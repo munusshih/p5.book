@@ -110,12 +110,14 @@
   // ── Text wrapping helper ────────────────────────────────────────────────────
   // Splits `str` into lines that each fit within `maxW` pixels,
   // preserving hard newlines. Uses p5's textWidth() for measurement.
+  // Words wider than maxW are placed on their own line rather than looping.
   function _wrapText(p, str, maxW) {
     const out = [];
     for (const para of str.split('\n')) {
       if (para === '') { out.push(''); continue; }
       let line = '';
       for (const word of para.split(' ')) {
+        if (!word) continue;
         const candidate = line ? line + ' ' + word : word;
         if (line && p.textWidth(candidate) > maxW) {
           out.push(line);
@@ -127,6 +129,15 @@
       if (line) out.push(line);
     }
     return out;
+  }
+
+  // Returns a numeric text leading in pixels, safe for all p5.js versions.
+  // p.textLeading() in p5 2.x returns the p5 instance rather than a number
+  // when the internal leading hasn't been explicitly set, so we fall back to
+  // the p5 default of textSize × 1.25.
+  function _getLeading(p) {
+    const raw = p.textLeading();
+    return (typeof raw === 'number' && raw > 0) ? raw : p.textSize() * 1.25;
   }
 
   class Book {
@@ -779,12 +790,20 @@
      *   }
      */
     textBox(str, x, y, w, h) {
-      const p       = this._p;
-      const cols    = this._columns;
-      const gutter  = this._columnGutter;
-      const colW    = (w - gutter * (cols - 1)) / cols;
-      const leading = p.textLeading() || p.textSize() * 1.25;
+      if (!str) return '';
+      const p      = this._p;
+      const cols   = this._columns;
+      const gutter = this._columnGutter;
+      const colW   = (w - gutter * (cols - 1)) / cols;
+
+      // Use the safe leading helper — p.textLeading() is unreliable as a
+      // getter in p5 2.x when leading hasn't been explicitly set.
+      const leading = _getLeading(p);
       const ascent  = p.textAscent();
+
+      // How many lines fit vertically?
+      // Line i has its baseline at y + ascent + i * leading.
+      // We need: ascent + i * leading < h  →  i < (h - ascent) / leading
       const maxLines = Math.max(1, Math.floor((h - ascent) / leading) + 1);
 
       const lines = _wrapText(p, str, colW);
