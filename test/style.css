@@ -1,0 +1,35 @@
+html,
+body {
+    margin: 0;
+    padding: 0;
+}
+
+canvas {
+    display: block;
+}
+
+/* ── p5.book viewer — uncomment to restyle ────────────────────────────
+
+:root {
+    --p5book-font:        monospace;
+    --p5book-font-size:   20px;
+    --p5book-bg:          #ffffff;
+    --p5book-toolbar-pad: 12px 20px;
+    --p5book-gap:         12px;
+
+}
+
+.p5book-viewer         { }
+.p5book-toolbar        { }
+.p5book-toolbar button { }
+.p5book-toolbar select { }
+.p5book-stage          { }
+.p5book-flipbook       { }
+.p5book-flipbook img   { }
+.p5book-flipbook-nav   { }
+.p5book-spread         { }
+.p5book-spread-page    { }
+.p5book-spread-page img  { }
+.p5book-spread-page span { }
+
+──────────────────────────────────────────────────────────────────── */
