@@ -76,8 +76,8 @@
   if (typeof p5 === "undefined") {
     console.error(
       "p5.book: p5.js must be loaded before p5.book.js.\n" +
-      "Make sure your <script> tags are in this order:\n" +
-      "  1. p5.js\n  2. jsPDF\n  3. p5.book.js"
+        "Make sure your <script> tags are in this order:\n" +
+        "  1. p5.js\n  2. jsPDF\n  3. p5.book.js",
     );
     return;
   }

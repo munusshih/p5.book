@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>worksheet · p5.book workshop</title>
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css" />
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <style>
+        body {
+            padding: 40px 20px 80px;
+            font-size: 20px;
+        }
+
+        h2 {
+            margin-top: 40px;
+        }
+
+        h3 {
+            margin-top: 20px;
+        }
+
+        p,
+        li {
+            margin-bottom: 6px;
+        }
+
+        ul,
+        ol {
+            padding-left: 20px;
+            margin-bottom: 12px;
+        }
+
+        pre {
+            background: #f6f6f6;
+            overflow-x: auto;
+            margin: 8px 0 16px;
+        }
+
+        pre code.hljs {
+            background: #f6f6f6;
+            font-size: 0.9em;
+            padding: 14px 16px;
+        }
+
+        code {
+            background: #f0f0f0;
+            padding: 1px 4px;
+            font-size: 0.9em;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 8px 0 16px;
+        }
+
+        td,
+        th {
+            border: 1px solid #ccc;
+            padding: 6px 10px;
+            vertical-align: top;
+        }
+
+        .step {
+            margin: 16px 0 24px;
+            padding-left: 14px;
+            border-left: 2px solid #ccc;
+        }
+
+        .step-num {
+            font-weight: bold;
+            font-size: 0.85em;
+            margin-bottom: 6px;
+        }
+
+        .try {
+            margin: 12px 0;
+        }
+
+        .try::before {
+            content: "Try it: ";
+            font-weight: bold;
+        }
+
+        .note {
+            margin: 12px 0;
+            font-style: italic;
+        }
+
+        .note::before {
+            content: "Note: ";
+            font-weight: bold;
+            font-style: normal;
+        }
+
+        footer {
+            margin-top: 60px;
+            padding-top: 16px;
+            border-top: 1px solid #ccc;
+            font-size: 0.85em;
+            color: #888;
+        }
+    </style>
+</head>
+
+<body>
+
+    <p><a href="../">← back to docs</a></p>
+
+    <h1>make a book with code</h1>
+    <p>Today you're going to make a real book — not by hand, but by writing
+        instructions for the computer. Each page will be drawn by the code you
+        write. At the end, you'll download a PDF you can print, fold, and keep.
+    </p>
+    <p>No experience needed. We'll go one small step at a time.</p>
+
+    <!-- ────────────────────────────────────────── 0: open the editor -->
+    <h2>0 — open the editor</h2>
+
+    <p>We'll use the p5.js editor — it runs entirely in your browser, nothing to
+        install.</p>
+
+    <div class="step">
+        <p>Go to <a href="https://editor.p5js.org"
+                target="_blank">editor.p5js.org</a> and open a new sketch.</p>
+        <p>You'll see two panels: code on the left, your drawing on the right.
+            Click
+            <strong>▶ Play</strong> to run the code. You should see a grey
+            square appear.
+        </p>
+    </div>
+
+    <p>The starter code looks like this:</p>
+    <pre>function setup() {
+  createCanvas(400, 400);
+}
+
+function draw() {
+  background(220);
+}</pre>
+
+    <p>Two things to know:</p>
+    <ul>
+        <li><strong>setup()</strong> runs <em>once</em> when the sketch starts.
+            Good for settings.</li>
+        <li><strong>draw()</strong> runs over and over. This is where you draw
+            things.</li>
+    </ul>
+
+    <div class="try">Change <code>background(220)</code> to
+        <code>background(255, 100, 0)</code> and press Play.
+        What colour do you get? The three numbers are red, green, blue — each
+        from 0 to 255.
+    </div>
+
+    <!-- ────────────────────────────────────────── 1: draw something -->
+    <h2>1 — draw something</h2>
+
+    <p>Before we make a book, let's draw one page. Think of the canvas as a
+        blank piece of paper.</p>
+
+    <div class="step">
+        <p>Change the canvas size to match a page — tall and narrow, like a
+            small book:</p>
+        <pre>function setup() {
+  createCanvas(400, 560);
+}
+
+function draw() {
+  background(255);  // white background
+  circle(200, 280, 100);  // a circle in the middle
+}</pre>
+        <p>Click Play. You should see a white page with one circle.</p>
+    </div>
+
+    <div class="try">
+        Move the circle around — the first number is left/right, the second is
+        up/down.
+        Try changing the third number (the size). What happens if you make it
+        really big?
+    </div>
+
+    <p>A few drawing commands to try:</p>
+    <pre>circle(x, y, size);           // a circle
+rect(x, y, width, height);    // a rectangle
+line(x1, y1, x2, y2);         // a line between two points
+
+fill(r, g, b);                // set the colour before drawing
+noFill();                     // transparent inside
+stroke(r, g, b);              // set the outline colour
+noStroke();                   // no outline</pre>
+
+    <div class="try">Design one page. Maybe a shape, a pattern, something
+        abstract.
+        This will be page 1 of your book!</div>
+
+    <!-- ────────────────────────────────────────── 2: add p5.book -->
+    <h2>2 — add p5.book</h2>
+
+    <p>Now we need to add the p5.book library so we can turn your drawings into
+        real PDF pages.</p>
+
+    <div class="step">
+        <p>In the editor, look at the left panel. Click the <strong>▼</strong>
+            arrow next to your sketch name — this shows all your files. Click on
+            <strong>index.html</strong>.
+        </p>
+        <p>Find the line that says <code>&lt;/body&gt;</code> near the bottom.
+            Add these two lines right
+            <em>before</em> it:
+        </p>
+        <pre>&lt;script src="https://unpkg.com/jspdf@latest/dist/jspdf.umd.min.js"&gt;&lt;/script&gt;
+&lt;script src="https://cdn.jsdelivr.net/gh/munusshih/p5.book@main/p5.book.js"&gt;&lt;/script&gt;</pre>
+        <p>Click back on <strong>sketch.js</strong> to go back to your code.</p>
+    </div>
+
+    <div class="note">These two lines load extra tools — jsPDF makes PDF files,
+        and p5.book connects everything together.</div>
+
+    <!-- ────────────────────────────────────────── 3: your first book -->
+    <h2>3 — your first book</h2>
+
+    <p>Time to make an actual book! Replace your code with this:</p>
+
+    <pre>let book;
+
+function setup() {
+  createCanvas(400, 560);
+  book = createBook(4, 5.6, 8);  // 4 inches wide, 5.6 inches tall, 8 pages
+}
+
+function draw() {
+  background(255);
+  circle(200, 280, 100);
+
+  book.addPage();  // ← saves this drawing as one page, then moves to the next
+}</pre>
+
+    <div class="step">
+        <p>Press Play. The sketch will run 8 times (once per page). After the
+            last page,
+            a viewer opens showing all your pages. You'll also see a
+            <strong>download pdf</strong> button.
+        </p>
+    </div>
+
+    <div class="note"><code>book.addPage()</code> always goes at the very end of
+        <code>draw()</code>.
+        It says: "save everything on the canvas as a page, then get ready for
+        the next one."
+    </div>
+
+    <div class="try">Change the number of pages. Try 4, or 12, or 20.
+        The viewer should show however many pages you set.</div>
+
+    <!-- ────────────────────────────────────────── 4: every page different -->
+    <h2>4 — every page is different</h2>
+
+    <p>Right now every page looks the same. Let's change that.</p>
+
+    <p>p5.book tells you which page you're on with <code>book.pageNumber</code>.
+        This starts at <strong>1</strong> on the first page, and goes up by 1
+        each time.</p>
+
+    <div class="step">
+        <p>Add the page number as text:</p>
+        <pre>function draw() {
+  background(255);
+  circle(200, 280, 100);
+
+  fill(0);
+  textSize(20);
+  text(book.pageNumber, 20, 40);  // writes the number in the top-left corner
+
+  book.addPage();
+}</pre>
+    </div>
+
+    <div class="try">
+        Move the page number somewhere else on the page.
+        Try changing <code>textSize(20)</code> to make it bigger or smaller.
+    </div>
+
+    <p>You can also use <code>book.pageNumber</code> to make things
+        <em>change</em> depending on the page. Here's a circle that
+        moves further right on each page:
+    </p>
+
+    <pre>function draw() {
+  background(255);
+
+  let x = book.pageNumber * 40;  // 40 on page 1, 80 on page 2, 120 on page 3...
+  circle(x, 280, 60);
+
+  book.addPage();
+}</pre>
+
+    <div class="try">What other things could you multiply by
+        <code>book.pageNumber</code>?
+        Try the size, or the y position, or the background colour number.
+    </div>
+
+    <!-- ────────────────────────────────────────── 5: gradual change -->
+    <h2>5 — gradual change</h2>
+
+    <p>There's an even easier way to make things evolve across your book:
+        <code>book.progress</code>.
+    </p>
+
+    <p>It's a number that starts at <strong>0</strong> on page 1 and reaches
+        <strong>1</strong> on the very last page. Like a percentage for how far
+        through the book you are.
+    </p>
+
+    <pre>// background fades from black to white
+let brightness = book.progress * 255;
+background(brightness);</pre>
+
+    <div class="step">
+        <pre>function draw() {
+  let brightness = book.progress * 255;
+  background(brightness);  // 0 = black on page 1, 255 = white on last page
+
+  let size = book.progress * 300;
+  circle(200, 280, size);  // starts tiny, ends huge
+
+  book.addPage();
+}</pre>
+        <p>Press Play and watch how each page gets a little brighter and the
+            circle a little bigger.</p>
+    </div>
+
+    <div class="try">
+        Change it so:
+        <ul>
+            <li>The circle moves from the left side to the right side</li>
+            <li>— or — The background colour shifts from one colour to another
+            </li>
+        </ul>
+        Hint: for colour, try
+        <code>background(book.progress * 255, 0, 100)</code>.
+    </div>
+
+    <!-- ────────────────────────────────────────── 6: different covers -->
+    <h2>6 — cover and back cover</h2>
+
+    <p>A real book has a special first page and last page. You can check which
+        page you're on:</p>
+
+    <pre>if (book.isFirstPage()) {
+  // this runs only on page 1 — your cover
+}
+
+if (book.isLastPage()) {
+  // this runs only on the final page — your back cover
+}</pre>
+
+    <div class="step">
+        <pre>function draw() {
+  if (book.isFirstPage()) {
+    background(0);        // black cover
+    fill(255);
+    textSize(32);
+    textAlign(CENTER, CENTER);
+    text("my book", width / 2, height / 2);
+
+  } else if (book.isLastPage()) {
+    background(0);
+    fill(255);
+    textSize(16);
+    textAlign(CENTER, CENTER);
+    text("the end", width / 2, height / 2);
+
+  } else {
+    background(255);
+    fill(0);
+    textSize(20);
+    text(book.pageNumber, 20, 40);
+  }
+
+  book.addPage();
+}</pre>
+    </div>
+
+    <div class="try">Design your own cover. Change the background colour, the
+        text, the font size.
+        Add a shape or two.</div>
+
+    <!-- ────────────────────────────────────────── 7: make it yours -->
+    <h2>7 — make your book</h2>
+
+    <p>Now put it all together and make something you'd actually want to print.
+    </p>
+    <p>Here are some ideas to get you started:</p>
+
+    <ul>
+        <li><strong>Colour book</strong> — each page is a different background
+            colour, the pages fade through a rainbow</li>
+        <li><strong>Word book</strong> — make a list of words in your code, one
+            word fills each page</li>
+        <li><strong>Shape book</strong> — a circle slowly turns into a square
+            over 10 pages</li>
+        <li><strong>Counting book</strong> — the number on each page, drawn big
+            and centred</li>
+        <li><strong>Your name</strong> — each page has one letter of your name
+        </li>
+        <li><strong>Mood book</strong> — each page is a different texture,
+            feeling, or colour story</li>
+    </ul>
+
+    <div class="try">
+        Build your book. When it's done, click <strong>download pdf</strong> in
+        the viewer.
+        You can print it at home and fold it into a zine!
+    </div>
+
+    <!-- ────────────────────────────────────────── cheat sheet -->
+    <h2>cheat sheet</h2>
+
+    <table>
+        <tr>
+            <th colspan="2">in setup() — run once</th>
+        </tr>
+        <tr>
+            <td><code>createBook(4, 6, 8)</code></td>
+            <td>make a book: 4in wide, 6in tall, 8 pages</td>
+        </tr>
+        <tr>
+            <td><code>createBook("A5", 8)</code></td>
+            <td>use a standard paper size instead</td>
+        </tr>
+        <tr>
+            <th colspan="2">in draw() — run once per page</th>
+        </tr>
+        <tr>
+            <td><code>book.pageNumber</code></td>
+            <td>which page you're on — starts at 1</td>
+        </tr>
+        <tr>
+            <td><code>book.progress</code></td>
+            <td>0 on page 1 → 1 on the last page</td>
+        </tr>
+        <tr>
+            <td><code>book.isFirstPage()</code></td>
+            <td>true only on the first page</td>
+        </tr>
+        <tr>
+            <td><code>book.isLastPage()</code></td>
+            <td>true only on the last page</td>
+        </tr>
+        <tr>
+            <td><code>book.addPage()</code></td>
+            <td>save this page — always put this last!</td>
+        </tr>
+    </table>
+
+    <!-- ────────────────────────────────────────── links -->
+    <h2>links</h2>
+    <ul>
+        <li><a href="https://editor.p5js.org" target="_blank">p5.js editor</a> —
+            where we code</li>
+        <li><a href="../">p5.book documentation</a></li>
+        <li><a href="https://p5js.org/reference/" target="_blank">p5.js
+                reference</a> — all the drawing commands</li>
+        <li><a href="https://github.com/munusshih/p5.book"
+                target="_blank">github.com/munusshih/p5.book</a></li>
+    </ul>
+
+    <footer>p5.book workshop</footer>
+
+    <script>
+        // auto-highlight all <pre> blocks
+        document.querySelectorAll('pre').forEach(pre => {
+            if (pre.querySelector('code')) return;
+            const code = document.createElement('code');
+            code.textContent = pre.textContent;
+            pre.textContent = '';
+            pre.appendChild(code);
+            hljs.highlightElement(code);
+        });
+    </script>
+</body>
+
+</html>

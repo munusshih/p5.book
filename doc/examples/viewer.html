@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>p5.book — example</title>
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css" />
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            height: 100dvh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            font-size: 20px;
+        }
+
+        #toolbar {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 8px 12px;
+            flex-shrink: 0;
+            border-bottom: 1px solid;
+        }
+
+        #toolbar .spacer {
+            flex: 1;
+        }
+
+        #main {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            overflow: hidden;
+        }
+
+        #code-panel {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border-right: 1px solid;
+        }
+
+        #tabs {
+            display: flex;
+            gap: 12px;
+            padding: 12px 12px;
+            flex-shrink: 0;
+        }
+
+        .tab {
+            font-size: 20px;
+        }
+
+        #code-scroll {
+            flex: 1;
+            overflow: auto;
+        }
+
+        #code-scroll pre {
+            margin: 0;
+        }
+
+        #code-scroll code.hljs {
+            font-size: 20px;
+            line-height: 1.6;
+            padding: 16px 20px;
+            min-height: 100%;
+            background: transparent;
+        }
+
+        #preview-panel {
+            overflow: hidden;
+        }
+
+        #preview-panel iframe {
+            display: block;
+            border: none;
+            width: 100%;
+            height: 100%;
+        }
+
+        @media (max-width: 700px) {
+            #main {
+                grid-template-columns: 1fr;
+                grid-template-rows: 50% 50%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="toolbar">
+        <a href="../">← docs</a>
+        <span id="title">loading…</span>
+        <span class="spacer"></span>
+        <a id="raw-link" href="#" target="_blank">open sketch</a>
+    </div>
+    <div id="main">
+        <div id="code-panel">
+            <div id="tabs">
+                <button class="tab active" data-file="sketch.js"
+                    data-lang="javascript">sketch.js</button>
+                <button class="tab" data-file="style.css"
+                    data-lang="css">style.css</button>
+                <button class="tab" data-file="sketch.html"
+                    data-lang="html">sketch.html</button>
+            </div>
+            <div id="code-scroll">
+                <pre><code id="code" class="language-javascript"></code></pre>
+            </div>
+        </div>
+        <div id="preview-panel">
+            <iframe id="preview" title="sketch preview"></iframe>
+        </div>
+    </div>
+
+    <script>
+        const params = new URLSearchParams(location.search);
+        const folder = params.get("folder") || "";
+        const title = params.get("title") || folder;
+
+        document.title = title + " · p5.book";
+        document.getElementById("title").textContent = title;
+        document.getElementById("raw-link").href = folder + "/sketch.html";
+
+        if (!folder) {
+            document.getElementById("code").textContent = "// ?folder= param missing";
+        }
+
+        // ── fetch all three source files ──────────────────────────────────────
+        const sources = {};
+
+        Promise.all(["sketch.js", "style.css", "sketch.html"].map(file =>
+            fetch(folder + "/" + file)
+                .then(r => r.ok ? r.text() : "/* " + file + " not found */")
+                .catch(() => "/* could not load " + file + " */")
+                .then(text => {
+                    // strip only the <script> block live-server injects, keep the rest
+                    sources[file] = text.replace(/<!-- Code injected by live-server -->[\s\S]*?<\/script>/g, "").trimEnd();
+                })
+        )).then(() => {
+            // show default tab
+            showTab(document.querySelector(".tab.active"));
+
+            // point iframe at sketch.html
+            document.getElementById("preview").src = folder + "/sketch.html";
+        });
+
+        // ── tab switching ─────────────────────────────────────────────────────
+        function showTab(btn) {
+            document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+            btn.classList.add("active");
+
+            const codeEl = document.getElementById("code");
+            codeEl.removeAttribute("data-highlighted"); // allow re-highlighting
+            codeEl.className = "language-" + btn.dataset.lang;
+            codeEl.textContent = sources[btn.dataset.file] || "";
+            hljs.highlightElement(codeEl);
+            document.getElementById("code-scroll").scrollTop = 0;
+        }
+
+        document.querySelectorAll(".tab").forEach(btn => {
+            btn.addEventListener("click", () => showTab(btn));
+        });
+
+    </script>
+</body>
+
+</html>

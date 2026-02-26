@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>p5.book — documentation</title>
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css" />
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <style>
+        body {
+            padding: 40px 20px 80px;
+            font-size: 20px;
+        }
+
+        h2 {
+            margin-top: 40px;
+        }
+
+        h3 {
+            margin-top: 24px;
+        }
+
+        p,
+        li {
+            margin-bottom: 6px;
+        }
+
+        ul,
+        ol {
+            padding-left: 20px;
+            margin-bottom: 12px;
+        }
+
+        pre {
+            background: #f6f6f6;
+            overflow-x: auto;
+            margin: 8px 0 16px;
+        }
+
+        pre code.hljs {
+            background: #f6f6f6;
+            font-size: 0.9em;
+            padding: 14px 16px;
+        }
+
+        code {
+            background: #f0f0f0;
+            padding: 1px 4px;
+            font-size: 0.9em;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 8px 0 16px;
+        }
+
+        td,
+        th {
+            border: 1px solid #ccc;
+            padding: 6px 10px;
+            vertical-align: top;
+            text-align: left;
+        }
+    </style>
+</head>
+
+<body>
+
+    <p style="margin-bottom:16px"><a
+            href="https://github.com/munusshih/p5.book">← github</a></p>
+
+    <h1>p5.book</h1>
+    <p class="tagline">A PDF book generator for <a href="https://p5js.org">p5.js
+            2.0</a>. No build tools. Just a <code>&lt;script&gt;</code> tag.</p>
+
+    <pre>&lt;!-- load these three scripts in order --&gt;
+&lt;script src="https://cdn.jsdelivr.net/npm/p5@2/lib/p5.min.js"&gt;&lt;/script&gt;
+&lt;script src="https://unpkg.com/jspdf@latest/dist/jspdf.umd.min.js"&gt;&lt;/script&gt;
+&lt;script src="https://cdn.jsdelivr.net/gh/munusshih/p5.book@main/p5.book.js"&gt;&lt;/script&gt;</pre>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <h2>examples</h2>
+
+    <ul>
+        <li><a href="examples/01-hello-book/">01 — hello book</a> — the absolute
+            minimum</li>
+        <li><a href="examples/02-page-numbers/">02 — page numbers</a> —
+            <code>book.page</code>, <code>book.pageNumber</code>,
+            <code>isFirstPage()</code>, <code>isLastPage()</code>
+        </li>
+        <li><a href="examples/03-color-progression/">03 — color progression</a>
+            — colors that evolve across the book using
+            <code>book.progress</code>
+        </li>
+        <li><a href="examples/04-typography/">04 — typography</a> — one word per
+            page, sized and placed generatively</li>
+        <li><a href="examples/05-bleed/">05 — bleed &amp; print marks</a> —
+            <code>book.bleed</code>, trim and bleed sizes
+        </li>
+    </ul>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <h2>workshop</h2>
+
+    <ul>
+        <li><a href="workshop/worksheet.html">worksheet</a> — step-by-step
+            exercises, no install required</li>
+    </ul>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <h2>quick start</h2>
+
+    <pre>let book;
+
+function setup() {
+  createCanvas(500, 800);   // size your canvas to match page ratio
+  pixelDensity(2);          // higher = crisper output
+
+  book = createBook(5, 8, 10);   // 5×8 inches, 10 pages
+}
+
+function draw() {
+  background(255);
+  text("Page " + book.pageNumber, 20, 30);
+
+  book.addPage(); // always call last — saves PDF after the final page
+}</pre>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <h2>api reference</h2>
+
+    <h3>createBook( … )</h3>
+    <p>Call once in <code>setup()</code>. Returns a <code>Book</code> object.
+    </p>
+    <pre>// named paper size
+book = createBook("A5", 12);
+book = createBook("letter", 12, "my-zine");   // optional filename
+
+// custom size  (default unit: inches)
+book = createBook(5, 8, 12);
+book = createBook(15, 20, 12, "cm");
+book = createBook(5, 8, 12, "in", "my-zine"); // with filename</pre>
+
+    <table>
+        <tr>
+            <th>named sizes</th>
+            <td><code>A3</code> <code>A4</code> <code>A5</code> <code>A6</code>
+                <code>letter</code> <code>legal</code> <code>tabloid</code> —
+                any size jsPDF knows
+            </td>
+        </tr>
+        <tr>
+            <th>units</th>
+            <td><code>"in"</code> inches (default) · <code>"cm"</code> ·
+                <code>"mm"</code> · <code>"px"</code> · <code>"pt"</code>
+            </td>
+        </tr>
+    </table>
+
+    <h3>book.addPage()</h3>
+    <p>Capture the current canvas as the next page. Call <strong>once, at the
+            very end of <code>draw()</code></strong>. After the last page the
+        viewer opens and the sketch stops.</p>
+
+    <h3>book.page &amp; book.pageNumber</h3>
+    <table>
+        <tr>
+            <th><code>book.page</code></th>
+            <td>0-based index. First page = <code>0</code>.</td>
+        </tr>
+        <tr>
+            <th><code>book.pageNumber</code></th>
+            <td>1-based. First page = <code>1</code>. Easier for display.</td>
+        </tr>
+        <tr>
+            <th><code>book.totalPages</code></th>
+            <td>Total number of pages passed to <code>createBook()</code>.</td>
+        </tr>
+    </table>
+
+    <h3>book.progress</h3>
+    <p><code>0.0</code> on the first page → <code>1.0</code> on the last. Use
+        with <code>lerp()</code> and <code>map()</code> for gradual change
+        across the book.</p>
+    <pre>background(lerp(0, 255, book.progress));       // fades black → white
+circle(width/2, height/2, book.progress * width); // grows page by page</pre>
+
+    <h3>book.isFirstPage() / book.isLastPage()</h3>
+    <pre>if (book.isFirstPage())      { text("Cover", 20, 30); }
+else if (book.isLastPage())  { text("The End", 20, 30); }
+else                         { text("p. " + book.pageNumber, 20, 30); }</pre>
+
+    <h3>book.setBleed( amount, [unit] )</h3>
+    <p>Add bleed and print marks. Call in <code>setup()</code>, before
+        <code>addPage()</code>.
+    </p>
+    <pre>book.setBleed(0.125);       // 1/8 inch — US standard
+book.setBleed(3, "mm");     // 3 mm — European standard</pre>
+
+    <h3>book.bleed</h3>
+    <p>A <code>p5.Graphics</code> buffer sized to the full bleed area. Draw into
+        it to fill the bleed zone in the PDF. Before <code>setBleed()</code> is
+        called, all calls on <code>book.bleed</code> are silently ignored.</p>
+    <pre>function draw() {
+  book.bleed.background(220);   // extends into the bleed zone
+
+  fill(0);
+  text("Page " + book.pageNumber, 20, 30); // trim area only
+
+  book.addPage();
+}</pre>
+
+    <h3>book.setPrintMarks(bool)</h3>
+    <p>Show or hide trim/bleed marks. <code>setBleed()</code> enables them
+        automatically.</p>
+
+    <h3>book.save([filename])</h3>
+    <p>Manually download the PDF. Usually not needed — it's triggered
+        automatically.</p>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <h2>tips</h2>
+    <ul>
+        <li><strong>Canvas size:</strong> match your page ratio. For a 5×8 in
+            page, use <code>createCanvas(500, 800)</code>.</li>
+        <li><strong>Resolution:</strong> use <code>pixelDensity(2)</code> or
+            <code>pixelDensity(3)</code> in <code>setup()</code> for crisp print
+            output.
+        </li>
+        <li><strong>Slow frames:</strong> add <code>frameRate(1)</code> in
+            <code>setup()</code> if each page needs more time to render.
+        </li>
+        <li><strong>Viewer:</strong> after the last page, a built-in viewer
+            opens with flipbook + spread view, download, and print.</li>
+        <li><strong>Styling the viewer:</strong> override CSS variables in your
+            stylesheet — see <code>test/style.css</code> for the full list.</li>
+    </ul>
+
+    <script>
+        // auto-highlight all <pre> blocks
+        document.querySelectorAll('pre').forEach(pre => {
+            if (pre.querySelector('code')) return;
+            const code = document.createElement('code');
+            code.textContent = pre.textContent;
+            pre.textContent = '';
+            pre.appendChild(code);
+            hljs.highlightElement(code);
+        });
+    </script>
+</body>
+
+</html>
