@@ -64,12 +64,31 @@
  *   book.isFirstPage()          – true when drawing the first page
  *   book.isLastPage()           – true when drawing the last page
  *   book.save([filename])       – manually download the PDF
+ *   book.columnNum(n, [gutter]) – set column count for textBox() (like textSize — stays until changed)
+ *   book.textBox(str, x, y, w, h) → overflow string
+ *                               – draw wrapped text into a box; returns text that didn't fit
  *
  * PROPERTIES (bleed)
  * ------------------
  *   book.bleed       – p5.Graphics buffer for the bleed layer (created by setBleed)
  *   book.bleedWidth  – trim width  + bleed on both sides (in book units; for reference)
  *   book.bleedHeight – trim height + bleed on both sides (in book units; for reference)
+ *
+ * TEXT FLOW
+ * ---------
+ *   book.columnNum(n, [gutter]) – set column count for textBox(); stays until changed
+ *                                 behaves like textSize() — call once, it sticks
+ *   book.textBox(str, x, y, w, h) → string
+ *                               – wrap and draw text into a box; inherits current p5
+ *                                 font, size, and leading; returns overflow text
+ *
+ *   // single column
+ *   let rest = book.textBox(myText, 40, 40, width - 80, height - 80);
+ *
+ *   // two columns, flow to next page
+ *   book.columnNum(2, 20);
+ *   let rest = book.textBox(myText, 40, 40, width - 80, height - 80);
+ *   if (rest) { book.addPage(); book.textBox(rest, 40, 40, width - 80, height - 80); }
  */
 
 (function () {
@@ -87,6 +106,28 @@
 
   // Millimetres per unit — used to convert bleed amounts between units
   const MM_PER_UNIT = { in: 25.4, cm: 10, mm: 1, pt: 25.4 / 72, px: 25.4 / 96 };
+
+  // ── Text wrapping helper ────────────────────────────────────────────────────
+  // Splits `str` into lines that each fit within `maxW` pixels,
+  // preserving hard newlines. Uses p5's textWidth() for measurement.
+  function _wrapText(p, str, maxW) {
+    const out = [];
+    for (const para of str.split('\n')) {
+      if (para === '') { out.push(''); continue; }
+      let line = '';
+      for (const word of para.split(' ')) {
+        const candidate = line ? line + ' ' + word : word;
+        if (line && p.textWidth(candidate) > maxW) {
+          out.push(line);
+          line = word;
+        } else {
+          line = candidate;
+        }
+      }
+      if (line) out.push(line);
+    }
+    return out;
+  }
 
   class Book {
     /**
@@ -168,6 +209,10 @@
 
       /** Captured JPEG data-URLs for each page — used by the viewer. */
       this._pageImages = [];
+
+      /** Column count and gutter for textBox() — like textSize(), stays until changed. */
+      this._columns = 1;
+      this._columnGutter = 20;
 
       /** Current page index. 0 = first page (not yet added). */
       this.page = 0;
@@ -679,6 +724,81 @@
      */
     save(filename) {
       this._pdf.save(filename || this._filename);
+    }
+
+    /**
+     * Set the number of columns for subsequent textBox() calls.
+     * Works like textSize() — call it once and it stays until you change it.
+     * With no arguments, returns the current column count.
+     *
+     * @param {number} n           – number of columns (≥ 1)
+     * @param {number} [gutter=20] – gap between columns, in pixels
+     * @returns {number|Book}      – column count when called with no args, otherwise `this`
+     *
+     * @example
+     *   book.columnNum(2);      // two equal columns, 20px gutter
+     *   book.columnNum(3, 30);  // three columns, 30px gutter
+     *   book.columnNum(1);      // back to single column
+     */
+    columnNum(n, gutter) {
+      if (n === undefined) return this._columns;
+      this._columns = Math.max(1, Math.floor(n));
+      if (gutter !== undefined) this._columnGutter = gutter;
+      return this;
+    }
+
+    /**
+     * Draw text into a rectangular box, wrapping words automatically.
+     * Inherits the current p5 text state — font, size, leading, fill, alignment.
+     * Respects hard newlines in the source string.
+     *
+     * If book.columnNum(n) has been set, the box is divided into n equal columns
+     * and text flows left-to-right through each column in order.
+     *
+     * Returns the text that did not fit, so you can continue it on the next page
+     * or column by calling textBox() again with the same arguments.
+     *
+     * @param {string} str – text to draw
+     * @param {number} x   – left edge of the box, in pixels
+     * @param {number} y   – top edge of the box, in pixels
+     * @param {number} w   – total width of the box, in pixels
+     * @param {number} h   – height of the box, in pixels
+     * @returns {string}   – overflow text (empty string if everything fit)
+     *
+     * @example
+     *   // single column
+     *   let overflow = book.textBox(myText, 40, 40, width - 80, height - 80);
+     *
+     * @example
+     *   // two columns, flow into next page if needed
+     *   book.columnNum(2, 24);
+     *   let overflow = book.textBox(myText, 40, 40, width - 80, height - 80);
+     *   if (overflow) {  // there's more — addPage() then continue
+     *     book.addPage();
+     *     overflow = book.textBox(overflow, 40, 40, width - 80, height - 80);
+     *   }
+     */
+    textBox(str, x, y, w, h) {
+      const p       = this._p;
+      const cols    = this._columns;
+      const gutter  = this._columnGutter;
+      const colW    = (w - gutter * (cols - 1)) / cols;
+      const leading = p.textLeading() || p.textSize() * 1.25;
+      const ascent  = p.textAscent();
+      const maxLines = Math.max(1, Math.floor((h - ascent) / leading) + 1);
+
+      const lines = _wrapText(p, str, colW);
+      let lineIdx = 0;
+
+      for (let col = 0; col < cols && lineIdx < lines.length; col++) {
+        const cx = x + col * (colW + gutter);
+        for (let i = 0; i < maxLines && lineIdx < lines.length; i++) {
+          p.text(lines[lineIdx], cx, y + ascent + i * leading);
+          lineIdx++;
+        }
+      }
+
+      return lines.slice(lineIdx).join('\n');
     }
   }
 
