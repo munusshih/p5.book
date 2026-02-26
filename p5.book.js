@@ -113,12 +113,15 @@
   // Words wider than maxW are placed on their own line rather than looping.
   function _wrapText(p, str, maxW) {
     const out = [];
-    for (const para of str.split('\n')) {
-      if (para === '') { out.push(''); continue; }
-      let line = '';
-      for (const word of para.split(' ')) {
+    for (const para of str.split("\n")) {
+      if (para === "") {
+        out.push("");
+        continue;
+      }
+      let line = "";
+      for (const word of para.split(" ")) {
         if (!word) continue;
-        const candidate = line ? line + ' ' + word : word;
+        const candidate = line ? line + " " + word : word;
         if (line && p.textWidth(candidate) > maxW) {
           out.push(line);
           line = word;
@@ -137,7 +140,7 @@
   // the p5 default of textSize × 1.25.
   function _getLeading(p) {
     const raw = p.textLeading();
-    return (typeof raw === 'number' && raw > 0) ? raw : p.textSize() * 1.25;
+    return typeof raw === "number" && raw > 0 ? raw : p.textSize() * 1.25;
   }
 
   class Book {
@@ -227,8 +230,11 @@
 
       /** Current page index. 0 = first page (not yet added). */
       this.page = 0;
-      /** Total number of pages. */
-      this.totalPages = totalPages;
+      /**
+       * Total number of pages. Can be null if you plan to call finish()
+       * manually instead of relying on auto-save.
+       */
+      this.totalPages = totalPages != null ? totalPages : null;
     }
 
     /**
@@ -396,7 +402,7 @@
 
       this.page++;
 
-      if (this.page >= this.totalPages) {
+      if (this.totalPages != null && this.page >= this.totalPages) {
         this._p.noLoop();
         this._showViewer();
       }
@@ -730,7 +736,30 @@
     }
 
     /**
-     * Manually save the PDF. Called automatically after the last page.
+     * Finish the book: show the viewer and save the PDF.
+     * Use this instead of totalPages when you don't know the page count
+     * upfront — e.g. when flowing text until overflow is empty.
+     *
+     * @param {string} [filename] – overrides the filename set in createBook()
+     *
+     * @example
+     *   let overflow = myText;
+     *   while (overflow) {
+     *     background(255);
+     *     overflow = book.textBox(overflow, 40, 40, width-80, height-80);
+     *     book.addPage();
+     *   }
+     *   book.finish();
+     */
+    finish(filename) {
+      if (filename) this._filename = filename;
+      this._p.noLoop();
+      this._showViewer();
+    }
+
+    /**
+     * Manually save the PDF to disk without showing the viewer.
+     * Called automatically after the last page when totalPages is set.
      * @param {string} [filename] – overrides the filename set in createBook()
      */
     save(filename) {
@@ -790,16 +819,16 @@
      *   }
      */
     textBox(str, x, y, w, h) {
-      if (!str) return '';
-      const p      = this._p;
-      const cols   = this._columns;
+      if (!str) return "";
+      const p = this._p;
+      const cols = this._columns;
       const gutter = this._columnGutter;
-      const colW   = (w - gutter * (cols - 1)) / cols;
+      const colW = (w - gutter * (cols - 1)) / cols;
 
       // Use the safe leading helper — p.textLeading() is unreliable as a
       // getter in p5 2.x when leading hasn't been explicitly set.
       const leading = _getLeading(p);
-      const ascent  = p.textAscent();
+      const ascent = p.textAscent();
 
       // How many lines fit vertically?
       // Line i has its baseline at y + ascent + i * leading.
@@ -817,24 +846,30 @@
         }
       }
 
-      return lines.slice(lineIdx).join('\n');
+      return lines.slice(lineIdx).join("\n");
     }
   }
 
   /**
    * Create a new Book. Call this inside setup().
    *
-   * @overload
-   * @param {string} sizeName   – named paper size: "A4", "A5", "letter", "legal", etc.
-   * @param {number} totalPages – number of pages to generate
-   * @param {string} [filename] – output filename (default: "book.pdf")
+   * If you know the page count upfront, pass it as totalPages and the book
+   * saves automatically after the last addPage().
+   *
+   * If you don't know the count (e.g. when flowing text), omit totalPages
+   * and call book.finish() when you're done.
    *
    * @overload
-   * @param {number} width      – page width  in `unit`
-   * @param {number} height     – page height in `unit`
-   * @param {number} totalPages – number of pages to generate
-   * @param {string} [unit]     – "in" (default), "cm", "mm", "px", "pt"
-   * @param {string} [filename] – output filename (default: "book.pdf")
+   * @param {string} sizeName       – named paper size: "A4", "A5", "letter", "legal", etc.
+   * @param {number} [totalPages]   – number of pages; omit to use book.finish() instead
+   * @param {string} [filename]     – output filename (default: "book.pdf")
+   *
+   * @overload
+   * @param {number} width          – page width  in `unit`
+   * @param {number} height         – page height in `unit`
+   * @param {number} [totalPages]   – number of pages; omit to use book.finish() instead
+   * @param {string} [unit]         – "in" (default), "cm", "mm", "px", "pt"
+   * @param {string} [filename]     – output filename (default: "book.pdf")
    *
    * @returns {Book}
    */

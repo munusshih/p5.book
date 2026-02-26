@@ -37,8 +37,8 @@ function draw() {
 
   // only capture once FRAMES_PER_PAGE layers have been drawn
   if (framesSoFar >= FRAMES_PER_PAGE) {
-    book.addPage();      // ← inside an if(), not at the bottom of every frame
+    book.addPage(); // ← inside an if(), not at the bottom of every frame
     framesSoFar = 0;
-    background(255);     // clear canvas for the next page
+    background(255); // clear canvas for the next page
   }
 }
