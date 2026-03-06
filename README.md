@@ -172,13 +172,48 @@ if (book.isFirstPage()) {
 
 ---
 
-### `book.save([filename])`
+### `book.isLeftPage()` / `book.isRightPage()`
 
-Manually trigger the PDF download. You usually don't need this — it's called automatically after the last `addPage()`.
+Check if the current page is on the left or right side of a spread. Only meaningful when `setSpread(true)` is enabled. Returns `false` for cover and back cover (which are solo pages).
 
 ```js
-book.save("my-zine.pdf");
+book.setSpread(true);
+
+function draw() {
+  background(255);
+
+  if (book.isLeftPage()) {
+    // content for left pages
+    textAlign(RIGHT);
+    text("Page " + book.pageNumber, width - 20, 30);
+  } else if (book.isRightPage()) {
+    // content for right pages
+    textAlign(LEFT);
+    text("Page " + book.pageNumber, 20, 30);
+  }
+
+  book.addPage();
+}
 ```
+
+**Note:** Page numbering in spreads:
+
+- Page 0 (cover) — solo, neither left nor right
+- LTR (default): odd indices (1, 3, 5...) = **left**, even indices (2, 4, 6...) = **right**
+- RTL: odd indices (1, 3, 5...) = **right**, even indices (2, 4, 6...) = **left**
+- Last page (back cover) — solo, neither left nor right
+
+---
+
+### `book.setDPI(dpi)`
+
+Set the canvas DPI for high-quality print output. Call in `setup()`, **before** `addPage()`.
+
+```js
+book.setDPI(300); // standard print resolution
+```
+
+This automatically adjusts `pixelDensity()` based on your trim width, so you don't need to call `pixelDensity()` yourself.
 
 ---
 
@@ -237,6 +272,60 @@ book.setPrintMarks(false); // bleed is still there, marks are not drawn
 
 ---
 
+### `book.setSpread(enabled)`
+
+Enable spread layout: cover and back cover are solo pages, inner pages pair as two-page spreads in the preview, PDF export, and print. Call in `setup()`, **before** `addPage()`.
+
+```js
+book.setSpread(true);
+```
+
+**Requirements:**
+
+- Total page count must be **even**
+- Must be called before the first `addPage()`
+
+When enabled:
+
+- Page 1 (cover) is displayed alone
+- Pages 2–3, 4–5, etc. are displayed as spreads
+- Last page (back cover) is displayed alone
+- PDF export automatically creates spread pages without inner bleed at the gutter
+
+---
+
+### `book.setDirection(dir)`
+
+Set reading direction. Default is `"ltr"` (left-to-right). Use `"rtl"` for right-to-left books (Arabic, Hebrew, manga, etc.). Call in `setup()`, **before** `addPage()`.
+
+```js
+book.setSpread(true);
+book.setDirection("rtl"); // right-to-left reading order
+```
+
+When `"rtl"` is set:
+
+- Spread pairs are physically flipped in the PDF and viewer — the first inner page appears on the **right** side
+- `isLeftPage()` / `isRightPage()` return correct values for RTL layout
+- Viewer arrow keys flip: `→` goes to the previous spread, `←` goes to the next
+
+---
+
+### `book.setSaddleStitch(enabled)`
+
+Enable saddle-stitch imposition button in the viewer. Page count must be **divisible by 4**.
+
+```js
+book.setSaddleStitch(true);
+```
+
+When enabled, the viewer shows a dropdown to choose between:
+
+- **PDF** — normal page order
+- **Saddle Stitch** — printer spread imposition for saddle-stitch binding
+
+---
+
 ### `book.bleedWidth` / `book.bleedHeight`
 
 Trim size + bleed on both sides, in the book's unit. Read-only. These are provided for reference — you don't need to use them to size your canvas anymore.
@@ -246,6 +335,178 @@ Trim size + bleed on both sides, in the book's unit. Read-only. These are provid
 console.log(book.bleedWidth); // 5.25
 console.log(book.bleedHeight); // 8.25
 ```
+
+---
+
+### `book.save([filename])`
+
+Manually trigger the PDF download. You usually don't need this — it's called automatically after the last `addPage()`.
+
+```js
+book.save("my-zine.pdf");
+```
+
+When `setSpread(true)` is enabled, this exports the spread-format PDF automatically.
+
+---
+
+### `book.saveSaddleStitch([filename])`
+
+Export a saddle-stitch imposition PDF. Page count must be divisible by 4.
+
+```js
+book.saveSaddleStitch(); // downloads "book-saddle.pdf"
+book.saveSaddleStitch("my-zine-print.pdf");
+```
+
+Pages are reordered into printer spreads for saddle-stitch binding:
+
+- For an 8-page book: [8,1], [2,7], [6,3], [4,5]
+
+**Note:** This is called automatically when the user selects "Saddle Stitch" in the viewer dropdown (if `setSaddleStitch(true)` was enabled).
+
+---
+
+### `book.finish([filename])`
+
+Manually show the viewer and stop the loop. Use when you don't know the total page count upfront (e.g. text reflow).
+
+```js
+let textLeft = "...long text...";
+
+function draw() {
+  background(255);
+  textLeft = book.textBox(textLeft, 20, 20, width - 40, height - 40);
+  book.addPage();
+
+  if (!textLeft) {
+    book.finish(); // all text placed — show viewer
+  }
+}
+```
+
+When a total page count is passed to `createBook()`, the viewer opens automatically after the last page — you don't need `finish()`.
+
+---
+
+### `book.textBox(str, x, y, w, h)`
+
+Draw wrapped text into a rectangular box with automatic line breaks. Returns overflow text that didn't fit.
+
+```js
+let overflow = "Long text here...";
+
+function draw() {
+  background(255);
+
+  // render text, get what didn't fit
+  overflow = book.textBox(overflow, 20, 20, width - 40, height - 40);
+
+  book.addPage();
+
+  // stop when all text has been placed
+  if (!overflow) {
+    book.finish();
+  }
+}
+```
+
+Respects current `textSize()`, `textLeading()`, `textAlign()`, `book.letterSpacing()`, and `book.columnNum()`.
+
+Chinese, Japanese, and Korean text is automatically detected and wrapped character-by-character (no space needed between characters).
+
+---
+
+### `book.columnNum(n, [gutter])`
+
+Set the number of columns for `textBox()`. Returns the current column count if called with no arguments.
+
+```js
+book.columnNum(2, 20); // 2 columns, 20px gutter
+book.columnNum(1); // back to single column
+
+let cols = book.columnNum(); // get current count
+```
+
+Persists like `textSize()` — affects all subsequent `textBox()` calls until changed.
+
+---
+
+### `book.letterSpacing(px)`
+
+Set CSS letter-spacing. Persists like `textSize()`. Negative values tighten, positive loosen. Applied to both the main canvas and the bleed layer.
+
+```js
+book.letterSpacing(-2); // tighten — good for large headlines
+book.letterSpacing(4); // loosen — spaced-out labels
+book.letterSpacing(0); // reset to normal
+```
+
+---
+
+### `book.bleed.draw(fn)`
+
+Scoped drawing into the bleed layer. `fn` receives the bleed `p5.Graphics` object as its argument, so you can route drawing calls without prefixing every line with `book.bleed.`.
+
+```js
+book.bleed.draw((g) => {
+  g.background(20);
+  g.noFill();
+  g.stroke(255);
+  for (let i = 50; i < 800; i += 50) {
+    g.ellipse(g.width / 2, g.height / 2, i, i);
+  }
+});
+```
+
+If `setBleed()` was not called, `bleed.draw()` is a no-op — the function is never called.
+
+---
+
+### `book.spine`
+
+A `p5.Graphics` buffer (200 × canvas-height px) for drawing the book spine. Its content appears in the **3D viewer** as the spine face, and can be used to design your spine artwork.
+
+```js
+function setup() {
+  book = createBook(5.5, 8.5, 200);
+
+  // draw spine content once at the start
+  book.spine.background(20);
+  book.spine.fill(200);
+  book.spine.textAlign(CENTER, CENTER);
+  book.spine.textSize(12);
+  // rotated text runs bottom-to-top along the spine
+  book.spine.push();
+  book.spine.translate(100, book.spine.height / 2);
+  book.spine.rotate(-HALF_PI);
+  book.spine.text("My Book Title", 0, 0);
+  book.spine.pop();
+}
+```
+
+Or use the scoped helper:
+
+```js
+book.spine.draw((g) => {
+  g.background(20);
+  g.fill(200);
+  g.noStroke();
+  g.textSize(12);
+  g.push();
+  g.translate(100, g.height / 2);
+  g.rotate(-HALF_PI);
+  g.textAlign(CENTER, CENTER);
+  g.text("My Book Title", 0, 0);
+  g.pop();
+});
+```
+
+**Notes:**
+
+- The spine canvas is 200 px wide × canvas height tall. Scale your drawings accordingly.
+- If you never draw on `book.spine`, a default spine is auto-generated (dark gradient + filename).
+- Spine thickness in the 3D viewer is automatically calculated from `totalPages` (≈ 0.1 mm per leaf).
 
 ---
 
@@ -266,28 +527,32 @@ console.log(book.bleedHeight); // 8.25
       function setup() {
         createCanvas(400, 600);
         book = createBook(4, 6, 12); // 4×6 in, 12 pages
-        // or: createBook(10, 15, 12, "cm");
-        // or: createBook("A5", 12);
+        book.setDPI(300); // high-res for print
+        book.setBleed(0.125); // 1/8" bleed
+        book.setSpread(true); // spread layout
+        book.setSaddleStitch(true); // enable saddle-stitch option
       }
 
       function draw() {
-        // background shifts from dark to light using book.progress
-        background(lerp(20, 240, book.progress));
-
-        // circle grows across the book
+        // bleed layer — extends to cut edge
         let hue = map(book.progress, 0, 1, 0, 360);
         colorMode(HSB);
-        fill(hue, 80, 100);
+        book.bleed.background(hue, 80, 100);
+
+        // trim layer — main canvas
+        colorMode(RGB);
+        clear(); // keep transparent so bleed shows through
+
+        // circle grows across the book
         noStroke();
+        fill(255);
         circle(width / 2, height / 2, book.progress * width);
 
-        // page number in the corner
-        colorMode(RGB);
-        fill(0);
+        // page number
+        fill(255);
         textSize(20);
-
         if (book.isFirstPage()) {
-          text("My Generative Book", 20, 30);
+          text("My Book", 20, 30);
         } else if (book.isLastPage()) {
           text("The End", 20, 30);
         } else {
@@ -305,11 +570,15 @@ console.log(book.bleedHeight); // 8.25
 
 ## Tips
 
-- **Resolution** — use `pixelDensity(2)` or higher in `setup()` for crisp print quality.
-- **Canvas size** — make your canvas match your page ratio. A 5×8 in page? Try `createCanvas(500, 800)`.
-- **Bleed size** — if you're using `setBleed()`, size your canvas to `book.bleedWidth * scale` × `book.bleedHeight * scale` so your art extends all the way to the cut edge.
+- **Resolution** — use `book.setDPI(300)` in `setup()` for crisp print quality (replaces manual `pixelDensity()`).
+- **Canvas size** — match your page ratio. A 5×8 in page? Try `createCanvas(500, 800)`.
+- **Bleed size** — standard bleed: 0.125 in (US) or 3 mm (Europe).
+- **Spread layout** — use `book.setSpread(true)` for books where the cover/back are solo and inner pages pair as spreads.
+- **Saddle-stitch** — enable `book.setSaddleStitch(true)` to add a printer spread export option (page count must be divisible by 4).
+- **Text reflow** — use `book.textBox()` with `book.columnNum()` to flow long text across multiple pages automatically.
 - **Slow down** — p5.book captures every frame, so `frameRate(1)` can give you more time to animate per page.
-- **Page count** — the sketch automatically stops after the last page, so you don't need `noLoop()`.
+- **Unknown page count** — don't pass `totalPages` to `createBook()`, use `book.finish()` when done.
+- **Viewer styling** — override CSS variables in your stylesheet — see [test/style.css](test/style.css) for the full list.
 
 ---
 

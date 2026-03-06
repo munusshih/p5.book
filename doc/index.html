@@ -103,13 +103,15 @@
         </li>
         <li><a href="examples/06-slow-burn/">06 — slow burn</a> —
             <code>addPage()</code> inside an <code>if()</code>, layers
-            accumulate across many frames</li>
+            accumulate across many frames
+        </li>
         <li><a href="examples/07-every-run-different/">07 — every run
                 different</a> — unseeded <code>random()</code> so every run
             produces a unique book</li>
         <li><a href="examples/08-text-flow/">08 — text flow</a> —
             <code>book.textBox()</code> and <code>book.columnNum()</code> to
-            reflow long text across pages</li>
+            reflow long text across pages
+        </li>
     </ul>
 
     <!-- ═══════════════════════════════════════════════════════════════ -->
@@ -203,6 +205,43 @@ circle(width/2, height/2, book.progress * width); // grows page by page</pre>
 else if (book.isLastPage())  { text("The End", 20, 30); }
 else                         { text("p. " + book.pageNumber, 20, 30); }</pre>
 
+    <h3>book.isLeftPage() / book.isRightPage()</h3>
+    <p>Check if the current page is on the left or right side of a spread. Only
+        meaningful when <code>setSpread(true)</code> is enabled. Respects
+        <code>setDirection()</code>. Returns <code>false</code> for cover and
+        back cover (solo pages).
+    </p>
+    <pre>book.setSpread(true);
+
+function draw() {
+  background(255);
+
+  if (book.isLeftPage()) {
+    textAlign(RIGHT);
+    text("Page " + book.pageNumber, width - 20, 30);
+  } else if (book.isRightPage()) {
+    textAlign(LEFT);
+    text("Page " + book.pageNumber, 20, 30);
+  }
+
+  book.addPage();
+}</pre>
+    <p><strong>Note (LTR):</strong> odd indices = left, even indices =
+        right.<br>
+        <strong>Note (RTL):</strong> odd indices = right, even indices = left.
+    </p>
+
+    <h3>book.setDirection( "ltr" | "rtl" )</h3>
+    <p>Set reading direction. Default is <code>"ltr"</code>. Use
+        <code>"rtl"</code>
+        for Arabic, Hebrew, manga, etc. Call in <code>setup()</code> before
+        <code>addPage()</code>. Affects spread pairing in the PDF and viewer,
+        <code>isLeftPage()</code> / <code>isRightPage()</code>, and viewer
+        arrow-key navigation.
+    </p>
+    <pre>book.setSpread(true);
+book.setDirection("rtl");</pre>
+
     <h3>book.setBleed( amount, [unit] )</h3>
     <p>Add bleed and print marks. Call in <code>setup()</code>, before
         <code>addPage()</code>.
@@ -223,9 +262,60 @@ book.setBleed(3, "mm");     // 3 mm — European standard</pre>
   book.addPage();
 }</pre>
 
+    <h3>book.bleed.draw( fn )</h3>
+    <p>Scoped drawing into the bleed layer. <code>fn</code> receives the bleed
+        <code>p5.Graphics</code> object as its argument — no need to prefix
+        every call
+        with <code>book.bleed.</code>. If <code>setBleed()</code> was not
+        called,
+        <code>bleed.draw()</code> is a no-op.
+    </p>
+    <pre>book.bleed.draw(g => {
+  g.background(20);
+  g.noFill();
+  g.stroke(255);
+  for (let i = 50; i &lt; 800; i += 50) {
+    g.ellipse(g.width / 2, g.height / 2, i, i);
+  }
+});</pre>
+
+    <h3>book.spine</h3>
+    <p>A <code>p5.Graphics</code> buffer (200 px × canvas height) for drawing
+        the book spine. Its content is displayed as the spine face in the
+        <strong>3D viewer</strong>. Use any p5 drawing methods on it, or use
+        the scoped <code>book.spine.draw(fn)</code> helper. If you never draw
+        on it, a default spine (dark gradient + filename) is shown in the
+        viewer.
+    </p>
+    <pre>// draw directly
+book.spine.background(20);
+book.spine.fill(200);
+book.spine.push();
+book.spine.translate(100, book.spine.height / 2);
+book.spine.rotate(-HALF_PI);
+book.spine.textAlign(CENTER, CENTER);
+book.spine.text("My Book", 0, 0);
+book.spine.pop();
+
+// or scoped
+book.spine.draw(g => {
+  g.background(20);
+  // ... draw on g
+});</pre>
+
     <h3>book.setPrintMarks(bool)</h3>
     <p>Show or hide trim/bleed marks. <code>setBleed()</code> enables them
         automatically.</p>
+
+    <h3>book.letterSpacing( px )</h3>
+    <p>Set CSS letter-spacing. Persists like <code>textSize()</code>. Negative
+        tightens, positive loosens. Applied to both the main canvas and the
+        bleed
+        layer.
+    </p>
+    <pre>book.letterSpacing(-2);  // tighten — great for large headlines
+book.letterSpacing(4);   // loosen — spaced-out display text
+book.letterSpacing(0);   // reset</pre>
 
     <h3>book.save([filename])</h3>
     <p>Manually download the PDF. Usually not needed — it's triggered

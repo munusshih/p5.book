@@ -9,8 +9,8 @@ async function setup() {
   );
   textFont(font);
   // book.setBleed(0.25);
-  // book.setSpread(true);
-  book.setSaddleStitch(true);
+  book.setSpread(true);
+  // book.setSaddleStitch(true);
   book.setDPI(300);
   textAlign(LEFT, TOP);
 }
