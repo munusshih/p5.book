@@ -107,14 +107,8 @@ if (typeof p5 !== "undefined")
               if (!_self._spineGfx) {
                 // Compute spine width proportional to actual physical spine thickness
                 // so the canvas has the correct aspect ratio and won't stretch in 3D/PDF.
-                const MM_PER = {
-                  in: 25.4,
-                  cm: 10,
-                  mm: 1,
-                  pt: 25.4 / 72,
-                  px: 25.4 / 96,
-                };
-                const trimHmm = _self._trimH * (MM_PER[_self._unit] || 25.4);
+                const trimHmm =
+                  _self._trimH * (MM_PER_UNIT[_self._unit] || 25.4);
                 const spineMM = Math.max(
                   3,
                   Math.ceil((_self.totalPages || 1) / 2) * _self._pageThickMM +
@@ -145,6 +139,7 @@ if (typeof p5 !== "undefined")
         this.page = 0;
         this.totalPages = totalPages != null ? totalPages : null;
         this._progressEl = null;
+        this._viewerShown = false;
         this._pagesProcessed = 0; // increments inside rAF so browser can paint each step
         this._pageQueue = Promise.resolve();
         if (this.totalPages != null) this._createProgressUI();
@@ -233,14 +228,12 @@ if (typeof p5 !== "undefined")
         }
       }
 
-      /** Set default colors for the 3D viewer.
-       *  @param {object} opts
-      /** Set the 3D viewer background color. @param {string} color  CSS color string. */
+      /** Set the 3D viewer background color.
+       *  @param {string} color  CSS color string (or null for transparent). */
       set3DBackground(color) {
         this._3dColors.bg = color;
       }
 
-      /** Set the cover-edge / binding color in the 3D viewer. @param {string} color  CSS color string. */
       /** Set the cover edges and page-stack texture color in the 3D viewer.
        *  @param {string|string[]} color  CSS color string, or array of up to 3:
        *                                  [fore-edge (right), top, bottom]. */
@@ -267,8 +260,7 @@ if (typeof p5 !== "undefined")
        *  @param {number} thickness  Thickness of one leaf.
        *  @param {string} [unit]     'mm' (default), 'in', or 'pt'. */
       setPageThickness(thickness, unit = "mm") {
-        const MM_PER = { mm: 1, in: 25.4, pt: 25.4 / 72, px: 25.4 / 96 };
-        this._pageThickMM = thickness * (MM_PER[unit] || 1);
+        this._pageThickMM = thickness * (MM_PER_UNIT[unit] || 1);
       }
 
       /** Enable spread layout: cover + back cover are solo pages; inner pages pair
@@ -747,6 +739,8 @@ if (typeof p5 !== "undefined")
       }
 
       _showViewer() {
+        if (this._viewerShown) return;
+        this._viewerShown = true;
         this._removeProgressUI();
         const book = this;
         let showBleed = this._bleed > 0;
@@ -996,15 +990,8 @@ if (typeof p5 !== "undefined")
           }
 
           // ── dimensions ────────────────────────────────────────────────────
-          const MM_PER = {
-            in: 25.4,
-            cm: 10,
-            mm: 1,
-            pt: 25.4 / 72,
-            px: 25.4 / 96,
-          };
-          const trimHmm = book._trimH * (MM_PER[book._unit] || 25.4);
-          const trimWmm = book._trimW * (MM_PER[book._unit] || 25.4);
+          const trimHmm = book._trimH * (MM_PER_UNIT[book._unit] || 25.4);
+          const trimWmm = book._trimW * (MM_PER_UNIT[book._unit] || 25.4);
           // page thickness per leaf (two-sided sheet), plus ~2 mm for cover boards
           const spineMM = Math.max(
             3,
@@ -1301,9 +1288,6 @@ if (typeof p5 !== "undefined")
           stage
             .querySelector("#p5b-exit")
             .addEventListener("click", () => setMode("flipbook"));
-
-
-
         };
 
         const toolbar = viewer.querySelector(".p5book-toolbar");
@@ -1423,13 +1407,6 @@ if (typeof p5 !== "undefined")
       /** Build a cover-spread PDF: [back cover] [spine] [front cover] on one landscape page. */
       _buildCoverPDF() {
         const { jsPDF } = window.jspdf;
-        const MM_PER_UNIT = {
-          in: 25.4,
-          cm: 10,
-          mm: 1,
-          pt: 25.4 / 72,
-          px: 25.4 / 96,
-        };
         const mmPerUnit = MM_PER_UNIT[this._unit] || 25.4;
         const n = this._rawCanvases.length;
         if (n === 0) throw new Error("[p5.book] no pages to export.");
@@ -1549,7 +1526,7 @@ if (typeof p5 !== "undefined")
         }
         try {
           this._buildCoverPDF().save(
-            filename || this._filename.replace(".pdf", "-cover.pdf"),
+            filename || this._filename.replace(/\.pdf$/i, "-cover.pdf"),
           );
         } catch (e) {
           alert("[p5.book] saveCover(): " + e.message);
@@ -1571,7 +1548,7 @@ if (typeof p5 !== "undefined")
         }
         try {
           this._buildSaddleStitchPDF().save(
-            filename || this._filename.replace(".pdf", "-saddle.pdf"),
+            filename || this._filename.replace(/\.pdf$/i, "-saddle.pdf"),
           );
         } catch (e) {
           alert("[p5.book] saveSaddleStitch(): " + e.message);

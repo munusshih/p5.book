@@ -229,8 +229,9 @@ noStroke();                   // no outline</pre>
     <pre>let book;
 
 function setup() {
-  createCanvas(400, 560);
   book = createBook(4, 5.6, 8);  // 4 inches wide, 5.6 inches tall, 8 pages
+  // createBook automatically creates a canvas with the right aspect ratio
+  // book.setDPI(300);  ← uncomment for print-quality export
 }
 
 function draw() {
@@ -427,11 +428,16 @@ if (book.isLastPage()) {
         </tr>
         <tr>
             <td><code>createBook(4, 6, 8)</code></td>
-            <td>make a book: 4in wide, 6in tall, 8 pages</td>
+            <td>make a book: 4in wide, 6in tall, 8 pages (also creates the
+                canvas)</td>
         </tr>
         <tr>
             <td><code>createBook("A5", 8)</code></td>
             <td>use a standard paper size instead</td>
+        </tr>
+        <tr>
+            <td><code>book.setDPI(300)</code></td>
+            <td>high-resolution export — for printing</td>
         </tr>
         <tr>
             <th colspan="2">in draw() — run once per page</th>
