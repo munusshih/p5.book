@@ -1,0 +1,16 @@
+# Docs site (not published to npm)
+src/
+public/
+astro.config.mjs
+tsconfig.json
+
+# Dev utilities
+_split_lib.py
+scripts/
+
+# Test
+test/
+
+# Build artifacts
+dist/
+node_modules/

@@ -1,0 +1,4 @@
+{
+    "title": "every run different",
+    "description": "unseeded random() so every run produces a unique book"
+}

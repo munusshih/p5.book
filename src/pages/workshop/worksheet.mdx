@@ -1,0 +1,369 @@
+---
+layout: "@/layouts/Worksheet.astro"
+title: worksheet · p5.book workshop
+---
+
+[← back to docs](/)
+
+# make a book with code
+
+Today you're going to make a real book — not by hand, but by writing instructions for the computer. Each page will be drawn by the code you write. At the end, you'll download a PDF you can print, fold, and keep.
+
+No experience needed. We'll go one small step at a time.
+
+---
+
+## 0 — open the editor
+
+We'll use the p5.js editor — it runs entirely in your browser, nothing to install.
+
+<div class="step">
+
+Go to [editor.p5js.org](https://editor.p5js.org) and open a new sketch.
+
+You'll see two panels: code on the left, your drawing on the right. Click **▶ Play** to run the code. You should see a grey square appear.
+
+</div>
+
+The starter code looks like this:
+
+```js
+function setup() {
+  createCanvas(400, 400);
+}
+
+function draw() {
+  background(220);
+}
+```
+
+Two things to know:
+
+- **setup()** runs _once_ when the sketch starts. Good for settings.
+- **draw()** runs over and over. This is where you draw things.
+
+<div class="try">
+
+Change `background(220)` to `background(255, 100, 0)` and press Play. What colour do you get? The three numbers are red, green, blue — each from 0 to 255.
+
+</div>
+
+---
+
+## 1 — draw something
+
+Before we make a book, let's draw one page. Think of the canvas as a blank piece of paper.
+
+<div class="step">
+
+Change the canvas size to match a page — tall and narrow, like a small book:
+
+```js
+function setup() {
+  createCanvas(400, 560);
+}
+
+function draw() {
+  background(255); // white background
+  circle(200, 280, 100); // a circle in the middle
+}
+```
+
+Click Play. You should see a white page with one circle.
+
+</div>
+
+<div class="try">
+
+Move the circle around — the first number is left/right, the second is up/down. Try changing the third number (the size). What happens if you make it really big?
+
+</div>
+
+A few drawing commands to try:
+
+```js
+circle(x, y, size); // a circle
+rect(x, y, width, height); // a rectangle
+line(x1, y1, x2, y2); // a line between two points
+
+fill(r, g, b); // set the colour before drawing
+noFill(); // transparent inside
+stroke(r, g, b); // set the outline colour
+noStroke(); // no outline
+```
+
+<div class="try">
+
+Design one page. Maybe a shape, a pattern, something abstract. This will be page 1 of your book!
+
+</div>
+
+---
+
+## 2 — add p5.book
+
+Now we need to add the p5.book library so we can turn your drawings into real PDF pages.
+
+<div class="step">
+
+In the editor, look at the left panel. Click the **▼** arrow next to your sketch name — this shows all your files. Click on **index.html**.
+
+Find the line that says `</body>` near the bottom. Add these two lines right _before_ it:
+
+```html
+<script src="https://unpkg.com/jspdf@latest/dist/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/munusshih/p5.book@main/p5.book.js"></script>
+```
+
+Click back on **sketch.js** to go back to your code.
+
+</div>
+
+<div class="note">
+
+These two lines load extra tools — jsPDF makes PDF files, and p5.book connects everything together.
+
+</div>
+
+---
+
+## 3 — your first book
+
+Time to make an actual book! Replace your code with this:
+
+```js
+let book;
+
+function setup() {
+  book = createBook(4, 5.6, 8); // 4 inches wide, 5.6 inches tall, 8 pages
+  // createBook automatically creates a canvas with the right aspect ratio
+  // book.setDPI(300);  ← uncomment for print-quality export
+}
+
+function draw() {
+  background(255);
+  circle(200, 280, 100);
+
+  book.addPage(); // ← saves this drawing as one page, then moves to the next
+}
+```
+
+<div class="step">
+
+Press Play. The sketch will run 8 times (once per page). After the last page, a viewer opens showing all your pages. You'll see buttons for **flipbook**, **grid**, and **3D view**, plus a download dropdown with options for PDF, individual frames, and more.
+
+</div>
+
+<div class="note">
+
+`book.addPage()` always goes at the very end of `draw()`. It says: "save everything on the canvas as a page, then get ready for the next one."
+
+</div>
+
+<div class="try">
+
+Change the number of pages. Try 4, or 12, or 20. The viewer should show however many pages you set.
+
+</div>
+
+---
+
+## 4 — every page is different
+
+Right now every page looks the same. Let's change that.
+
+p5.book tells you which page you're on with `book.pageNumber`. This starts at **1** on the first page, and goes up by 1 each time.
+
+<div class="step">
+
+Add the page number as text:
+
+```js
+function draw() {
+  background(255);
+  circle(200, 280, 100);
+
+  fill(0);
+  textSize(20);
+  text(book.pageNumber, 20, 40); // writes the number in the top-left corner
+
+  book.addPage();
+}
+```
+
+</div>
+
+<div class="try">
+
+Move the page number somewhere else on the page. Try changing `textSize(20)` to make it bigger or smaller.
+
+</div>
+
+You can also use `book.pageNumber` to make things _change_ depending on the page. Here's a circle that moves further right on each page:
+
+```js
+function draw() {
+  background(255);
+
+  let x = book.pageNumber * 40; // 40 on page 1, 80 on page 2, 120 on page 3...
+  circle(x, 280, 60);
+
+  book.addPage();
+}
+```
+
+<div class="try">
+
+What other things could you multiply by `book.pageNumber`? Try the size, or the y position, or the background colour number.
+
+</div>
+
+---
+
+## 5 — gradual change
+
+There's an even easier way to make things evolve across your book: `book.progress`.
+
+It's a number that starts at **0** on page 1 and reaches **1** on the very last page. Like a percentage for how far through the book you are.
+
+```js
+// background fades from black to white
+let brightness = book.progress * 255;
+background(brightness);
+```
+
+<div class="step">
+
+```js
+function draw() {
+  let brightness = book.progress * 255;
+  background(brightness); // 0 = black on page 1, 255 = white on last page
+
+  let size = book.progress * 300;
+  circle(200, 280, size); // starts tiny, ends huge
+
+  book.addPage();
+}
+```
+
+Press Play and watch how each page gets a little brighter and the circle a little bigger.
+
+</div>
+
+<div class="try">
+
+Change it so:
+
+- The circle moves from the left side to the right side
+- — or — The background colour shifts from one colour to another
+
+Hint: for colour, try `background(book.progress * 255, 0, 100)`.
+
+</div>
+
+---
+
+## 6 — cover and back cover
+
+A real book has a special first page and last page. You can check which page you're on:
+
+```js
+if (book.isFirstPage()) {
+  // this runs only on page 1 — your cover
+}
+
+if (book.isLastPage()) {
+  // this runs only on the final page — your back cover
+}
+```
+
+<div class="step">
+
+```js
+function draw() {
+  if (book.isFirstPage()) {
+    background(0); // black cover
+    fill(255);
+    textSize(32);
+    textAlign(CENTER, CENTER);
+    text("my book", width / 2, height / 2);
+  } else if (book.isLastPage()) {
+    background(0);
+    fill(255);
+    textSize(16);
+    textAlign(CENTER, CENTER);
+    text("the end", width / 2, height / 2);
+  } else {
+    background(255);
+    fill(0);
+    textSize(20);
+    text(book.pageNumber, 20, 40);
+  }
+
+  book.addPage();
+}
+```
+
+</div>
+
+<div class="try">
+
+Design your own cover. Change the background colour, the text, the font size. Add a shape or two.
+
+</div>
+
+---
+
+## 7 — make your book
+
+Now put it all together and make something you'd actually want to print.
+
+Here are some ideas to get you started:
+
+- **Colour book** — each page is a different background colour, the pages fade through a rainbow
+- **Word book** — make a list of words in your code, one word fills each page
+- **Shape book** — a circle slowly turns into a square over 10 pages
+- **Counting book** — the number on each page, drawn big and centred
+- **Your name** — each page has one letter of your name
+- **Mood book** — each page is a different texture, feeling, or colour story
+
+<div class="try">
+
+Build your book. When it's done, click **download pdf** in the viewer. You can print it at home and fold it into a zine!
+
+</div>
+
+---
+
+## cheat sheet
+
+|                                   |                                                                    |
+| --------------------------------- | ------------------------------------------------------------------ |
+| **in setup() — run once**         |                                                                    |
+| `createBook(4, 6, 8)`             | make a book: 4in wide, 6in tall, 8 pages (also creates the canvas) |
+| `createBook("A5", 8)`             | use a standard paper size instead                                  |
+| `book.setDPI(300)`                | high-resolution export — for printing                              |
+| **in draw() — run once per page** |                                                                    |
+| `book.pageNumber`                 | which page you're on — starts at 1                                 |
+| `book.progress`                   | 0 on page 1 → 1 on the last page                                   |
+| `book.isFirstPage()`              | true only on the first page                                        |
+| `book.isLastPage()`               | true only on the last page                                         |
+| `book.addPage()`                  | save this page — always put this last!                             |
+| **in the viewer**                 |                                                                    |
+| `← / →`                           | previous / next page                                               |
+| `[ / ]`                           | jump to first / last page                                          |
+| `?`                               | show keyboard shortcuts                                            |
+| download dropdown                 | PDF · Cover · Frames (PNG) · Frames (JPG)                          |
+
+---
+
+## links
+
+- [p5.js editor](https://editor.p5js.org) — where we code
+- [p5.book documentation](/)
+- [p5.js reference](https://p5js.org/reference/) — all the drawing commands
+- [github.com/munusshih/p5.book](https://github.com/munusshih/p5.book)
+
+---
+
+_p5.book workshop_

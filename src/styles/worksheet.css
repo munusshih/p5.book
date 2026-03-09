@@ -1,0 +1,94 @@
+@import "./base.css";
+
+/* -- page layout */
+body {
+  font-size: 20px;
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 40px 20px 80px;
+}
+
+/* -- headings */
+h1 {
+  font-size: 1.8em;
+  font-weight: 700;
+  margin: 0 0 12px;
+}
+
+h2 {
+  margin-top: 40px;
+  font-size: 1.1em;
+  font-weight: 600;
+}
+
+h3 {
+  margin-top: 20px;
+  font-weight: 600;
+}
+
+/* -- prose */
+p,
+li {
+  margin-bottom: 6px;
+}
+
+ul,
+ol {
+  padding-left: 20px;
+  margin-bottom: 12px;
+}
+
+/* -- workshop callouts */
+.step {
+  margin: 16px 0 24px;
+  padding-left: 14px;
+  border-left: 2px solid var(--border);
+}
+
+.step-num {
+  font-weight: 600;
+  font-size: 0.85em;
+  margin-bottom: 6px;
+}
+
+.try,
+.note {
+  margin: 12px 0;
+}
+
+.try::before {
+  content: "Try it: ";
+  font-weight: 600;
+}
+
+.note {
+  font-style: italic;
+}
+
+.note::before {
+  content: "Note: ";
+  font-weight: 600;
+  font-style: normal;
+}
+
+/* -- footer */
+footer {
+  margin-top: 60px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+  font-size: 0.85em;
+  color: var(--muted);
+}
+
+/* -- links */
+a {
+  color: inherit;
+}
+
+/* -- responsive */
+@media (max-width: 600px) {
+  body {
+    padding: 28px 16px 60px;
+    font-size: 17px;
+  }
+}

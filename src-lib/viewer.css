@@ -1,0 +1,340 @@
+:root {
+    --p5book-font: monospace;
+    --p5book-font-size: 20px;
+    --p5book-bg: #ffffff;
+    --p5book-toolbar-pad: 12px 20px;
+    --p5book-gap: 12px;
+    --p5book-thumb-h: 180px;
+}
+
+.p5book-viewer {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    background: var(--p5book-bg);
+    display: flex;
+    flex-direction: column;
+    font-family: var(--p5book-font);
+    font-size: var(--p5book-font-size);
+}
+
+.p5book-toolbar {
+    display: flex;
+    align-items: center;
+    gap: var(--p5book-gap);
+    padding: var(--p5book-toolbar-pad);
+    flex-shrink: 0;
+    flex-wrap: wrap;
+}
+
+.p5book-toolbar b,
+.p5book-toolbar button,
+.p5book-toolbar select {
+    font-size: var(--p5book-font-size);
+}
+
+.p5book-chk-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--p5book-font);
+    font-size: var(--p5book-font-size);
+    cursor: pointer;
+    user-select: none;
+}
+
+.p5book-chk-label input[type=checkbox] {
+    width: 1em;
+    height: 1em;
+    cursor: pointer;
+}
+
+.p5book-stage {
+    flex: 1;
+    overflow: auto;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+}
+
+.p5book-flipbook {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    padding: 32px;
+    margin: auto;
+}
+
+.p5book-flipbook img {
+    max-height: calc(100vh - 160px);
+    max-width: calc(100vw - 80px);
+    display: block;
+}
+
+.p5book-flipbook-nav {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.p5book-flipbook-nav button,
+.p5book-flipbook-nav select {
+    font-size: var(--p5book-font-size);
+}
+
+.p5book-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-start;
+    gap: var(--p5book-gap);
+    padding: 32px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.p5book-grid-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+}
+
+.p5book-grid-item img {
+    height: var(--p5book-thumb-h);
+    width: auto;
+    display: block;
+}
+
+.p5book-grid-item span {
+    font-size: calc(var(--p5book-font-size) * 0.75);
+}
+
+/* ── 3D viewer ──────────────────────────────────────── */
+.p5book-3d-wrap {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.p5book-3d-scene {
+    perspective: 1400px;
+    flex-shrink: 0;
+    cursor: grab;
+    user-select: none;
+}
+
+.p5book-3d-scene:active {
+    cursor: grabbing;
+}
+
+.p5book-3d-book {
+    position: relative;
+    transform-style: preserve-3d;
+}
+
+.p5book-3d-face {
+    position: absolute;
+    top: 0;
+    left: 0;
+    overflow: hidden;
+}
+
+.p5book-3d-face img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: fill;
+    pointer-events: none;
+    draggable: false;
+}
+
+.p5book-3d-shadow {
+    background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.35) 0%, transparent 70%);
+    height: 24px;
+    margin-top: 20px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+/* info panel — bottom left, no border, transparent */
+.p5book-3d-info {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    padding: 16px 20px;
+    font-family: system-ui, sans-serif;
+    font-size: 12px;
+    line-height: 1.9;
+    opacity: 0.45;
+    pointer-events: none;
+}
+
+.p5book-3d-info dl {
+    margin: 0;
+    display: grid;
+    grid-template-columns: auto auto;
+    column-gap: 12px;
+}
+
+.p5book-3d-info dt {
+    font-weight: 600;
+    grid-column: 1;
+}
+
+.p5book-3d-info dd {
+    margin: 0;
+    grid-column: 2;
+}
+
+/* controls panel — bottom right */
+.p5book-3d-ctrl {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 16px 20px;
+    font-family: system-ui, sans-serif;
+    font-size: 13px;
+    background: var(--p5book-bg);
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    border-left: 1px solid rgba(0, 0, 0, 0.1);
+    pointer-events: auto;
+    min-width: 220px;
+}
+
+.p5book-3d-ctrl-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.p5book-3d-ctrl-group-title {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    opacity: 0.4;
+    font-weight: 600;
+}
+
+.p5book-3d-ctrl-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.p5book-3d-ctrl-row label {
+    flex: 1;
+    opacity: 0.7;
+    white-space: nowrap;
+}
+
+.p5book-3d-ctrl-row input[type=range] {
+    flex: 2;
+    cursor: pointer;
+    min-width: 0;
+}
+
+.p5book-3d-ctrl-row input[type=color] {
+    width: 28px;
+    height: 22px;
+    padding: 0;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.p5book-3d-ctrl-row span.p5b-val {
+    font-size: 11px;
+    opacity: 0.45;
+    width: 34px;
+    text-align: right;
+    flex-shrink: 0;
+}
+
+.p5book-3d-dir {
+    display: flex;
+    gap: 6px;
+}
+
+.p5book-3d-dir button {
+    flex: 1;
+    font-family: system-ui, sans-serif;
+    font-size: 13px;
+    padding: 3px 0;
+    cursor: pointer;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    background: none;
+}
+
+.p5book-3d-dir button.active {
+    background: #000;
+    color: #fff;
+    border-color: #000;
+}
+
+/* ── shortcuts dialog ───────────────────────────────── */
+#p5book-shortcuts-dialog {
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 8px;
+    padding: 24px 28px;
+    font-family: var(--p5book-font);
+    font-size: calc(var(--p5book-font-size) * 0.85);
+    background: var(--p5book-bg);
+    max-width: min(480px, 90vw);
+}
+
+#p5book-shortcuts-dialog::backdrop {
+    background: rgba(0, 0, 0, 0.35);
+}
+
+#p5book-shortcuts-dialog h3 {
+    margin: 0 0 14px;
+    font-size: var(--p5book-font-size);
+}
+
+#p5book-shortcuts-dialog table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+#p5book-shortcuts-dialog td {
+    padding: 5px 12px 5px 0;
+}
+
+#p5book-shortcuts-dialog kbd {
+    display: inline-block;
+    padding: 1px 6px;
+    border: 1px solid rgba(0, 0, 0, 0.25);
+    border-radius: 3px;
+    font-size: 0.9em;
+}
+
+/* ── responsive ─────────────────────────────────────── */
+@media (max-width: 640px) {
+    :root {
+        --p5book-font-size: 15px;
+        --p5book-toolbar-pad: 8px 12px;
+        --p5book-gap: 6px;
+        --p5book-thumb-h: 120px;
+    }
+
+    .p5book-flipbook img {
+        max-height: calc(100vh - 200px);
+        max-width: calc(100vw - 24px);
+    }
+
+    .p5book-3d-ctrl {
+        min-width: 160px;
+        font-size: 11px;
+    }
+}

@@ -1,0 +1,76 @@
+/* ── progress UI ──────────────────────────────────────────────────────────── */
+/* Injected by Book._createProgressUI() via a <style id="p5book-progress-styles"> tag */
+
+#p5book-progress {
+    position: fixed;
+    z-index: 99998;
+    display: flex;
+    flex-direction: column;
+    pointer-events: none;
+}
+
+/* full-screen overlay variant (opt-in via { progressBar: true }) */
+#p5book-progress.is-overlay {
+    inset: 0;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    background: rgba(255, 255, 255, 0.92);
+    font-family: monospace;
+    font-size: 13px;
+}
+
+/* default: small non-blocking corner badge */
+#p5book-progress.is-corner {
+    bottom: 16px;
+    right: 16px;
+    align-items: flex-end;
+    gap: 6px;
+}
+
+#p5book-prog-label.is-overlay {
+    opacity: 0.5;
+}
+
+#p5book-prog-label.is-corner {
+    font-family: monospace;
+    font-size: 11px;
+    background: rgba(0, 0, 0, 0.55);
+    color: #fff;
+    padding: 4px 9px;
+    border-radius: 20px;
+    letter-spacing: 0.03em;
+}
+
+.p5book-prog-track {
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.p5book-prog-track.is-overlay {
+    width: 240px;
+    height: 3px;
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.p5book-prog-track.is-corner {
+    width: 120px;
+    height: 2px;
+    background: rgba(0, 0, 0, 0.15);
+}
+
+#p5book-prog-bar {
+    height: 100%;
+    width: 0%;
+    border-radius: 2px;
+}
+
+#p5book-prog-bar.is-overlay {
+    background: #000;
+    transition: width 0.1s linear;
+}
+
+#p5book-prog-bar.is-corner {
+    background: rgba(255, 255, 255, 0.9);
+    transition: width 0.12s linear;
+}

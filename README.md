@@ -28,9 +28,7 @@ Add these three scripts to your HTML, **in order**:
 let book;
 
 function setup() {
-  createCanvas(500, 800);
-
-  // 5×8 inch book, 10 pages
+  // 5×8 inch book, 10 pages — canvas auto-created with correct aspect ratio
   book = createBook(5, 8, 10);
 
   // or use a named size:
@@ -95,6 +93,14 @@ book = createBook(5, 8, 20); // 5×8 inches (default unit)
 book = createBook(15, 20, 20, "cm"); // 15×20 cm
 book = createBook(150, 200, 20, "mm"); // 150×200 mm
 book = createBook(5, 8, 20, "in", "zine"); // with custom filename
+```
+
+You can also pass an **options object** as the last argument:
+
+```js
+book = createBook(5, 8, 20, { imageType: "png" }); // lossless PNG (larger file)
+book = createBook(5, 8, 20, { jpegQuality: 0.98 }); // JPEG quality 0–1 (default 0.92)
+book = createBook(5, 8, 20, { progressBar: true }); // full-screen overlay instead of corner counter
 ```
 
 | Unit   | Description      |
@@ -308,6 +314,7 @@ When `"rtl"` is set:
 - Spread pairs are physically flipped in the PDF and viewer — the first inner page appears on the **right** side
 - `isLeftPage()` / `isRightPage()` return correct values for RTL layout
 - Viewer arrow keys flip: `→` goes to the previous spread, `←` goes to the next
+- `textBox()` column order is reversed and `canvas.direction` is set to `"rtl"` so Arabic/Hebrew text renders correctly
 
 ---
 
@@ -364,6 +371,20 @@ Pages are reordered into printer spreads for saddle-stitch binding:
 - For an 8-page book: [8,1], [2,7], [6,3], [4,5]
 
 **Note:** This is called automatically when the user selects "Saddle Stitch" in the viewer dropdown (if `setSaddleStitch(true)` was enabled).
+
+---
+
+### `book.exportFrames([format])`
+
+Download every captured page as an individual image file. Useful for importing pages into InDesign, Affinity Publisher, Figma, or video compositing tools.
+
+```js
+book.exportFrames(); // PNG (default)
+book.exportFrames("png"); // explicit PNG
+book.exportFrames("jpeg"); // JPEG, using the book's jpegQuality setting
+```
+
+Files are named `<basename>-0001.png`, `-0002.png`, … and downloaded one by one with a small stagger to avoid browser throttling. Also accessible via **Frames (PNG)** / **Frames (JPG)** in the viewer's download dropdown.
 
 ---
 
@@ -525,8 +546,7 @@ book.spine.draw((g) => {
       let book;
 
       function setup() {
-        createCanvas(400, 600);
-        book = createBook(4, 6, 12); // 4×6 in, 12 pages
+        book = createBook(4, 6, 12); // 4×6 in, 12 pages — canvas auto-created
         book.setDPI(300); // high-res for print
         book.setBleed(0.125); // 1/8" bleed
         book.setSpread(true); // spread layout
@@ -570,14 +590,16 @@ book.spine.draw((g) => {
 
 ## Tips
 
-- **Resolution** — use `book.setDPI(300)` in `setup()` for crisp print quality (replaces manual `pixelDensity()`).
-- **Canvas size** — match your page ratio. A 5×8 in page? Try `createCanvas(500, 800)`.
+- **Canvas** — `createBook()` auto-creates the canvas at 500 px wide with your book's aspect ratio. No need to call `createCanvas()`.
+- **Resolution** — use `book.setDPI(300)` in `setup()` for crisp print quality. This is preferred over `pixelDensity()` because it also resizes the canvas height so both axes are exactly on-spec.
 - **Bleed size** — standard bleed: 0.125 in (US) or 3 mm (Europe).
 - **Spread layout** — use `book.setSpread(true)` for books where the cover/back are solo and inner pages pair as spreads.
 - **Saddle-stitch** — enable `book.setSaddleStitch(true)` to add a printer spread export option (page count must be divisible by 4).
-- **Text reflow** — use `book.textBox()` with `book.columnNum()` to flow long text across multiple pages automatically.
+- **Text reflow** — use `book.textBox()` with `book.columnNum()` to flow long text across multiple pages automatically. RTL books use `book.setDirection("rtl")` — column order and text direction are handled automatically.
 - **Slow down** — p5.book captures every frame, so `frameRate(1)` can give you more time to animate per page.
 - **Unknown page count** — don't pass `totalPages` to `createBook()`, use `book.finish()` when done.
+- **Export frames** — use `book.exportFrames()` or the **Frames (PNG/JPG)** option in the download dropdown to save each page as a standalone image.
+- **Viewer shortcuts** — `←`/`→` to flip pages, `[` first page, `]` last page, `?` keyboard cheat sheet.
 - **Viewer styling** — override CSS variables in your stylesheet — see [test/style.css](test/style.css) for the full list.
 
 ---

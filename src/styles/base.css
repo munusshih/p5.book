@@ -1,0 +1,102 @@
+/* shared design tokens — imported by doc.css and worksheet.css */
+:root {
+    --accent: #d63a3a;
+    --text: #1a1a1a;
+    --muted: #666;
+    --border: #e2e2e2;
+    --bg: #ffffff;
+    --code-bg: #f5f5f5;
+
+    --font-sans: 'Inter', system-ui, sans-serif;
+    --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    color: var(--text);
+    background: var(--bg);
+    font-family: var(--font-sans);
+    line-height: 1.75;
+}
+
+a {
+    color: var(--accent);
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+strong {
+    font-weight: 600;
+}
+
+/* ── code ───────────────────────────────────────────────────── */
+
+code {
+    background: var(--code-bg);
+    padding: 2px 5px;
+    border-radius: 4px;
+    font-family: var(--font-mono);
+    font-size: 0.82em;
+    border: 1px solid var(--border);
+}
+
+pre {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow-x: auto;
+    margin: 8px 0 20px;
+}
+
+pre code {
+    /* reset inline-code styles inside a block */
+    border: none;
+    padding: 0;
+    background: transparent;
+    font-size: inherit;
+}
+
+pre code.hljs {
+    background: transparent !important;
+    font-family: var(--font-mono) !important;
+    font-size: 0.82em;
+    padding: 16px 20px;
+}
+
+/* ── tables ─────────────────────────────────────────────────── */
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 8px 0 20px;
+    font-size: 0.9em;
+}
+
+th,
+td {
+    border: 1px solid var(--border);
+    padding: 8px 12px;
+    vertical-align: top;
+    text-align: left;
+}
+
+th {
+    background: var(--code-bg);
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+hr {
+    border: none;
+    border-top: 1.5px solid var(--border);
+    margin: 48px 0;
+}

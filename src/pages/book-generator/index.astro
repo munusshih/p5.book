@@ -1,0 +1,35 @@
+---
+// Book generator page — loads the standalone p5 sketch from /public/book-generator/
+// concepts.json and sketch.js are served from /book-generator/ (public/book-generator/)
+// and the p5.book.js library is served from the repo root via the dev/build plugin.
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>book generator · p5.book</title>
+    <style>
+      body {
+        margin: 0;
+        background: #000;
+      }
+    </style>
+
+    <!-- 1. p5.js 2.0 -->
+    <script is:inline src="https://cdn.jsdelivr.net/npm/p5@2/lib/p5.min.js"
+    ></script>
+
+    <!-- 2. jsPDF (required by p5.book) -->
+    <script is:inline src="https://unpkg.com/jspdf@latest/dist/jspdf.umd.min.js"
+    ></script>
+
+    <!-- 3. p5.book -->
+    <script is:inline src="/p5.book.js"></script>
+  </head>
+  <body>
+    <!-- sketch.js lives in public/book-generator/sketch.js, served at /book-generator/sketch.js -->
+    <script is:inline src="/book-generator/sketch.js" defer></script>
+  </body>
+</html>

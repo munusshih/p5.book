@@ -1,0 +1,47 @@
+{
+    "name": "p5.book",
+    "version": "0.1.0",
+    "description": "PDF book generator addon for p5.js 2.x",
+    "author": "Munus Shih",
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/munusshih/p5.book.git"
+    },
+    "keywords": [
+        "p5js",
+        "p5.js",
+        "pdf",
+        "book",
+        "generative",
+        "creative-coding"
+    ],
+    "main": "p5.book.js",
+    "exports": {
+        ".": "./p5.book.js"
+    },
+    "files": [
+        "p5.book.js",
+        "src-lib/",
+        "README.md"
+    ],
+    "type": "module",
+    "engines": {
+        "node": ">=18"
+    },
+    "scripts": {
+        "lib:build": "node scripts/build-lib.js",
+        "lib:watch": "node scripts/build-lib.js --watch",
+        "docs:dev": "astro dev",
+        "docs:build": "astro build",
+        "docs:preview": "astro preview",
+        "build": "npm run lib:build && npm run docs:build",
+        "prepublishOnly": "npm run lib:build"
+    },
+    "devDependencies": {
+        "@astrojs/mdx": "^4.2.3",
+        "astro": "^5.5.5",
+        "esbuild": "^0.27.3",
+        "rehype-highlight": "^7.0.0"
+    }
+}

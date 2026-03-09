@@ -1,0 +1,10 @@
+---
+import Base from "@/layouts/Base.astro";
+import "@/styles/doc.css";
+
+const { frontmatter } = Astro.props;
+---
+
+<Base title={frontmatter.title ?? "p5.book"}>
+  <slot />
+</Base>

@@ -1,0 +1,33 @@
+---
+// Auto-generates the examples list from src/examples/*/meta.json.
+// Add a new example = add a folder. No registration needed.
+
+const allMeta = import.meta.glob("../examples/*/meta.json", { eager: true });
+
+const examples = Object.entries(allMeta)
+  .map(([path, meta]) => {
+    const slug = path.match(/\/([^/]+)\/meta\.json$/)?.[1];
+    if (!slug) return null;
+    return {
+      slug,
+      num: slug.match(/^(\d+)/)?.[1] ?? "",
+      title: (meta as any).title as string,
+      description: (meta as any).description as string,
+    };
+  })
+  .filter(Boolean)
+  .sort((a, b) => a!.slug.localeCompare(b!.slug));
+---
+
+<ul>
+  {
+    examples.map((ex) => (
+      <li>
+        <a href={`/examples/${ex!.slug}/`}>
+          {ex!.num} — {ex!.title}
+        </a>{" "}
+        — {ex!.description}
+      </li>
+    ))
+  }
+</ul>

@@ -1,0 +1,411 @@
+---
+layout: "@/layouts/Doc.astro"
+title: p5.book — documentation
+---
+
+import ExampleList from "@/components/ExampleList.astro";
+
+[← github](https://github.com/munusshih/p5.book)
+
+# p5.book
+
+A PDF book generator for [p5.js 2.0](https://p5js.org). No build tools. Just a `<script>` tag.
+
+```html
+<!-- load these three scripts in order -->
+<script src="https://cdn.jsdelivr.net/npm/p5@2/lib/p5.min.js"></script>
+<script src="https://unpkg.com/jspdf@latest/dist/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/munusshih/p5.book@main/p5.book.js"></script>
+```
+
+---
+
+## examples
+
+<ExampleList />
+
+---
+
+## workshop
+
+- [worksheet](/workshop/worksheet) — step-by-step exercises, no install required
+
+---
+
+## quick start
+
+```js
+let book;
+
+function setup() {
+  book = createBook(5, 8, 10); // 5×8 inches, 10 pages
+  book.setDPI(300); // print-quality resolution — also sizes the canvas
+}
+
+function draw() {
+  background(255);
+  text("Page " + book.pageNumber, 20, 30);
+
+  book.addPage(); // always call last — saves PDF after the final page
+}
+```
+
+---
+
+## api reference
+
+### createBook( … )
+
+Call once in `setup()`. Returns a `Book` object.
+
+```js
+// named paper size
+book = createBook("A5", 12);
+book = createBook("letter", 12, "my-zine"); // optional filename
+
+// custom size  (default unit: inches)
+book = createBook(5, 8, 12);
+book = createBook(15, 20, 12, "cm");
+book = createBook(5, 8, 12, "in", "my-zine"); // with filename
+```
+
+|                 |                                                                       |
+| --------------- | --------------------------------------------------------------------- |
+| **named sizes** | `A3` `A4` `A5` `A6` `letter` `legal` `tabloid` — any size jsPDF knows |
+| **units**       | `"in"` inches (default) · `"cm"` · `"mm"` · `"px"` · `"pt"`           |
+
+You can pass an **options object** as the last argument:
+
+```js
+book = createBook(5, 8, 12, { imageType: "png" }); // lossless PNG
+book = createBook(5, 8, 12, { jpegQuality: 0.98 }); // JPEG quality 0–1 (default 0.92)
+book = createBook(5, 8, 12, { progressBar: true }); // full-screen overlay instead of corner counter
+```
+
+### book.setDPI( dpi )
+
+Set print resolution. The canvas pixel density and height are adjusted automatically so that both axes hit exactly `dpi` pixels per inch. Call in `setup()` before `addPage()`. Prefer this over calling `pixelDensity()` directly.
+
+```js
+book.setDPI(300); // print quality
+book.setDPI(150); // lighter file size
+```
+
+**Note:** if `setBleed()` was already called, `setDPI()` rebuilds the bleed graphics buffer at the correct density automatically.
+
+### book.addPage()
+
+Capture the current canvas as the next page. Call **once, at the very end of `draw()`**. After the last page the viewer opens and the sketch stops.
+
+### book.page & book.pageNumber
+
+|                   |                                                 |
+| ----------------- | ----------------------------------------------- |
+| `book.page`       | 0-based index. First page = `0`.                |
+| `book.pageNumber` | 1-based. First page = `1`. Easier for display.  |
+| `book.totalPages` | Total number of pages passed to `createBook()`. |
+
+### book.progress
+
+`0.0` on the first page → `1.0` on the last. Use with `lerp()` and `map()` for gradual change across the book.
+
+**Note:** when `totalPages` is not provided (using the `finish()` workflow), progress always returns `1.0`. Derive your own 0→1 value from an external counter if needed.
+
+```js
+background(lerp(0, 255, book.progress)); // fades black → white
+circle(width / 2, height / 2, book.progress * width); // grows page by page
+```
+
+### book.isFirstPage() / book.isLastPage()
+
+```js
+if (book.isFirstPage()) {
+  text("Cover", 20, 30);
+} else if (book.isLastPage()) {
+  text("The End", 20, 30);
+} else {
+  text("p. " + book.pageNumber, 20, 30);
+}
+```
+
+### book.isLeftPage() / book.isRightPage()
+
+Check if the current page is on the left or right side of a spread. Only meaningful when `setSpread(true)` is enabled. Respects `setDirection()`. Returns `false` for cover and back cover (solo pages).
+
+```js
+function setup() {
+  book = createBook(5, 8, 12);
+  book.setSpread(true);
+}
+
+function draw() {
+  background(255);
+
+  if (book.isLeftPage()) {
+    textAlign(RIGHT);
+    text("Page " + book.pageNumber, width - 20, 30);
+  } else if (book.isRightPage()) {
+    textAlign(LEFT);
+    text("Page " + book.pageNumber, 20, 30);
+  }
+
+  book.addPage();
+}
+```
+
+**Note (LTR):** odd indices = left, even indices = right.
+**Note (RTL):** odd indices = right, even indices = left.
+
+### book.setDirection( "ltr" | "rtl" )
+
+Set reading direction. Default is `"ltr"`. Use `"rtl"` for Arabic, Hebrew, manga, etc. Call in `setup()` before `addPage()`. Affects spread pairing in the PDF and viewer, `isLeftPage()` / `isRightPage()`, viewer arrow-key navigation, and `textBox()` — column order is reversed and text direction is set to RTL automatically.
+
+```js
+book.setSpread(true);
+book.setDirection("rtl");
+```
+
+### book.setSpread( bool )
+
+Enable two-page spread layout. The cover and back cover are kept as solo pages; all inner pages are paired as spreads in the viewer and in the exported PDF. Total page count must be even. Call in `setup()` before `addPage()`.
+
+```js
+book.setSpread(true);
+```
+
+Use `isLeftPage()` and `isRightPage()` to position content based on which side of the spread the current page is on.
+
+### book.setSaddleStitch( bool )
+
+Enables the _Saddle Stitch_ download option in the viewer, which reorders pages into printer-ready pairs for folding and stapling. Page count must be divisible by 4.
+
+```js
+book.setSaddleStitch(true);
+```
+
+### book.setPageThickness( thickness, [unit] )
+
+Set the thickness of one leaf (a two-sided sheet of paper) for the spine width calculation. Defaults to `0.1 mm` (standard uncoated stock). Affects both the 3D viewer and the cover PDF.
+
+```js
+book.setPageThickness(0.1); // 0.1 mm per leaf (default)
+book.setPageThickness(0.004, "in"); // coated/matte stock
+book.setPageThickness(0.3); // thick newsprint
+```
+
+| unit |                                    |
+| ---- | ---------------------------------- |
+|      | `"mm"` (default) · `"in"` · `"pt"` |
+
+### book.setBleed( amount, [unit] )
+
+Add bleed and print marks. Call in `setup()`, before `addPage()`.
+
+```js
+book.setBleed(0.125); // 1/8 inch — US standard
+book.setBleed(3, "mm"); // 3 mm — European standard
+```
+
+### book.bleed
+
+A `p5.Graphics` buffer sized to the full bleed area. Draw into it to fill the bleed zone in the PDF. Before `setBleed()` is called, all calls on `book.bleed` are silently ignored.
+
+```js
+function draw() {
+  book.bleed.background(220); // extends into the bleed zone
+
+  fill(0);
+  text("Page " + book.pageNumber, 20, 30); // trim area only
+
+  book.addPage();
+}
+```
+
+### book.bleed.draw( fn )
+
+Scoped drawing into the bleed layer. `fn` receives the bleed `p5.Graphics` object as its argument — no need to prefix every call with `book.bleed.`. If `setBleed()` was not called, `bleed.draw()` is a no-op.
+
+```js
+book.bleed.draw((g) => {
+  g.background(20);
+  g.noFill();
+  g.stroke(255);
+  for (let i = 50; i < 800; i += 50) {
+    g.ellipse(g.width / 2, g.height / 2, i, i);
+  }
+});
+```
+
+### book.bleedWidth / book.bleedHeight
+
+Read-only getters — the full bleed page size (trim + bleed on both sides) in your book's unit. Useful when you need to size geometry to the exact bleed area.
+
+```js
+// circle that just reaches each bleed edge
+circle(book.bleedWidth / 2, book.bleedHeight / 2, book.bleedWidth);
+```
+
+### book.spine
+
+A `p5.Graphics` buffer whose width is proportional to the computed spine thickness (based on page count × `setPageThickness()`) and whose height matches the canvas. Its content is displayed as the spine face in the **3D viewer** and in the **cover PDF**. Use any p5 drawing methods on it, or use the scoped `book.spine.draw(fn)` helper. If you never draw on it, a default spine (dark gradient + filename) is shown automatically.
+
+```js
+// draw directly
+book.spine.background(20);
+book.spine.fill(200);
+book.spine.push();
+book.spine.translate(100, book.spine.height / 2);
+book.spine.rotate(-HALF_PI);
+book.spine.textAlign(CENTER, CENTER);
+book.spine.text("My Book", 0, 0);
+book.spine.pop();
+
+// or scoped
+book.spine.draw((g) => {
+  g.background(20);
+  // ... draw on g
+});
+```
+
+### book.setPrintMarks(bool)
+
+Show or hide trim/bleed marks. `setBleed()` enables them automatically.
+
+### book.letterSpacing( px )
+
+Set CSS letter-spacing. Persists like `textSize()`. Negative tightens, positive loosens. Applied to both the main canvas and the bleed layer.
+
+```js
+book.letterSpacing(-2); // tighten — great for large headlines
+book.letterSpacing(4); // loosen — spaced-out display text
+book.letterSpacing(0); // reset
+```
+
+### book.columnNum( n, [gutter] )
+
+Set the number of columns for `textBox()`. Persists like `textSize()`. Returns the current count when called with no arguments.
+
+```js
+book.columnNum(2, 16); // 2 columns, 16 px gutter
+book.columnNum(1); // back to single column
+```
+
+### book.textBox( str, x, y, w, h )
+
+Draw word-wrapped text into a box. Respects `textSize()`, `textLeading()`, and `columnNum()`. **Returns** any overflow text that didn't fit — pass it to the next page to reflow long documents. Supports Latin word-wrapping and CJK character-level wrapping automatically.
+
+```js
+// single page
+book.textBox(myText, 40, 40, width - 80, height - 80);
+```
+
+For long documents, pass the returned overflow to the next page:
+
+```js
+let overflow = myLongText;
+
+function setup() {
+  book = createBook(5, 8);
+}
+
+function draw() {
+  background(255);
+  overflow = book.textBox(overflow, 40, 40, width - 80, height - 80);
+  book.addPage();
+  if (!overflow) book.finish();
+}
+```
+
+### book.save([filename])
+
+Manually download the single-page or spread PDF. Usually not needed — triggered automatically after the last `addPage()`.
+
+### book.finish([filename])
+
+Stop the loop and open the viewer without a known total page count. Use this instead of relying on `totalPages` when the page count is determined at runtime (e.g. text reflow).
+
+```js
+let overflow = myLongText;
+
+function setup() {
+  book = createBook(4, 6); // no totalPages argument
+}
+
+function draw() {
+  background(255);
+  overflow = book.textBox(overflow, 40, 40, width - 80, height - 80);
+  book.addPage();
+  if (!overflow) book.finish();
+}
+```
+
+### book.saveCover([filename])
+
+Download a single landscape PDF with _back cover · spine · front cover_ composited side by side — ready for commercial print upload. Uses the spine drawn on `book.spine`, or a default gradient if none was drawn.
+
+```js
+book.saveCover(); // auto filename
+book.saveCover("my-book-cover.pdf");
+```
+
+### book.saveSaddleStitch([filename])
+
+Download a saddle-stitch imposition PDF — pages reordered into printer-spread pairs for folding and stapling. Page count must be divisible by 4. Also accessible via the viewer's download dropdown.
+
+```js
+book.saveSaddleStitch();
+```
+
+### book.exportFrames( [format] )
+
+Download every captured page as an individual image file — useful for importing into InDesign, Affinity Publisher, Figma, or video compositing tools. Also accessible via **Frames (PNG)** / **Frames (JPG)** in the viewer's download dropdown.
+
+```js
+book.exportFrames(); // PNG (default)
+book.exportFrames("png"); // explicit PNG
+book.exportFrames("jpeg"); // JPEG, uses the book's jpegQuality setting
+```
+
+Files are named `<basename>-0001.png`, `-0002.png`, … downloaded one by one with a small stagger to prevent browser throttling.
+
+---
+
+## 3d viewer customization
+
+### book.set3DBackground( color )
+
+Set the 3D viewer background. Accepts any CSS color string, or `null` for transparent (default).
+
+```js
+book.set3DBackground("#f0ece8");
+book.set3DBackground(null); // transparent
+```
+
+### book.set3DEdgeColor( color )
+
+Set the color of the book's page edges in the 3D viewer. Pass a single CSS color string, or an array of up to 3 colors `[fore-edge, top, bottom]`.
+
+```js
+book.set3DEdgeColor("#e8e0d4"); // all edges the same
+book.set3DEdgeColor(["#ccc", "#ddd", "#bbb"]); // fore · top · bottom
+```
+
+### book.showColorPickers( visible )
+
+Show or hide the background / edge color pickers in the 3D viewer GUI. Pass `false` to hide them (e.g. for a clean demo). Default is `true`.
+
+```js
+book.showColorPickers(false); // hide the color controls
+```
+
+---
+
+## tips
+
+- **Canvas size:** match your page ratio. For a 5×8 in page, use `createCanvas(500, 800)`. p5.book creates the canvas automatically with the correct aspect ratio.
+- **Resolution:** call `book.setDPI(300)` in `setup()` for crisp print output. This is preferred over calling `pixelDensity()` directly because it also resizes the canvas height so both axes are exactly on-spec.
+- **Slow frames:** add `frameRate(1)` in `setup()` if each page needs more time to render.
+- **Unknown page count:** omit `totalPages` from `createBook()` and call `book.finish()` when done — useful for text-reflow or generative books that decide at runtime.
+- **Progress (unknown count):** `book.progress` returns `1` when `totalPages` is not set; derive your own 0→1 value from an external counter if needed.
+- **Viewer:** after the last page, a built-in viewer opens with flipbook + grid + 3D view, bleed toggle, download, and print. Use the dropdown to choose PDF / Saddle Stitch / Cover.
+- **Styling the viewer:** override CSS variables in your stylesheet — see `test/style.css` for the full list.
