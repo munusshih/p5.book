@@ -6,5 +6,48 @@ const { frontmatter } = Astro.props;
 ---
 
 <Base title={frontmatter.title ?? "p5.book"}>
-  <slot />
+  <div id="doc-layout">
+    <main id="doc-content">
+      <slot />
+    </main>
+    <nav id="doc-toc" aria-label="On this page">
+      <p class="toc-label">on this page</p>
+      <ul id="toc-list"></ul>
+    </nav>
+  </div>
+
+  <script>
+    const list = document.getElementById("toc-list");
+    const headings = document.querySelectorAll(
+      "#doc-content h2, #doc-content h3",
+    );
+
+    headings.forEach((h) => {
+      const li = document.createElement("li");
+      const a = document.createElement("a");
+      a.href = "#" + h.id;
+      a.textContent = h.textContent ?? "";
+      a.dataset.level = h.tagName.toLowerCase();
+      li.appendChild(a);
+      list?.appendChild(li);
+    });
+
+    // highlight active section on scroll
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            list
+              ?.querySelectorAll("a")
+              .forEach((a) => a.classList.remove("active"));
+            const active = list?.querySelector(`a[href="#${entry.target.id}"]`);
+            active?.classList.add("active");
+          }
+        });
+      },
+      { rootMargin: "-20% 0px -70% 0px" },
+    );
+
+    headings.forEach((h) => observer.observe(h));
+  </script>
 </Base>

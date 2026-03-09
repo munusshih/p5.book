@@ -1,40 +1,30 @@
 ---
+import { getCollection } from "astro:content";
+
 // Bare canvas page — inlines sketch.js so there's no document.write shim,
 // no file serving logic, and no shared sketch.html. Pure Astro.
-const allMeta = import.meta.glob("../../../examples/*/meta.json", {
-  eager: true,
-});
-const allCode = import.meta.glob("../../../examples/*/sketch.js", {
-  query: "?raw",
-  import: "default",
-  eager: true,
-});
 
-export function getStaticPaths() {
-  const metas = import.meta.glob("../../../examples/*/meta.json", {
-    eager: true,
-  });
-  const codes = import.meta.glob("../../../examples/*/sketch.js", {
+export async function getStaticPaths() {
+  const allCode = import.meta.glob("../../../examples/*/sketch.js", {
     query: "?raw",
     import: "default",
     eager: true,
   });
 
-  return Object.entries(metas)
-    .map(([metaPath, meta]) => {
-      const slug = metaPath.match(/\/([^/]+)\/meta\.json$/)?.[1];
-      if (!slug) return null;
-      const codePath = metaPath.replace("meta.json", "sketch.js");
+  const entries = await getCollection("examples");
+  return entries
+    .map((entry) => {
+      const slug = entry.id.replace("/meta", "");
+      const codePath = `../../../examples/${slug}/sketch.js`;
       return {
         params: { slug },
         props: {
-          title: (meta as any).title as string,
-          code: codes[codePath] as string,
+          title: entry.data.title,
+          code: allCode[codePath] as string,
         },
       };
     })
-    .filter(Boolean)
-    .sort((a, b) => a!.params.slug.localeCompare(b!.params.slug));
+    .sort((a, b) => a.params.slug.localeCompare(b.params.slug));
 }
 
 const { slug } = Astro.params;

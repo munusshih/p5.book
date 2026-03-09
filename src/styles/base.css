@@ -60,9 +60,10 @@ pre {
 pre code {
     /* reset inline-code styles inside a block */
     border: none;
-    padding: 0;
+    padding: 16px 20px;
     background: transparent;
     font-size: inherit;
+    display: block;
 }
 
 pre code.hljs {

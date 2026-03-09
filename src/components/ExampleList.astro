@@ -1,22 +1,17 @@
 ---
-// Auto-generates the examples list from src/examples/*/meta.json.
-// Add a new example = add a folder. No registration needed.
+import { getCollection } from "astro:content";
 
-const allMeta = import.meta.glob("../examples/*/meta.json", { eager: true });
-
-const examples = Object.entries(allMeta)
-  .map(([path, meta]) => {
-    const slug = path.match(/\/([^/]+)\/meta\.json$/)?.[1];
-    if (!slug) return null;
+const examples = (await getCollection("examples"))
+  .map((entry) => {
+    const slug = entry.id.replace("/meta", "");
     return {
       slug,
       num: slug.match(/^(\d+)/)?.[1] ?? "",
-      title: (meta as any).title as string,
-      description: (meta as any).description as string,
+      title: entry.data.title,
+      description: entry.data.description,
     };
   })
-  .filter(Boolean)
-  .sort((a, b) => a!.slug.localeCompare(b!.slug));
+  .sort((a, b) => a.slug.localeCompare(b.slug));
 ---
 
 <ul>

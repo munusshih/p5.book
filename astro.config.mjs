@@ -29,7 +29,7 @@ const p5bookPlugin = {
 };
 
 export default defineConfig({
-  site: "https://munusshih.github.io/p5.book",
+  site: "https://p5-book.munusshih.com",
   integrations: [mdx(), p5bookPlugin],
   markdown: {
     rehypePlugins: [rehypeHighlight],

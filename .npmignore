@@ -3,6 +3,8 @@ src/
 public/
 astro.config.mjs
 tsconfig.json
+vercel.json
+book-generator/
 
 # Dev utilities
 _split_lib.py
