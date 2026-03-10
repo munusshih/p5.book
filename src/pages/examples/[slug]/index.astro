@@ -2,29 +2,20 @@
 import { getCollection } from "astro:content";
 
 // Split-pane example viewer — code panel left, live sketch iframe right.
-// All data comes from src/examples/[slug]/{meta.json,sketch.js} at build time.
+// Source of truth: src/examples/<slug>.js — title/description from comment lines,
+// code from entry.body. No import.meta.glob, no meta.json.
 
 export async function getStaticPaths() {
-  const allCode = import.meta.glob("../../../examples/*/sketch.js", {
-    query: "?raw",
-    import: "default",
-    eager: true,
-  });
-
   const entries = await getCollection("examples");
   return entries
-    .map((entry) => {
-      const slug = entry.id.replace("/meta", "");
-      const codePath = `../../../examples/${slug}/sketch.js`;
-      return {
-        params: { slug },
-        props: {
-          title: entry.data.title,
-          description: entry.data.description,
-          code: allCode[codePath] as string,
-        },
-      };
-    })
+    .map((entry) => ({
+      params: { slug: entry.id },
+      props: {
+        title: entry.data.title,
+        description: entry.data.description,
+        code: entry.body!,
+      },
+    }))
     .sort((a, b) => a.params.slug.localeCompare(b.params.slug));
 }
 

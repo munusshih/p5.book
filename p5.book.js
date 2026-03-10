@@ -51,9 +51,11 @@
     </dialog>
     <div class="p5book-toolbar">
       <b>p5.book</b>
-      <button id="p5book-btn-flipbook">flipbook</button>
-      <button id="p5book-btn-grid">grid</button>
-      <button id="p5book-btn-3d">3d viewer</button>
+      <select id="p5book-mode-sel">
+        <option value="flipbook">flipbook</option>
+        <option value="grid">grid</option>
+        <option value="3d">3d viewer</option>
+      </select>
       ${book._bleed > 0 ? '<label class="p5book-chk-label"><input type="checkbox" id="p5book-chk-bleed" checked> bleed</label>' : ""}
       <span style="flex:1"></span>
       <select id="p5book-dl-sel">
@@ -467,16 +469,13 @@
     const toolbar = viewer.querySelector(".p5book-toolbar");
     const setMode = (newMode) => {
       mode = newMode;
-      viewer.querySelector("#p5book-btn-flipbook").style.fontWeight = mode === "flipbook" ? "bold" : "";
-      viewer.querySelector("#p5book-btn-grid").style.fontWeight = mode === "grid" ? "bold" : "";
-      viewer.querySelector("#p5book-btn-3d").style.fontWeight = mode === "3d" ? "bold" : "";
+      const modeSel = viewer.querySelector("#p5book-mode-sel");
+      if (modeSel) modeSel.value = mode;
       if (mode === "flipbook") renderFlipbook();
       else if (mode === "grid") renderGrid();
       else render3D();
     };
-    viewer.querySelector("#p5book-btn-flipbook").addEventListener("click", () => setMode("flipbook"));
-    viewer.querySelector("#p5book-btn-grid").addEventListener("click", () => setMode("grid"));
-    viewer.querySelector("#p5book-btn-3d").addEventListener("click", () => setMode("3d"));
+    viewer.querySelector("#p5book-mode-sel").addEventListener("change", (e) => setMode(e.target.value));
     if (book._bleed > 0) {
       const chk = viewer.querySelector("#p5book-chk-bleed");
       chk.addEventListener("change", () => {

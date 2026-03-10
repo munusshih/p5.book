@@ -11,28 +11,14 @@ import ExampleList from "@/components/ExampleList.astro";
 
 A PDF book generator for [p5.js 2.0](https://p5js.org). No build tools. Just a `<script>` tag.
 
+## getting started
+
 ```html
 <!-- load these three scripts in order -->
 <script src="https://cdn.jsdelivr.net/npm/p5@2/lib/p5.min.js"></script>
 <script src="https://unpkg.com/jspdf@latest/dist/jspdf.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/gh/munusshih/p5.book@main/p5.book.js"></script>
 ```
-
----
-
-## examples
-
-<ExampleList />
-
----
-
-## workshop
-
-- [worksheet](/workshop/worksheet) — step-by-step exercises, no install required
-
----
-
-## quick start
 
 ```js
 let book;
@@ -50,9 +36,17 @@ function draw() {
 }
 ```
 
----
+## examples
 
-## api reference
+<ExampleList />
+
+## workshop
+
+- [worksheet](/workshop/worksheet) — step-by-step exercises, no install required
+
+## setup
+
+_→ [hello book](/examples/01-hello-book) — createBook(), setDPI()_
 
 ### createBook( … )
 
@@ -92,6 +86,10 @@ book.setDPI(150); // lighter file size
 ```
 
 **Note:** if `setBleed()` was already called, `setDPI()` rebuilds the bleed graphics buffer at the correct density automatically.
+
+## pages
+
+_→ [page numbers](/examples/02-page-numbers) · [color progression](/examples/03-color-progression) · [slow burn](/examples/06-slow-burn)_
 
 ### book.addPage()
 
@@ -156,6 +154,10 @@ function draw() {
 **Note (LTR):** odd indices = left, even indices = right.
 **Note (RTL):** odd indices = right, even indices = left.
 
+## layout
+
+_→ [spread layout](/examples/10-spread-layout) — setSpread(), isLeftPage(), isRightPage(), setSaddleStitch()_
+
 ### book.setDirection( "ltr" | "rtl" )
 
 Set reading direction. Default is `"ltr"`. Use `"rtl"` for Arabic, Hebrew, manga, etc. Call in `setup()` before `addPage()`. Affects spread pairing in the PDF and viewer, `isLeftPage()` / `isRightPage()`, viewer arrow-key navigation, and `textBox()` — column order is reversed and text direction is set to RTL automatically.
@@ -196,6 +198,10 @@ book.setPageThickness(0.3); // thick newsprint
 | unit |                                    |
 | ---- | ---------------------------------- |
 |      | `"mm"` (default) · `"in"` · `"pt"` |
+
+## bleed & print
+
+_→ [bleed & print marks](/examples/05-bleed) — setBleed(), book.bleed.draw(), bleedWidth, bleedHeight_
 
 ### book.setBleed( amount, [unit] )
 
@@ -245,6 +251,14 @@ Read-only getters — the full bleed page size (trim + bleed on both sides) in y
 circle(book.bleedWidth / 2, book.bleedHeight / 2, book.bleedWidth);
 ```
 
+### book.setPrintMarks( bool )
+
+Show or hide trim/bleed marks. `setBleed()` enables them automatically.
+
+## spine
+
+_→ [spine & cover](/examples/11-spine-cover) — book.spine.draw(), saveCover(), setPageThickness(), set3DBackground()_
+
 ### book.spine
 
 A `p5.Graphics` buffer whose width is proportional to the computed spine thickness (based on page count × `setPageThickness()`) and whose height matches the canvas. Its content is displayed as the spine face in the **3D viewer** and in the **cover PDF**. Use any p5 drawing methods on it, or use the scoped `book.spine.draw(fn)` helper. If you never draw on it, a default spine (dark gradient + filename) is shown automatically.
@@ -267,9 +281,18 @@ book.spine.draw((g) => {
 });
 ```
 
-### book.setPrintMarks(bool)
+### book.saveCover([filename])
 
-Show or hide trim/bleed marks. `setBleed()` enables them automatically.
+Download a single landscape PDF with _back cover · spine · front cover_ composited side by side — ready for commercial print upload. Uses the spine drawn on `book.spine`, or a default gradient if none was drawn.
+
+```js
+book.saveCover(); // auto filename
+book.saveCover("my-book-cover.pdf");
+```
+
+## typography
+
+_→ [typography](/examples/04-typography) · [text flow](/examples/08-text-flow)_
 
 ### book.letterSpacing( px )
 
@@ -316,6 +339,10 @@ function draw() {
 }
 ```
 
+## export
+
+_→ [text flow](/examples/08-text-flow) — book.finish(), textBox() overflow reflow_
+
 ### book.save([filename])
 
 Manually download the single-page or spread PDF. Usually not needed — triggered automatically after the last `addPage()`.
@@ -339,15 +366,6 @@ function draw() {
 }
 ```
 
-### book.saveCover([filename])
-
-Download a single landscape PDF with _back cover · spine · front cover_ composited side by side — ready for commercial print upload. Uses the spine drawn on `book.spine`, or a default gradient if none was drawn.
-
-```js
-book.saveCover(); // auto filename
-book.saveCover("my-book-cover.pdf");
-```
-
 ### book.saveSaddleStitch([filename])
 
 Download a saddle-stitch imposition PDF — pages reordered into printer-spread pairs for folding and stapling. Page count must be divisible by 4. Also accessible via the viewer's download dropdown.
@@ -368,9 +386,9 @@ book.exportFrames("jpeg"); // JPEG, uses the book's jpegQuality setting
 
 Files are named `<basename>-0001.png`, `-0002.png`, … downloaded one by one with a small stagger to prevent browser throttling.
 
----
+## viewer
 
-## 3d viewer customization
+_→ [spine & cover](/examples/11-spine-cover) — set3DBackground(), set3DEdgeColor()_
 
 ### book.set3DBackground( color )
 
@@ -397,8 +415,6 @@ Show or hide the background / edge color pickers in the 3D viewer GUI. Pass `fal
 ```js
 book.showColorPickers(false); // hide the color controls
 ```
-
----
 
 ## tips
 

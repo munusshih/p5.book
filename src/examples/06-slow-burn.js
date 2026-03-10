@@ -1,3 +1,5 @@
+// title: slow burn
+// description: addPage() inside an if(), layers accumulate across many frames
 // ─────────────────────────────────────────────────────────────────────────────
 // 06 — slow burn
 //

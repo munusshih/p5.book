@@ -1,16 +1,14 @@
 ---
 import { getCollection } from "astro:content";
 
+// entry.id is the filename stem, e.g. "01-hello-book"
 const examples = (await getCollection("examples"))
-  .map((entry) => {
-    const slug = entry.id.replace("/meta", "");
-    return {
-      slug,
-      num: slug.match(/^(\d+)/)?.[1] ?? "",
-      title: entry.data.title,
-      description: entry.data.description,
-    };
-  })
+  .map((entry) => ({
+    slug: entry.id,
+    num: entry.id.match(/^(\d+)/)?.[1] ?? "",
+    title: entry.data.title,
+    description: entry.data.description,
+  }))
   .sort((a, b) => a.slug.localeCompare(b.slug));
 ---
 

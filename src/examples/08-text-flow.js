@@ -1,3 +1,5 @@
+// title: text flow
+// description: book.textBox() and book.columnNum() to reflow long text across pages
 // ─────────────────────────────────────────────────────────────────────────────
 // 08 — text flow
 //
