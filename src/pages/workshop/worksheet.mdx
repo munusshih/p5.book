@@ -15,6 +15,10 @@ title: "p5.book: make a book with code"
   <source src="/assets/book-cover.webm" type="video/webm" />
 </video>
 
+This is a workshop to make a book with code. We'll use p5.js to draw each page, and p5.book to turn it into a print-ready, downloadable PDF. Who needs Adobe InDesign when you have JavaScript?
+
+p5.book adds one idea on top of p5.js: **`draw()` runs once per page.** By the time it finishes, you have a complete PDF.
+
 <div class="note">
   The video above is a book made with p5.book! It has 26 pages, one for each
   letter of the alphabet. The cover and back cover are designed as a spread, so
@@ -22,10 +26,6 @@ title: "p5.book: make a book with code"
   made [this book in the p5.js
   editor](https://editor.p5js.org/munusshih/sketches/0n9s8Xo2M).
 </div>
-
-This is a workshop to make a book with code. We'll use p5.js to draw each page, and p5.book to turn it into a print-ready, downloadable PDF. Who needs Adobe InDesign when you have JavaScript?
-
-p5.book adds one idea on top of p5.js: **`draw()` runs once per page.** By the time it finishes, you have a complete PDF.
 
 ---
 
@@ -317,11 +317,42 @@ book.setSpread(true);
 
 When you do this, the canvas doubles in width to fit both the left and right pages. The left page is drawn on the left half of the canvas, and the right page is drawn on the right half. When you export the PDF, it will still be two separate pages, but they will be designed as a spread.
 
-<div class="step">
+<div class="step" data-step="1">
   Try it out! Add `book.setSpread(true)` in `setup()`, then draw something that
   spans across the left and right pages. For example, you could draw a big
   circle that starts on the left page and continues onto the right page.
 </div>
+
+<div class="step" data-step="2">
+  Other than the cover and back cover, all the pages are either left or right pages. You can check which one you're on with `book.isLeftPage()` and `book.isRightPage()`. Use those to draw different content on left and right pages.
+
+```js
+if (book.isLeftPage()) {
+  // draw left page content
+} else if (book.isRightPage()) {
+  // draw right page content
+}
+```
+
+For example, you could make all the left pages blue and all the right pages pink:
+
+```js
+if (book.isLeftPage()) {
+  background("blue");
+} else if (book.isRightPage()) {
+  background("pink");
+}
+```
+
+</div>
+<div class="step" data-step="3">
+  You can also decide if this book should open from the left or the right. By default, it opens from the right, which is standard for English books. But if you want to make a book that opens from the left, like in Traditional Chinese, Japanese, Arabic or Hebrew, you can add this line in `setup()`:
+```js
+book.setDirection("rtl"); // right-to-left
+```
+</div>
+
+<div class="try">
 
 ---
 
