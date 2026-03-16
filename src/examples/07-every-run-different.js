@@ -38,11 +38,11 @@ function draw() {
       let y = r * tile;
       // randomly pick one of two arc-pair orientations
       if (random() > 0.5) {
-        arc(x,        y,        tile * 2, tile * 2, 0,           HALF_PI);
-        arc(x + tile, y + tile, tile * 2, tile * 2, PI,          PI + HALF_PI);
+        arc(x, y, tile * 2, tile * 2, 0, HALF_PI);
+        arc(x + tile, y + tile, tile * 2, tile * 2, PI, PI + HALF_PI);
       } else {
-        arc(x + tile, y,        tile * 2, tile * 2, HALF_PI,     PI);
-        arc(x,        y + tile, tile * 2, tile * 2, PI + HALF_PI, TWO_PI);
+        arc(x + tile, y, tile * 2, tile * 2, HALF_PI, PI);
+        arc(x, y + tile, tile * 2, tile * 2, PI + HALF_PI, TWO_PI);
       }
     }
   }

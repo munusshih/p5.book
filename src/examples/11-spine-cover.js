@@ -69,7 +69,6 @@ function draw() {
     textSize(11);
     textAlign(RIGHT, TOP);
     text("p5.book", width - 20, 22);
-
   } else if (book.isLastPage()) {
     // ── back cover ───────────────────────────────────────────────────────────
     background(20);
@@ -78,7 +77,6 @@ function draw() {
     textAlign(CENTER, BOTTOM);
     textSize(12);
     text("made with p5.book", width / 2, height - 24);
-
   } else {
     // ── interior pages: hue sweeps using book.progress ───────────────────────
     let h = (t * 300) % 360;

@@ -10,7 +10,7 @@ export function showViewer(book) {
   let showBleed = book._bleed > 0;
   let viewItems = book._buildViewItems(showBleed);
   let current = 0;
-  let mode = "flipbook";
+  let mode = book._viewerMode || "flipbook";
 
   if (!document.getElementById("p5book-styles")) {
     const s = document.createElement("style");
@@ -605,5 +605,5 @@ export function showViewer(book) {
     }
   });
 
-  setMode("flipbook");
+  setMode(book._viewerMode || "flipbook");
 }

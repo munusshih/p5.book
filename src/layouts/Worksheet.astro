@@ -6,5 +6,161 @@ const { frontmatter } = Astro.props;
 ---
 
 <Base title={frontmatter.title ?? "p5.book workshop"}>
-  <slot />
+  <div class="title-section">
+    <h1>{frontmatter.title}</h1>
+  </div>
+  <div class="content">
+    <slot />
+  </div>
+  <nav class="bottom-nav" id="bottom-nav">
+    <!-- Auto-populated by JavaScript -->
+  </nav>
 </Base>
+
+<script>
+  // Auto-populate navigation from headings
+  const nav = document.getElementById("bottom-nav");
+  const content = document.querySelector(".content");
+
+  if (nav && content) {
+    const headings = content.querySelectorAll("h2");
+    headings.forEach((heading) => {
+      const kbd = heading.querySelector("kbd");
+      if (kbd) {
+        const letter = kbd.textContent;
+        // Get the full text after the em-dash
+        const fullText = heading.textContent;
+        const titleMatch = fullText.match(/[A-Z]\s*—\s*(.+)/);
+        const title = titleMatch ? titleMatch[1].trim() : fullText;
+
+        const link = document.createElement("a");
+        link.href = "#" + heading.id || "";
+        link.innerHTML = `<span class="nav-letter">${letter}</span><span class="nav-label">${title}</span>`;
+        link.addEventListener("click", (e) => {
+          e.preventDefault();
+          heading.scrollIntoView({ behavior: "smooth", block: "start" });
+        });
+        nav.appendChild(link);
+      }
+    });
+  }
+
+  if (content) {
+    const steps = content.querySelectorAll(".step");
+    let stepCounter = 0;
+
+    steps.forEach((step) => {
+      const manualStep = step.getAttribute("data-step")?.trim();
+
+      if (manualStep) {
+        const explicitNumber = Number.parseInt(manualStep, 10);
+        if (Number.isFinite(explicitNumber)) {
+          stepCounter = explicitNumber;
+          step.dataset.stepLabel = String(explicitNumber);
+          return;
+        }
+
+        step.dataset.stepLabel = manualStep;
+        return;
+      }
+
+      stepCounter += 1;
+      step.dataset.stepLabel = String(stepCounter);
+    });
+  }
+
+  const languageLabels = {
+    js: "JavaScript",
+    javascript: "JavaScript",
+    ts: "TypeScript",
+    typescript: "TypeScript",
+    html: "HTML",
+    css: "CSS",
+    json: "JSON",
+    sh: "Shell",
+    bash: "Bash",
+    text: "Text",
+    plaintext: "Text",
+  };
+
+  const toLanguageLabel = (language) => {
+    if (!language) return "Text";
+    if (languageLabels[language]) return languageLabels[language];
+    return language.charAt(0).toUpperCase() + language.slice(1);
+  };
+
+  const detectCodeLanguage = (preElement, codeElement) => {
+    const preLanguage = preElement?.dataset?.language;
+    if (preLanguage) return preLanguage.toLowerCase();
+
+    if (!codeElement) return "text";
+    const match = codeElement.className.match(/language-([a-z0-9-]+)/i);
+    return match ? match[1].toLowerCase() : "text";
+  };
+
+  if (content) {
+    const codeBlocks = content.querySelectorAll("pre");
+
+    codeBlocks.forEach((pre) => {
+      if (pre.parentElement?.classList.contains("code-block")) return;
+
+      const codeElement = pre.querySelector("code");
+      const language = detectCodeLanguage(pre, codeElement);
+
+      const wrapper = document.createElement("div");
+      wrapper.className = "code-block";
+
+      const header = document.createElement("div");
+      header.className = "code-block-header";
+
+      const languageTag = document.createElement("span");
+      languageTag.className = "code-block-language";
+      languageTag.textContent = toLanguageLabel(language);
+
+      const copyButton = document.createElement("button");
+      copyButton.type = "button";
+      copyButton.className = "code-block-copy";
+      copyButton.textContent = "Copy";
+      copyButton.setAttribute(
+        "aria-label",
+        `Copy ${languageTag.textContent} code`,
+      );
+
+      let resetTimer;
+      const setCopyState = (label, stateClass) => {
+        if (resetTimer) window.clearTimeout(resetTimer);
+        copyButton.textContent = label;
+        copyButton.classList.remove("is-copied", "is-copy-manual");
+        if (stateClass) copyButton.classList.add(stateClass);
+        resetTimer = window.setTimeout(() => {
+          copyButton.textContent = "Copy";
+          copyButton.classList.remove("is-copied", "is-copy-manual");
+        }, 1500);
+      };
+
+      copyButton.addEventListener("click", async () => {
+        const sourceText = codeElement?.textContent ?? pre.textContent ?? "";
+        if (!sourceText.trim()) return;
+
+        try {
+          if (!navigator.clipboard?.writeText) {
+            throw new Error("Clipboard API unavailable");
+          }
+          await navigator.clipboard.writeText(sourceText);
+          setCopyState("Copied", "is-copied");
+        } catch {
+          const selection = window.getSelection();
+          const range = document.createRange();
+          range.selectNodeContents(pre);
+          selection?.removeAllRanges();
+          selection?.addRange(range);
+          setCopyState("Press Cmd/Ctrl+C", "is-copy-manual");
+        }
+      });
+
+      header.append(languageTag, copyButton);
+      pre.parentNode?.insertBefore(wrapper, pre);
+      wrapper.append(header, pre);
+    });
+  }
+</script>

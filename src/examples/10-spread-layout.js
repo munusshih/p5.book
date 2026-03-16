@@ -41,8 +41,11 @@ function draw() {
     noStroke();
     textAlign(CENTER, CENTER);
     textSize(book.isFirstPage() ? 28 : 16);
-    text(book.isFirstPage() ? "spread\nlayout" : "the end", width / 2, height / 2);
-
+    text(
+      book.isFirstPage() ? "spread\nlayout" : "the end",
+      width / 2,
+      height / 2,
+    );
   } else if (book.isLeftPage()) {
     // ── left page of spread ──────────────────────────────────────────────────
     background(235);
@@ -56,7 +59,6 @@ function draw() {
     stroke(180);
     strokeWeight(1);
     line(width - 4, 0, width - 4, height);
-
   } else {
     // ── right page of spread ─────────────────────────────────────────────────
     background(20);

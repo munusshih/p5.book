@@ -19,7 +19,7 @@
 let book;
 
 function setup() {
-  book = createBook(4, 6, 6);    // 4×6 in, 6 pages — canvas auto-created
+  book = createBook(4, 6, 6); // 4×6 in, 6 pages — canvas auto-created
   book.setDPI(150);
   colorMode(HSB, 360, 100, 100);
 }

@@ -6,12 +6,12 @@
 // This is the same pattern used to generate the p5.book concepts handbook.
 
 const CONCEPTS = [
-  { word: "labor",   bg: [20, 20, 20],     fg: [230, 220, 180] },
-  { word: "rest",    bg: [230, 220, 200],  fg: [40,  35,  30]  },
-  { word: "output",  bg: [180, 60,  40],   fg: [245, 240, 230] },
-  { word: "value",   bg: [30,  60,  100],  fg: [210, 225, 245] },
-  { word: "time",    bg: [240, 235, 220],  fg: [60,  50,  40]  },
-  { word: "agency",  bg: [50,  90,  60],   fg: [220, 240, 220] },
+  { word: "labor", bg: [20, 20, 20], fg: [230, 220, 180] },
+  { word: "rest", bg: [230, 220, 200], fg: [40, 35, 30] },
+  { word: "output", bg: [180, 60, 40], fg: [245, 240, 230] },
+  { word: "value", bg: [30, 60, 100], fg: [210, 225, 245] },
+  { word: "time", bg: [240, 235, 220], fg: [60, 50, 40] },
+  { word: "agency", bg: [50, 90, 60], fg: [220, 240, 220] },
 ];
 
 let book;
@@ -36,7 +36,6 @@ function draw() {
     textSize(11);
     textAlign(RIGHT, TOP);
     text("p5.book", width - 20, 20);
-
   } else if (book.isLastPage()) {
     // ── back cover ─────────────────────────────────────────────────
     background(10);
@@ -44,7 +43,6 @@ function draw() {
     textAlign(CENTER, CENTER);
     textSize(12);
     text("a generated book", width / 2, height / 2);
-
   } else {
     // ── interior pages ─────────────────────────────────────────────
     let concept = CONCEPTS[book.page - 1]; // -1 to skip cover

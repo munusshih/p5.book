@@ -1,69 +1,88 @@
 ---
 layout: "@/layouts/Worksheet.astro"
-title: worksheet · p5.book workshop
+title: "p5.book: make a book with code"
 ---
 
 [← back to docs](/)
 
-# make a book with code
+<video
+  style="width: 100%; max-height: 500px; margin: auto;"
+  autoplay
+  loop
+  muted
+  playsinline
+>
+  <source src="/assets/book-cover.webm" type="video/webm" />
+</video>
 
-You already know how to draw with p5.js. Now let's use that to make a real, printable book — every page drawn by code, exported as a PDF.
+This is a workshop to make a book with code. We'll use p5.js to draw each page, and p5.book to turn it into a print-ready, downloadable PDF. Who needs Adobe InDesign when you have JavaScript?
 
 p5.book adds one idea on top of p5.js: **`draw()` runs once per page.** By the time it finishes, you have a complete PDF.
 
 ---
 
-## 0 — add p5.book
+## <kbd>A</kbd> — add p5.book
 
 Open your sketch in the **p5.js editor**. Click the **▼** arrow next to your sketch name, then click **index.html**.
 
 Find the `</body>` tag near the bottom. Add these two lines right _before_ it:
 
 ```html
+<script src="https://cdn.jsdelivr.net/npm/p5@2/lib/p5.min.js"></script>
 <script src="https://unpkg.com/jspdf@latest/dist/jspdf.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/gh/munusshih/p5.book@main/p5.book.js"></script>
 ```
 
 Click back on **sketch.js** to return to your code.
 
+You can also just open [this file](https://editor.p5js.org/munusshih/sketches/u8Ox1CmnM) in the p5.js editor and click `File > Duplicate` to get started.
+
 <div class="note">
 
-jsPDF generates the PDF file. p5.book connects your p5 sketch to it.
+For people who are curious, we are loading two libraries. `jspdf` is a popular library for generating PDFs in JavaScript. p5.book uses it under the hood to create the PDF file. We load it separately so you can use it directly if you want to add custom features that p5.book doesn't have built in.
 
 </div>
 
 ---
 
-## 1 — your first book
+## <kbd>B</kbd> — your first book
 
-Replace your sketch code with this:
+The first thing to do is create a book in `setup()`:
 
 ```js
 let book;
 
 function setup() {
   book = createBook(4, 6, 8); // 4 in wide, 6 in tall, 8 pages
-  // canvas is created automatically at the right aspect ratio
-  // book.setDPI(300); ← uncomment for print-quality export
 }
 
 function draw() {
-  background(255);
-  circle(width / 2, height / 2, 100);
+  background("orange");
+  circle(width / 2, height / 2, frameCount * 50);
 
   book.addPage(); // saves this frame as a page — always call this last
 }
 ```
 
-<div class="step">
+The `createBook()` function creates a book object and a canvas for you. The canvas is sized to fit inside the trim marks of the page size you specify. In this case, it's a 4x6 inch book with 8 pages.
 
-Press **▶ Play**. The sketch runs 8 times, once per page. After the last page a viewer opens — try the view dropdown at the top left (flipbook / grid / 3D view), and the download button.
+<div class="step" data-step="1">
+
+When you press **▶ Play**. The sketch runs 8 times, once per page. After the last page a viewer opens, try the view dropdown at the top left (flipbook / grid / 3D view), and the download button.
+
+</div>
+
+<div class="step" data-step="2">
+
+You can change the size of the book by passing different arguments to `createBook()`. The first two are width and height in inches, the third is page count. You can also pass a standard paper size as a string: "A3", "A4", "A5", "A6", "letter", "legal", or "tabloid". For example, `createBook("A5", 20)` makes an A5 book with 20 pages.
+
+If you want to make a custom size, you can also pass dimensions in millimeters: `createBook(100, 150, 100, "mm")` for a 100x150mm book.
 
 </div>
 
 <div class="note">
 
-`book.addPage()` at the end of `draw()` says: "save everything on the canvas right now as a page, then move on to the next."
+How is the library working? `book.addPage()` at the end of `draw()` basically screenshots the canvas and adds it as a page to the PDF. When you reach the total page count, it stops and opens the viewer.
 
 </div>
 
@@ -77,15 +96,15 @@ What happens if you uncomment `book.setDPI(300)` in `setup()`? (The canvas stays
 
 ---
 
-## 2 — which page am I on?
+## <kbd>C</kbd> — which page am I on?
 
 p5.book gives you three numbers to know where you are:
 
-| | |
-|---|---|
-| `book.pageNumber` | current page — starts at **1** |
-| `book.page` | same, starts at **0** — useful as an array index |
-| `book.totalPages` | total pages passed to `createBook()` |
+|                   |                                                  |
+| ----------------- | ------------------------------------------------ |
+| `book.pageNumber` | current page — starts at **1**                   |
+| `book.page`       | same, starts at **0** — useful as an array index |
+| `book.totalPages` | total pages passed to `createBook()`             |
 
 <div class="step">
 
@@ -127,7 +146,7 @@ What else could you change using `book.pageNumber`? Try the circle's size, the b
 
 ---
 
-## 3 — gradual change
+## <kbd>D</kbd> — gradual change
 
 `book.progress` is the easiest way to make things evolve smoothly across the whole book.
 
@@ -161,7 +180,6 @@ Press **▶ Play** and watch the progression across pages.
 
 <div class="try">
 
-Try:
 - Fade between two colours: `background(lerp(220, 40, t), lerp(80, 180, t), lerp(200, 80, t))`
 - Drift a shape across: `circle(lerp(40, width - 40, t), height / 2, 60)`
 
@@ -169,7 +187,7 @@ Try:
 
 ---
 
-## 4 — cover and back cover
+## <kbd>E</kbd> — cover and back cover
 
 Use `isFirstPage()` and `isLastPage()` to give special treatment to the cover and back cover.
 
@@ -210,7 +228,7 @@ Design your own cover — try a different colour, add a shape, put your name on 
 
 ---
 
-## 5 — bleed
+## <kbd>F</kbd> — bleed
 
 **Bleed** is extra image that extends past the cut line. If your background colour should go right to the edge of the printed page — not stop before the trim — you need bleed.
 
@@ -263,11 +281,12 @@ book.bleed.background(c);
 
 ---
 
-## 6 — make your book
+## <kbd>G</kbd> — make your book
 
 Put it all together and make something you'd actually want to print.
 
 **Ideas:**
+
 - **Colour book** — each page a different random hue in HSB mode
 - **Word book** — an array of words, one word fills each page in big type
 - **Shape book** — a circle slowly turns into a rectangle over 10 pages
@@ -285,34 +304,34 @@ Try the **3D view** dropdown to see your book spinning as a physical object. Dow
 
 ---
 
-## cheat sheet
+## <kbd>H</kbd> — cheat sheet
 
-| | |
-|---|---|
-| **in setup() — run once** | |
-| `createBook(4, 6, 8)` | 4 in wide, 6 in tall, 8 pages — canvas auto-created |
-| `createBook("A5", 8)` | standard paper size (A3 A4 A5 A6 letter legal tabloid) |
-| `book.setDPI(300)` | high-resolution export — for printing |
-| `book.setBleed(0.125)` | 1/8 inch bleed — or `(3, "mm")` for European standard |
-| **in draw() — run once per page** | |
-| `book.pageNumber` | current page — starts at 1 |
-| `book.page` | same, starts at 0 — use as an array index |
-| `book.totalPages` | total pages |
-| `book.progress` | 0 on page 1 → 1 on last page |
-| `book.isFirstPage()` | true only on the first page |
-| `book.isLastPage()` | true only on the last page |
-| `book.bleed.background(c)` | full-bleed background — extends past trim |
-| `book.addPage()` | save this page — always put this **last** |
-| **in the viewer** | |
-| `← / →` | previous / next page |
-| `[ / ]` | jump to first / last page |
-| `?` | keyboard shortcuts |
-| view dropdown | flipbook · grid · 3D view |
-| download dropdown | PDF · Saddle Stitch · Cover · Frames |
+|                                   |                                                        |
+| --------------------------------- | ------------------------------------------------------ |
+| **in setup() — run once**         |                                                        |
+| `createBook(4, 6, 8)`             | 4 in wide, 6 in tall, 8 pages — canvas auto-created    |
+| `createBook("A5", 8)`             | standard paper size (A3 A4 A5 A6 letter legal tabloid) |
+| `book.setDPI(300)`                | high-resolution export — for printing                  |
+| `book.setBleed(0.125)`            | 1/8 inch bleed — or `(3, "mm")` for European standard  |
+| **in draw() — run once per page** |                                                        |
+| `book.pageNumber`                 | current page — starts at 1                             |
+| `book.page`                       | same, starts at 0 — use as an array index              |
+| `book.totalPages`                 | total pages                                            |
+| `book.progress`                   | 0 on page 1 → 1 on last page                           |
+| `book.isFirstPage()`              | true only on the first page                            |
+| `book.isLastPage()`               | true only on the last page                             |
+| `book.bleed.background(c)`        | full-bleed background — extends past trim              |
+| `book.addPage()`                  | save this page — always put this **last**              |
+| **in the viewer**                 |                                                        |
+| `← / →`                           | previous / next page                                   |
+| `[ / ]`                           | jump to first / last page                              |
+| `?`                               | keyboard shortcuts                                     |
+| view dropdown                     | flipbook · grid · 3D view                              |
+| download dropdown                 | PDF · Saddle Stitch · Cover · Frames                   |
 
 ---
 
-## links
+## <kbd>I</kbd> — links
 
 - [p5.js editor](https://editor.p5js.org) — where we code
 - [p5.book documentation](/) — all the API functions

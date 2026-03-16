@@ -26,7 +26,7 @@
     let showBleed = book._bleed > 0;
     let viewItems = book._buildViewItems(showBleed);
     let current = 0;
-    let mode = "flipbook";
+    let mode = book._viewerMode || "flipbook";
     if (!document.getElementById("p5book-styles")) {
       const s = document.createElement("style");
       s.id = "p5book-styles";
@@ -541,7 +541,7 @@
         renderFlipbook();
       }
     });
-    setMode("flipbook");
+    setMode(book._viewerMode || "flipbook");
   }
 
   // src-lib/progress.css
@@ -627,6 +627,7 @@
       this._pageThickMM = 0.1;
       this._3dColors = { bg: null, edge: ["#f0ece4", "#f0ece4", "#f0ece4"] };
       this._3dHideColors = false;
+      this._viewerMode = "flipbook";
       this._bleedWarnedOnce = false;
       this.bleed = new Proxy(
         {},
@@ -774,6 +775,17 @@
     /** Enable saddle-stitch imposition button in the viewer. Page count must be divisible by 4. */
     setSaddleStitch(enabled) {
       this._saddleStitch = !!enabled;
+    }
+    /** Set the default viewer mode when the viewer opens.
+     *  @param {string} mode  "flipbook" (default), "grid", or "3d" */
+    setViewerMode(mode) {
+      if (["flipbook", "grid", "3d"].includes(mode)) {
+        this._viewerMode = mode;
+      } else {
+        console.warn(
+          `[p5.book] Invalid viewer mode "${mode}". Use "flipbook", "grid", or "3d".`
+        );
+      }
     }
     /** Set the thickness of one leaf (sheet of paper) for spine-width calculation.
      *  @param {number} thickness  Thickness of one leaf.
