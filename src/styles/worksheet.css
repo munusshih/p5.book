@@ -117,11 +117,11 @@ ol {
   font-weight: 600;
 }
 
-.content tr > :last-child {
+.content tr> :last-child {
   border-right: none;
 }
 
-.content tbody tr:last-child > * {
+.content tbody tr:last-child>* {
   border-bottom: none;
 }
 
@@ -213,7 +213,7 @@ ol {
   content: attr(data-step-label);
   position: absolute;
   top: -0.65rem;
-  left: -0.6rem;
+  left: 0rem;
   width: 2.2rem;
   height: 2.2rem;
   display: grid;
