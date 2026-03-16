@@ -1,14 +1,13 @@
 let book;
-let font;
-let gradient;
+let font1;
+let font2;
 
 async function setup() {
-  book = createBook(4, 8, 26, "inch");
+  book = createBook(4, 8, 26, "in");
   book.setSpread(true);
   book.setDPI(300);
   book.setPageThickness(3);
   book.setViewerMode("3d");
-
   font1 = await loadFont("../fonts/ApfelGrotezk-Brukt.woff");
   font2 = await loadFont("../fonts/ApfelGrotezk-Mittel.woff");
   textAlign(CENTER, CENTER);

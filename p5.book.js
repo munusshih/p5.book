@@ -656,6 +656,7 @@
       this._viewerShown = false;
       this._pagesProcessed = 0;
       this._pageQueue = Promise.resolve();
+      this._addPageOverflowWarned = false;
       if (this.totalPages != null) this._createProgressUI();
     }
     _createProgressUI() {
@@ -910,6 +911,15 @@
       return this._rtl ? this._page % 2 === 1 : this._page % 2 === 0;
     }
     addPage() {
+      if (this.totalPages != null && this._page >= this.totalPages) {
+        if (!this._addPageOverflowWarned) {
+          this._addPageOverflowWarned = true;
+          console.warn(
+            `[p5.book] addPage() called after totalPages (${this.totalPages}) was reached. Extra pages are ignored.`
+          );
+        }
+        return this._pageQueue;
+      }
       const b = this._bleed;
       const mainCvs = this._p.canvas;
       let rawCanvas;

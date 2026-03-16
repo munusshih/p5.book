@@ -55,7 +55,7 @@ body {
 /* -- headings */
 h1 {
   width: 100%;
-  font-size: 7.25vw;
+  font-size: 7.2vw;
   font-weight: 700;
   line-height: 1;
   font-family: "Apfel Grotezk", sans-serif;
@@ -89,6 +89,44 @@ ul,
 ol {
   padding-left: 1.25rem;
   margin-bottom: 0.75rem;
+}
+
+/* -- tables */
+.content table {
+  width: 100%;
+  margin: 1rem 0 1.5rem;
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 2px solid #000;
+  border-radius: 0.85rem;
+  overflow: hidden;
+  background: #fffef9;
+  font-size: 0.95em;
+}
+
+.content th,
+.content td {
+  border-right: 1px solid #000;
+  border-bottom: 1px solid #000;
+  padding: 0.55rem 0.7rem;
+  vertical-align: top;
+}
+
+.content th {
+  background: #ffe7b8;
+  font-weight: 600;
+}
+
+.content tr > :last-child {
+  border-right: none;
+}
+
+.content tbody tr:last-child > * {
+  border-bottom: none;
+}
+
+.content tbody tr:nth-child(even) td {
+  background: #fffaf0;
 }
 
 /* -- code blocks */
@@ -167,10 +205,8 @@ ol {
   margin: 1rem 0 1.5rem;
   position: relative;
   padding: 1rem 1rem 1rem 2.75rem;
-  border: 2px dashed #000;
   border-radius: 1rem;
   background: #fff6dc;
-  box-shadow: 0.15rem 0.15rem 0 rgba(0, 0, 0, 0.15);
 }
 
 .step::before {
@@ -208,23 +244,24 @@ ol {
 }
 
 .try {
-  margin: 1rem 0 1.5rem;
-  padding: 0.75rem 0.875rem 0.875rem;
+  margin: 1rem auto;
+  padding: 1.2rem 0rem 1.25rem;
 }
 
 .try::before {
   content: "Try it yourself!";
-  display: inline-block;
+  display: block;
+  width: fit-content;
   font-weight: 600;
-  font-size: 1.25rem;
+  font-size: 4rem;
   padding: 0.1rem 0.7rem 0.2rem;
-  margin-bottom: 0.375rem;
+  margin: 0 auto 2rem;
   transform: rotate(-4deg);
-  transform-origin: left center;
-  border: 2px dashed #000;
+  transform-origin: center;
+  /* border: 2px dashed #000; */
   border-radius: 999px;
-  background: #fff;
-  box-shadow: 0.1rem 0.12rem 0 rgba(0, 0, 0, 0.2);
+  /* background: #fff; */
+  /* box-shadow: 0.1rem 0.12rem 0 rgba(0, 0, 0, 0.2); */
 }
 
 .try>p {
@@ -252,7 +289,9 @@ ol {
 .note {
   margin: 1rem 0 1.5rem;
   padding: 0.75rem 0.875rem 0.875rem;
-  background: #fff8e1;
+  background: #eee;
+  border: 2px dashed #000;
+  border-radius: 0.75rem;
   position: relative;
   overflow: visible;
 }
@@ -441,5 +480,14 @@ hr {
     font-size: 0.82rem;
     top: -0.5rem;
     left: -0.45rem;
+  }
+
+  .content table {
+    font-size: 0.85em;
+  }
+
+  .content th,
+  .content td {
+    padding: 0.45rem 0.5rem;
   }
 }

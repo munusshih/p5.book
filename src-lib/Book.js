@@ -143,6 +143,7 @@ export class Book {
     this._viewerShown = false;
     this._pagesProcessed = 0; // increments inside rAF so browser can paint each step
     this._pageQueue = Promise.resolve();
+    this._addPageOverflowWarned = false;
     if (this.totalPages != null) this._createProgressUI();
   }
 
@@ -438,6 +439,18 @@ export class Book {
   }
 
   addPage() {
+    // Guard against one extra draw tick before noLoop() applies.
+    // Without this, an unintended page can be captured as the last page.
+    if (this.totalPages != null && this._page >= this.totalPages) {
+      if (!this._addPageOverflowWarned) {
+        this._addPageOverflowWarned = true;
+        console.warn(
+          `[p5.book] addPage() called after totalPages (${this.totalPages}) was reached. Extra pages are ignored.`,
+        );
+      }
+      return this._pageQueue;
+    }
+
     // ── Capture canvas pixels SYNCHRONOUSLY before the user draws the next page ──
     const b = this._bleed;
     const mainCvs = this._p.canvas;
