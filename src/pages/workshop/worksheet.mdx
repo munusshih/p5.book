@@ -28,15 +28,12 @@ I currently teach at [Pratt Institute MFA Communications Design](https://www.pra
 
 </div>
 
-<div class="note">
-  **Why this library exists:** p5.js is a great library for coding visuals. In
-  fact it's one of my favorite libraries, but print workflows and preparing
-  files are annoying to build repeatedly: page counting, PDF export, bleed,
-  spreads, and cover logic.
+**Why this library exists:** p5.js is a great library for coding visuals. In
+fact it's one of my favorite libraries, but print workflows and preparing
+files are annoying to build repeatedly: page counting, PDF export, bleed,
+spreads, and cover logic.
 
 I also don't want to have to rely on other closed source softwares like Adobe Indesign to make books, that's why I built p5.book to wrap those print mechanics so anyone can make a book with code, and we can make book-making more accessible and opensource!
-
-</div>
 
 ---
 
@@ -63,18 +60,11 @@ Hopefully you have some experience with p5.js already, but if not, no worries! W
 
 I also recommend opening the p5.js editor in another tab so you can follow along with the code examples and experiment on your own. You can find it at [editor.p5js.org](https://editor.p5js.org/).
 
-## <kbd>A</kbd> — add p5.book
+## <kbd>B</kbd> — add p5.book
 
 However, we are not just making any sketch, we are making a book! So we need to add the p5.book library I created to our project.
 
 Open your sketch in the p5.js editor. Click the **▼** arrow next to your sketch name, then click `index.html`. Or open [this starter file](https://editor.p5js.org/munusshih/sketches/u8Ox1CmnM) and choose `File > Duplicate`.
-
-<Diagram
-  label="Script Setup"
-  src="/diagrams/worksheet/a-add-p5-book.svg"
-  alt="Diagram of adding p5.js, jspdf, and p5.book script tags in index.html"
-  caption="Add three script tags in the head, then write your code in sketch.js."
-/>
 
 Add these inside `<head>`:
 
@@ -84,72 +74,106 @@ Add these inside `<head>`:
 <script src="https://cdn.jsdelivr.net/gh/munusshih/p5.book@main/p5.book.js"></script>
 ```
 
-Then go back to `sketch.js`.
+Then go back to `sketch.js`. We will code in `sketch.js` as usual, but now we have access to the p5.book API to create books and export PDFs.
+
+<div class="note">
+For people who are curious, we are loading three libraries here.
+
+1. `p5.js` is the core library for drawing and animation. It provides the canvas and all the drawing functions we will use to create our book pages.
+
+2. `jspdf` is a popular library for generating PDFs in JavaScript. p5.book uses it under the hood to create the PDF file. We load it separately so you can use it directly if you want to add custom features that p5.book doesn't have built in.
+
+3. `p5.book` is the library I built to handle book-specific features like page management, spreads, bleed, and PDF export. It provides a simple API to create books with p5.js.
+
+</div>
 
 ---
 
-## <kbd>B</kbd> — your first book
+## <kbd>C</kbd> — your first book
 
-Start with the smallest complete loop:
+Let's move to `sketch.js`. The first thing to do is create a book in `setup()`:
 
 ```js
 let book;
 
 function setup() {
-  book = createBook(4, 6, 8); // 4 in × 6 in, 8 pages
-  // book = createBook("A5", 8);
-  // book = createBook(100, 150, 100, "mm");
-  // book.setDPI(300);
+  book = createBook(4, 6, 8); // 4 inches wide, 6 inches tall, 8 pages
+  // book = createBook("A5", 8); // standard paper size (A3 A4 A5 A6 letter legal tabloid)
+  // book = createBook(100, 150, 100, "mm"); // custom size in millimeters
+  // book.setDPI(300); // high-resolution export — for printing
 }
 
 function draw() {
   background("orange");
   circle(width / 2, height / 2, frameCount * 50);
 
-  book.addPage(); // always last
+  book.addPage();
+  // saves this frame as a page — always call this last
 }
 ```
 
-<Diagram
-  label="Setup vs Draw"
-  src="/diagrams/worksheet/b-first-book-flow.svg"
-  alt="Correct placement of createBook in setup and addPage in draw"
-  caption="createBook belongs in setup; drawing and addPage happen in draw. addPage in setup captures only once."
-/>
+The `createBook()` function creates a book object and a canvas for you. The canvas is sized to fit inside the trim marks of the page size you specify. In this case, it's a 4x6 inch book with 8 pages.
 
 <div class="step" data-step="1">
-  Press **▶ Play**. It captures pages, then opens the viewer.
+
+When you press **▶ Play**. The sketch runs 8 times, once per page. After the last page a viewer opens, try the view dropdown at the top left (flipbook / grid / 3D view), and the download button.
+
 </div>
 
 <div class="step" data-step="2">
-Change the book size and page count.
+
+You can change the size of the book by passing different arguments to `createBook()`. The first two are **width** and **height** in inches, the third is **page count**.
 
 ```js
 createBook(width, height, pageCount);
+```
+
+You can also pass a standard paper size as a string: "A3", "A4", "A5", "A6", "letter", "legal", or "tabloid". For example, `createBook("A5", 20)` makes an A5 book with 20 pages.
+
+```js
 createBook("A5", pageCount);
 createBook("letter", pageCount);
+createBook("tabloid", pageCount);
 ```
 
 </div>
 
 <div class="step" data-step="3">
-Use units for custom sizes.
+  If you want to make a custom size, you can also pass dimensions like millimeters, centimeters, or inches. Just add a fourth argument with the unit:
 
 ```js
-createBook(100, 200, 20, "mm");
-createBook(10, 15, 15, "cm");
-createBook(4, 6, 10, "in");
+createBook(100, 200, 20, "mm"); // 100x200 mm book with 20 pages
+createBook(10, 15, 15, "cm"); // 10x15 cm book with 15 pages
+createBook(4, 6, 10, "in"); // 4x6 inch book with 10 pages
 ```
 
 </div>
 
-Try the matching example: [hello book](/examples/01-hello-book).
+<div class="note">
+
+How is the library working? `book.addPage()` at the end of `draw()` basically screenshots the canvas and adds it as a page to the PDF. When you reach the total page count, it stops and opens the viewer.
+
+</div>
+
+<div class="try">
+
+Change the page count: try 4, 12, or 20. The viewer should show however many pages you set.
+
+What happens if you uncomment `book.setDPI(300)` in `setup()`? (The canvas stays the same on screen but the PDF exports at higher resolution.)
+
+</div>
 
 ---
 
-## <kbd>C</kbd> — which page am I on?
+## <kbd>D</kbd> — which page am I on?
 
-Use page state to control progression:
+It's fun to be able to create a book, but the real power of coding is that you can make things change across pages. p5.book gives you some tools to do that. These are some variables you can use in `draw()` to find out which page you're on:
+
+<Diagram
+  label="Page Number"
+  src="/diagrams/worksheet/c-page-state.svg"
+  alt="Current page diagram showing pageNumber, page index, totalPages, and progress"
+/>
 
 | function          | what it does                                     |
 | ----------------- | ------------------------------------------------ |
@@ -158,45 +182,59 @@ Use page state to control progression:
 | `book.totalPages` | total page count                                 |
 | `book.progress`   | 0 on first page → 1 on last page                 |
 
-<Diagram
-  label="Page State"
-  src="/diagrams/worksheet/c-page-state.svg"
-  alt="Current page diagram showing pageNumber, page index, totalPages, and progress"
-  caption="Use pageNumber/page/progress to create visual change over time."
-/>
+Knowing which page you're on means you can make things change across pages. Let's see how we can put these to work.
+
+<div class="step" data-step="1">
+
+If you just want to show the page number, you can do that:
 
 ```js
 function draw() {
   background("orange");
 
   fill(0);
-  textFont("Georgia");
-  textStyle(BOLD);
   textSize(width / 2);
   textAlign(CENTER, CENTER);
   text(book.pageNumber, width / 2, height / 2);
 
   book.addPage();
 }
+
+Here we draw the page number huge and centred on each page. Press **▶ Play** to see it in action.
 ```
 
-Try: [page numbers](/examples/02-page-numbers) and [color progression](/examples/03-color-progression).
+</div>
+
+<div class="step" data-step="2">
+
+You can use `book.pageNumber` to make things _change_ per page:
+
+```js
+function draw() {
+  background("orange");
+
+  // circle moves right each page: 40, 80, 120…
+  let x = book.pageNumber * 40;
+  circle(x, height / 2, 60);
+
+  book.addPage();
+}
+
+We multiply the page number by 40 to get the x position of the circle.
+```
+
+</div>
+
+<div class="try">
+
+- What else could you change using `book.pageNumber`? Try the circle's size, the background brightness, or the y position.
+- Try using `book.page` instead of `book.pageNumber` — how does that change your code?
+
+</div>
 
 ---
 
-## <kbd>D</kbd> — cover and back cover
-
-Treat the first and last page differently:
-
-```js
-if (book.isFirstPage()) {
-  // cover
-} else if (book.isLastPage()) {
-  // back cover
-} else {
-  // inside pages
-}
-```
+## <kbd>E</kbd> — cover and back cover
 
 <Diagram
   label="Cover Structure"
@@ -205,51 +243,147 @@ if (book.isFirstPage()) {
   caption="Page 1 is cover, middle pages are interior, and the last page is back cover."
 />
 
+Currently all the pages look the same. But in a real book, the cover and back cover are usually different from the inside pages.
+
+Luckily, p5.book gives you two functions to check if you're on the first or last page.
+
+Use `isFirstPage()` and `isLastPage()` to give special treatment to the cover and back cover.
+
+<div class="step" data-step="1">
+We can use if and else (conditional statements) to check if we're on the first or last page, and draw something different for those pages.
+
+```js
+if (book.isFirstPage()) {
+  // draw cover
+} else if (book.isLastPage()) {
+  // draw back cover
+} else {
+  // draw inside pages
+}
+```
+
+Let's make a simple cover and back cover:
+
 ```js
 function draw() {
   if (book.isFirstPage()) {
-    background("orange");
+    background("orange"); // orange cover
     fill(255);
+    textSize(60);
+    textAlign(CENTER, CENTER);
     text("COVER", width / 2, height / 2);
   } else if (book.isLastPage()) {
-    background("black");
+    background("black"); // black back cover
     fill(255);
+    textSize(60);
+    textAlign(CENTER, CENTER);
     text("THE END", width / 2, height / 2);
   } else {
     background(255);
     fill(0);
+    textSize(60);
     text(book.pageNumber, width / 2, height / 2);
   }
 
-  textAlign(CENTER, CENTER);
-  textSize(60);
   book.addPage();
 }
 ```
 
-Try: [cover & back story](/examples/12-cover-story).
+</div>
 
----
-
-## <kbd>E</kbd> — spreads
-
-A spread is a facing left-right page pair. With spread mode, interior pages are paired while cover/back remain solo pages.
+<div class="step" data-step="2">
+We can also use `if(pageNumber === 1)` instead of `isFirstPage()`, and `if(pageNumber === totalPages)` instead of `isLastPage()`.
 
 ```js
-function setup() {
-  book = createBook(4, 6, 12);
-  book.setSpread(true);
+if (book.pageNumber === 1) {
+  // draw cover
+} else if (book.pageNumber === book.totalPages) {
+  // draw back cover
+} else {
+  // draw inside pages
 }
 ```
 
-<Diagram
-  label="Spread Pairing"
-  src="/diagrams/worksheet/e-spreads.svg"
-  alt="Spread layout showing interior left/right pairing"
-  caption="Spread mode pairs interior pages as facing left/right pages."
-/>
+There's no right or wrong way to do it — use whichever you find easier to read and understand.
 
-Use page-side helpers:
+</div>
+
+<div class="step" data-step="3">
+Instead of just different front and back covers, you could also use the page number to specify different content for each page. Let's say on page 1 we want to say "Welcome", on page 2 we want to say "To My Book", and on page 3 we want to say "Enjoy!".
+
+```js
+function draw() {
+  if (book.pageNumber === 1) {
+    background("orange");
+    fill(255);
+    textSize(60);
+    textAlign(CENTER, CENTER);
+    text("Welcome", width / 2, height / 2);
+  } else if (book.pageNumber === 2) {
+    background("yellow");
+    fill(255);
+    textSize(60);
+    textAlign(CENTER, CENTER);
+    text("To My Book", width / 2, height / 2);
+  } else if (book.pageNumber === 3) {
+    background("purple");
+    fill(255);
+    textSize(60);
+    textAlign(CENTER, CENTER);
+    text("Enjoy!", width / 2, height / 2);
+  } else {
+    background(255);
+    fill(0);
+    textSize(60);
+    text(book.pageNumber, width / 2, height / 2);
+  }
+
+  book.addPage();
+}
+```
+
+Remember that page numbers start at 1, so the first page is page 1, the second page is page 2, and so on. You can use as many else if statements as you want to customize each page of your book.
+
+</div>
+
+<div class="try">
+
+- Design your own cover — try a different colour, add a shape, put your name on it.
+- Can you make a story with a beginning, middle, and end?
+
+</div>
+
+---
+
+## <kbd>F</kbd> — spreads
+
+A **spread** is two pages that face each other in a book. When you open a book, you see a spread: the left page and the right page together. By default, p5.book treats each page separately. But you can also set it to treat two pages as one spread.
+
+To set your book to spreads, add this line in `setup()`:
+
+```js
+book.setSpread(true);
+```
+
+When you do this, the canvas doubles in width to fit both the left and right pages. The left page is drawn on the left half of the canvas, and the right page is drawn on the right half. When you export the PDF, it will still be two separate pages, but they will be designed as a spread.
+
+<div class="step" data-step="1">
+  Try it out! Add `book.setSpread(true)` in `setup()`, and see how the canvas
+  changes.
+</div>
+
+<div class="step" data-step="2">
+  Other than the cover and back cover, all the pages are either left or right pages. You can check which one you're on with `book.isLeftPage()` and `book.isRightPage()`. Use those to draw different content on left and right pages.
+
+```js
+if (book.isLeftPage()) {
+  // draw left page content
+} else if (book.isRightPage()) {
+  // draw right page content
+}
+```
+
+For example, you could make all the left pages blue and all the right pages pink:
 
 ```js
 if (book.isLeftPage()) {
@@ -259,14 +393,21 @@ if (book.isLeftPage()) {
 }
 ```
 
-Optional reading direction:
-
+</div>
+<div class="step" data-step="3">
+  You can also decide if this book should open from the left or the right. By default, it opens from the right, which is standard for English books. But if you want to make a book that opens from the left, like in Traditional Chinese, Japanese, Arabic or Hebrew, you can add this line in `setup()`:
 ```js
-book.setDirection("rtl");
+book.setDirection("rtl"); // right-to-left
 ```
+</div>
 
-Try: [spread layout](/examples/10-spread-layout).
-
+<div class="try">
+  - What happens if you set `book.setSpread(true)` but don't draw anything that
+  spans across the pages? Try it out and see how the left and right pages are
+  still separate, but the canvas is wider. - Try making a spread where the left
+  page has a shape that continues onto the right page. For example, a big circle
+  that starts on the left and finishes on the right.
+</div>
 ---
 
 ## <kbd>F</kbd> — bleed
@@ -305,10 +446,7 @@ Try: [bleed & print marks](/examples/05-bleed).
 
 ## <kbd>G</kbd> — typography
 
-Typography can be the main structure of a book. Instead of drawing many objects, you can let one word, one letter, or one typographic rule change page by page.
-
-<div class="step" data-step="1">
-Start with one letter per page.
+Typography can be the whole concept of a book.
 
 ```js
 const WORD = "WORKSHOP";
@@ -331,37 +469,13 @@ function draw() {
 }
 ```
 
-</div>
-
-<div class="step" data-step="2">
-Add rhythm with tracking, baseline shift, or size changes:
-
-```js
-let s = map(book.progress, 0, 1, width * 0.4, width * 0.72);
-textSize(s);
-book.letterSpacing(book.page % 2 === 0 ? -1 : 3);
-```
-
-</div>
-
-<div class="try">
-
-- Try a two-font system: one font for cover, one for interior pages.
-- Try a strict rule: odd pages always dark, even pages always light.
-- Try spelling a phrase across a spread by coordinating left and right pages.
-
-</div>
-
 Try: [typography](/examples/04-typography) and [type rhythm](/examples/14-type-rhythm).
 
 ---
 
 ## <kbd>H</kbd> — generative patterns
 
-Generative books are systems: the page is the time axis, and your rule evolves across that axis.
-
-<div class="step" data-step="1">
-Pick one pattern rule and keep it simple:
+Use randomness, loops, and rules to create visual systems that evolve across pages.
 
 ```js
 function draw() {
@@ -377,57 +491,18 @@ function draw() {
 }
 ```
 
-</div>
-
-<div class="step" data-step="2">
-Then change exactly one parameter across pages:
-
-```js
-let density = floor(map(book.progress, 0, 1, 40, 240));
-let strokeA = map(book.progress, 0, 1, 12, 48);
-```
-
-</div>
-
-<div class="try">
-
-- Keep the same geometry, but shift only density.
-- Keep density fixed, but shift only color.
-- Compare two runs: deterministic (`randomSeed`) vs every run different.
-
-</div>
-
 Try: [every run different](/examples/07-every-run-different), [slow burn](/examples/06-slow-burn), and [pattern layers](/examples/15-pattern-layers).
 
 ---
 
 ## <kbd>I</kbd> — make your book
 
-Now combine what you built into one finished mini-book.
-
-Pick one direction and finish it:
+Pick one direction and finish a complete mini-book:
 
 - **Type system book:** one word/letter per page, strong typographic rhythm.
 - **Pattern book:** one generative rule, gradual parameter shift.
 - **Story book:** explicit cover, interior narrative, back cover.
 - **Print-minded book:** include bleed and test a printed prototype.
-
-<div class="step" data-step="1">
-Define your constraint in one sentence:
-
-- “One letter per page with a strict black/white rhythm.”
-- “One pattern system that increases in density.”
-- “Story arc: cover, interior, back cover.”
-
-</div>
-
-<div class="step" data-step="2">
-Build a first complete pass quickly, then polish one layer:
-
-- first pass: structure + export works
-- polish pass: typography, spacing, or color rhythm
-
-</div>
 
 Minimum done definition:
 
@@ -435,14 +510,6 @@ Minimum done definition:
 - Uses page progression (`pageNumber`, `page`, or `progress`).
 - Has at least one intentional visual rule.
 - Exports successfully as PDF.
-
-<div class="try">
-
-- Export PDF once early; don’t wait until the end.
-- If time is short, cut scope to 8–12 pages and finish a complete book.
-- Print one draft if possible and adjust contrast/size for readability.
-
-</div>
 
 Try: [cover & back story](/examples/12-cover-story), [workshop remix](/examples/13-workshop-remix), and [data-driven book](/examples/09-data-driven-book).
 

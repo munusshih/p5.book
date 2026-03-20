@@ -499,14 +499,17 @@
     viewer.querySelector("#p5book-btn-print").addEventListener("click", () => {
       try {
         const sel = viewer.querySelector("#p5book-dl-sel");
+        const dlType = sel?.value || "pdf";
         let pdf;
-        if (sel && sel.value === "saddle") {
+        if (dlType === "saddle") {
           pdf = book._buildSaddleStitchPDF();
-        } else if (sel && sel.value === "cover") {
+        } else if (dlType === "cover") {
           pdf = book._buildCoverPDF();
         } else {
           pdf = book._spread ? book._buildSpreadPDF() : book._pdf;
         }
+        const baseName = (book._filename || "p5-book.pdf").replace(/\.pdf$/i, "");
+        const fallbackName = dlType === "saddle" ? `${baseName}-saddle-stitch.pdf` : dlType === "cover" ? `${baseName}-cover.pdf` : `${baseName}.pdf`;
         const blob = pdf.output("blob");
         const url = URL.createObjectURL(blob);
         const frame = document.createElement("iframe");
@@ -518,27 +521,81 @@
         frame.setAttribute("aria-hidden", "true");
         frame.src = url;
         document.body.appendChild(frame);
+        let done = false;
+        let loadTimeout = 0;
         const cleanup = () => {
+          if (done) return;
+          done = true;
+          if (loadTimeout) window.clearTimeout(loadTimeout);
           try {
             frame.remove();
           } finally {
             URL.revokeObjectURL(url);
           }
         };
+        const fallbackToDownload = (msg) => {
+          if (done) return;
+          cleanup();
+          try {
+            pdf.save(fallbackName);
+          } catch {
+          }
+          alert(`${msg} Downloaded the PDF instead.`);
+        };
+        frame.addEventListener(
+          "error",
+          () => {
+            fallbackToDownload(
+              "[p5.book] Browser blocked loading the print preview."
+            );
+          },
+          { once: true }
+        );
+        loadTimeout = window.setTimeout(() => {
+          fallbackToDownload(
+            "[p5.book] Browser blocked opening the print preview."
+          );
+        }, 4e3);
         frame.addEventListener(
           "load",
           () => {
+            if (done) return;
+            if (loadTimeout) {
+              window.clearTimeout(loadTimeout);
+              loadTimeout = 0;
+            }
             const targetWindow = frame.contentWindow;
             if (!targetWindow) {
-              cleanup();
-              alert(
-                "[p5.book] Print was blocked by the browser. Use Download \u2192 PDF and print the file directly."
+              fallbackToDownload(
+                "[p5.book] Print was blocked by the browser."
               );
               return;
             }
-            targetWindow.focus();
-            targetWindow.print();
-            window.setTimeout(cleanup, 1200);
+            let afterPrintFired = false;
+            try {
+              targetWindow.addEventListener(
+                "afterprint",
+                () => {
+                  afterPrintFired = true;
+                  cleanup();
+                },
+                { once: true }
+              );
+            } catch {
+            }
+            window.setTimeout(() => {
+              if (done) return;
+              try {
+                targetWindow.focus();
+                targetWindow.print();
+              } catch {
+                fallbackToDownload("[p5.book] Print failed in this browser.");
+                return;
+              }
+              window.setTimeout(() => {
+                if (!afterPrintFired) cleanup();
+              }, 3e4);
+            }, 350);
           },
           { once: true }
         );
