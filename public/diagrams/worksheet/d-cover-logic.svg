@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 420" role="img" aria-labelledby="title desc">
+  <title id="title">Cover sequence</title>
+  <desc id="desc">First page is cover, middle pages are interior, last page is back cover.</desc>
+  <defs>
+    <style>
+      .bg { fill: #fffef0; }
+      .cover { fill: #ffd77d; stroke: #000; stroke-width: 3; }
+      .inner { fill: #fff8dc; stroke: #000; stroke-width: 3; }
+      .back { fill: #ffe7b8; stroke: #000; stroke-width: 3; }
+      .t { font: 20px "Apfel Grotezk", Arial, sans-serif; fill: #000; }
+      .arrow { stroke: #000; stroke-width: 3; fill: none; marker-end: url(#ah); }
+    </style>
+    <marker id="ah" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#000" />
+    </marker>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="1200" height="420" />
+
+  <rect class="cover" x="86" y="100" width="170" height="230" rx="10" />
+  <text class="t" x="171" y="360" text-anchor="middle">cover</text>
+
+  <path class="arrow" d="M 272 214 L 336 214" />
+
+  <rect class="inner" x="356" y="100" width="130" height="230" rx="10" />
+  <rect class="inner" x="506" y="100" width="130" height="230" rx="10" />
+  <rect class="inner" x="656" y="100" width="130" height="230" rx="10" />
+  <text class="t" x="571" y="360" text-anchor="middle">inside pages</text>
+
+  <path class="arrow" d="M 802 214 L 866 214" />
+
+  <rect class="back" x="886" y="100" width="170" height="230" rx="10" />
+  <text class="t" x="971" y="360" text-anchor="middle">back cover</text>
+</svg>

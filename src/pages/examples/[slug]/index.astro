@@ -38,6 +38,33 @@ const { title, description, code } = Astro.props;
       src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"
     ></script>
     <style>
+      @font-face {
+        font-family: "Apfel Grotezk";
+        src:
+          url("/fonts/ApfelGrotezk-Regular.woff2") format("woff2"),
+          url("/fonts/ApfelGrotezk-Regular.woff") format("woff");
+        font-weight: 300;
+        font-style: normal;
+      }
+
+      @font-face {
+        font-family: "Apfel Grotezk Brukt";
+        src:
+          url("/fonts/ApfelGrotezk-Brukt.woff2") format("woff2"),
+          url("/fonts/ApfelGrotezk-Brukt.woff") format("woff");
+        font-weight: 700;
+        font-style: normal;
+      }
+
+      @font-face {
+        font-family: "Apfel Grotezk";
+        src:
+          url("/fonts/ApfelGrotezk-Mittel.woff2") format("woff2"),
+          url("/fonts/ApfelGrotezk-Mittel.woff") format("woff");
+        font-weight: 500;
+        font-style: normal;
+      }
+
       * {
         box-sizing: border-box;
         margin: 0;
@@ -50,28 +77,48 @@ const { title, description, code } = Astro.props;
         flex-direction: column;
         overflow: hidden;
         font-size: 20px;
-        font-family: system-ui, sans-serif;
+        font-family: "Apfel Grotezk", system-ui, sans-serif;
+        font-weight: 300;
+        background: #fff;
+        color: #000;
       }
 
       #toolbar {
         display: flex;
-        align-items: center;
-        gap: 16px;
-        padding: 8px 12px;
+        align-items: flex-start;
+        gap: 1rem;
+        padding: 0.65rem 1rem 0.7rem;
         flex-shrink: 0;
-        border-bottom: 1px solid;
+        border-bottom: 1px solid #000;
+        background: orange;
       }
 
-      #toolbar .spacer {
-        flex: 1;
+      #toolbar a {
+        color: #000;
+        text-decoration: underline;
+        white-space: nowrap;
+        font-size: 0.88rem;
+        line-height: 1.4;
+        margin-top: 0.1rem;
+      }
+
+      #meta {
+        min-width: 0;
       }
 
       #title {
-        font-weight: 500;
+        display: block;
+        font-family: "Apfel Grotezk", "Apfel Grotezk", sans-serif;
+        font-size: 1rem;
+        font-weight: 700;
+        line-height: 1.2;
       }
+
       #desc {
-        font-size: 14px;
-        color: #666;
+        display: block;
+        font-size: 0.8rem;
+        line-height: 1.4;
+        color: #171717;
       }
 
       #main {
@@ -79,13 +126,15 @@ const { title, description, code } = Astro.props;
         display: grid;
         grid-template-columns: 1fr 1fr;
         overflow: hidden;
+        background: #fffef9;
       }
 
       #code-panel {
         display: flex;
         flex-direction: column;
         overflow: hidden;
-        border-right: 1px solid;
+        border-right: 1px solid #000;
+        background: #fffef9;
       }
 
       #code-scroll {
@@ -98,15 +147,19 @@ const { title, description, code } = Astro.props;
       }
 
       #code-scroll code.hljs {
-        font-size: 14px;
-        line-height: 1.6;
+        font-size: 0.75rem;
+        line-height: 1.65;
         padding: 16px 20px;
         min-height: 100%;
-        background: transparent;
+        font-family:
+          "SFMono-Regular", Menlo, Monaco, Consolas, "Liberation Mono",
+          "Courier New", monospace;
+        background: #fffef9;
       }
 
       #preview-panel {
         overflow: hidden;
+        background: #fff;
       }
 
       #preview-panel iframe {
@@ -119,18 +172,26 @@ const { title, description, code } = Astro.props;
       @media (max-width: 700px) {
         #main {
           grid-template-columns: 1fr;
-          grid-template-rows: 50% 50%;
+          grid-template-rows: minmax(16rem, 45%) minmax(18rem, 55%);
+        }
+
+        #toolbar {
+          padding: 0.6rem 0.85rem 0.65rem;
+        }
+
+        #title {
+          font-size: 0.95rem;
         }
       }
     </style>
   </head>
   <body>
     <div id="toolbar">
-      <a href="/">← docs</a>
-      <span id="title">{title}</span>
-      <span id="desc">{description}</span>
-      <span class="spacer"></span>
-      <a href={`/examples/${slug}/run/`} target="_blank">open sketch ↗</a>
+      <a href="/workshop/worksheet">← worksheet</a>
+      <div id="meta">
+        <span id="title">{title}</span>
+        <span id="desc">{description}</span>
+      </div>
     </div>
     <div id="main">
       <div id="code-panel">

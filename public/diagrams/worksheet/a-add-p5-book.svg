@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 420" role="img" aria-labelledby="title desc">
+  <title id="title">Library load order</title>
+  <desc id="desc">Add three libraries in index head, then use createBook and addPage in sketch.</desc>
+  <defs>
+    <style>
+      .bg { fill: #fffef0; }
+      .panel { fill: #fff8dc; stroke: #000; stroke-width: 3; }
+      .bar { fill: #ffe7b8; stroke: #000; stroke-width: 2; }
+      .bar2 { fill: #ffd77d; stroke: #000; stroke-width: 2; }
+      .t { font: 22px "Apfel Grotezk", Arial, sans-serif; fill: #000; }
+      .s { font: 18px "Apfel Grotezk", Arial, sans-serif; fill: #000; }
+      .arrow { stroke: #000; stroke-width: 3; fill: none; marker-end: url(#ah); }
+    </style>
+    <marker id="ah" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#000" />
+    </marker>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="1200" height="420" />
+
+  <rect class="panel" x="56" y="52" width="514" height="314" rx="16" />
+  <text class="t" x="92" y="94">index.html / &lt;head&gt;</text>
+
+  <rect class="bar" x="92" y="122" width="442" height="56" rx="10" />
+  <text class="s" x="313" y="157" text-anchor="middle">p5.js</text>
+
+  <rect class="bar" x="92" y="194" width="442" height="56" rx="10" />
+  <text class="s" x="313" y="229" text-anchor="middle">jspdf</text>
+
+  <rect class="bar2" x="92" y="266" width="442" height="56" rx="10" />
+  <text class="s" x="313" y="301" text-anchor="middle">p5.book</text>
+
+  <path class="arrow" d="M 590 210 C 665 210, 690 210, 760 210" />
+
+  <rect class="panel" x="776" y="104" width="368" height="212" rx="16" />
+  <text class="t" x="814" y="146">sketch.js</text>
+
+  <rect class="bar" x="812" y="168" width="296" height="54" rx="10" />
+  <text class="s" x="960" y="202" text-anchor="middle">createBook()</text>
+
+  <rect class="bar2" x="812" y="238" width="296" height="54" rx="10" />
+  <text class="s" x="960" y="272" text-anchor="middle">addPage()</text>
+</svg>

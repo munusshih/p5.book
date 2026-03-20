@@ -1,0 +1,17 @@
+---
+interface Props {
+  src: string;
+  alt: string;
+  label?: string;
+  caption?: string;
+  loading?: "lazy" | "eager";
+}
+
+const { src, alt, label, caption, loading = "lazy" } = Astro.props;
+---
+
+<figure class="diagram">
+  {label && <p class="diagram-label">{label}</p>}
+  <img src={src} alt={alt} loading={loading} decoding="async" />
+  {caption && <figcaption>{caption}</figcaption>}
+</figure>

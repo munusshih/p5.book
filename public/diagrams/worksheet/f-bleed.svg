@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 420" role="img" aria-labelledby="title desc">
+  <title id="title">Bleed map</title>
+  <desc id="desc">Bleed, trim, and safe area with a compact legend.</desc>
+  <defs>
+    <style>
+      .bg { fill: #fffef0; }
+      .bleed { fill: #ffd77d; stroke: #000; stroke-width: 3; }
+      .trim { fill: #fff8dc; stroke: #000; stroke-width: 3; stroke-dasharray: 10 8; }
+      .safe { fill: none; stroke: #000; stroke-width: 2.5; stroke-dasharray: 3 6; }
+      .legend { fill: #ffe7b8; stroke: #000; stroke-width: 3; }
+      .t { font: 19px "Apfel Grotezk", Arial, sans-serif; fill: #000; }
+    </style>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="1200" height="420" />
+
+  <rect class="bleed" x="116" y="44" width="566" height="332" rx="12" />
+  <rect class="trim" x="172" y="92" width="454" height="236" rx="10" />
+  <rect class="safe" x="214" y="126" width="370" height="168" rx="8" />
+
+  <rect class="legend" x="744" y="108" width="384" height="206" rx="14" />
+
+  <line x1="782" y1="162" x2="886" y2="162" stroke="#000" stroke-width="3" />
+  <text class="t" x="910" y="168">bleed</text>
+
+  <line x1="782" y1="212" x2="886" y2="212" stroke="#000" stroke-width="3" stroke-dasharray="10 8" />
+  <text class="t" x="910" y="218">trim</text>
+
+  <line x1="782" y1="262" x2="886" y2="262" stroke="#000" stroke-width="2.5" stroke-dasharray="3 6" />
+  <text class="t" x="910" y="268">safe</text>
+</svg>

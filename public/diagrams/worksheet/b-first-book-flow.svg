@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 420" role="img" aria-labelledby="title desc">
+  <title id="title">setup vs draw</title>
+  <desc id="desc">createBook belongs in setup once, addPage belongs in draw loop.</desc>
+  <defs>
+    <style>
+      .bg { fill: #fffef0; }
+      .box { fill: #fff8dc; stroke: #000; stroke-width: 3; }
+      .hi { fill: #ffd77d; stroke: #000; stroke-width: 3; }
+      .page { fill: #ffe7b8; stroke: #000; stroke-width: 2; }
+      .t { font: 23px "Apfel Grotezk", Arial, sans-serif; fill: #000; }
+      .s { font: 18px "Apfel Grotezk", Arial, sans-serif; fill: #000; }
+      .arrow { stroke: #000; stroke-width: 3; fill: none; marker-end: url(#ah); }
+    </style>
+    <marker id="ah" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#000" />
+    </marker>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="1200" height="420" />
+
+  <rect class="box" x="70" y="100" width="360" height="220" rx="16" />
+  <text class="t" x="250" y="146" text-anchor="middle">setup()</text>
+  <rect class="hi" x="118" y="172" width="264" height="72" rx="12" />
+  <text class="s" x="250" y="216" text-anchor="middle">createBook()</text>
+  <text class="s" x="250" y="284" text-anchor="middle">once</text>
+
+  <path class="arrow" d="M 448 210 L 540 210" />
+
+  <rect class="box" x="560" y="70" width="560" height="280" rx="16" />
+  <text class="t" x="840" y="116" text-anchor="middle">draw()</text>
+
+  <rect class="page" x="620" y="148" width="112" height="156" rx="8" />
+  <rect class="page" x="756" y="148" width="112" height="156" rx="8" />
+  <rect class="hi" x="892" y="148" width="168" height="156" rx="10" />
+
+  <text class="s" x="976" y="231" text-anchor="middle">addPage()</text>
+
+  <path class="arrow" d="M 620 332 C 620 372, 1020 372, 1020 332" />
+  <text class="s" x="820" y="392" text-anchor="middle">repeat</text>
+</svg>

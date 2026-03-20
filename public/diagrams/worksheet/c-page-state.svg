@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 420" role="img" aria-labelledby="title desc">
+  <title id="title">Page state</title>
+  <desc id="desc">One page is active; pageNumber, page index and progress can be read from that state.</desc>
+  <defs>
+    <style>
+      .bg { fill: #fffef0; }
+      .page { fill: #fff8dc; stroke: #000; stroke-width: 3; }
+      .active { fill: #ffd77d; stroke: #000; stroke-width: 3; }
+      .card { fill: #ffe7b8; stroke: #000; stroke-width: 3; }
+      .t { font: 22px "Apfel Grotezk", Arial, sans-serif; fill: #000; }
+      .s { font: 18px "Apfel Grotezk", Arial, sans-serif; fill: #000; }
+      .m { font: 19px Menlo, Consolas, monospace; fill: #000; }
+    </style>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="1200" height="420" />
+
+  <rect class="page" x="70" y="110" width="130" height="200" rx="10" />
+  <rect class="page" x="220" y="110" width="130" height="200" rx="10" />
+  <rect class="active" x="370" y="110" width="130" height="200" rx="10" />
+  <rect class="page" x="520" y="110" width="130" height="200" rx="10" />
+  <rect class="page" x="670" y="110" width="130" height="200" rx="10" />
+
+  <rect class="card" x="860" y="88" width="290" height="244" rx="14" />
+  <text class="m" x="890" y="148">pageNumber: 3</text>
+  <text class="m" x="890" y="196">page: 2</text>
+  <text class="m" x="890" y="244">progress: 0.5</text>
+
+  <text class="t" x="435" y="356" text-anchor="middle">active page</text>
+</svg>

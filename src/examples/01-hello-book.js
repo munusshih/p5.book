@@ -30,6 +30,8 @@ function draw() {
   // big page number, centered
   fill(0, 0, 0);
   noStroke();
+  textFont("Georgia");
+  textStyle(BOLD);
   textSize(width * 0.55);
   textAlign(CENTER, CENTER);
   text(book.pageNumber, width / 2, height / 2);

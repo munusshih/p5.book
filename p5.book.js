@@ -509,11 +509,39 @@
         }
         const blob = pdf.output("blob");
         const url = URL.createObjectURL(blob);
-        const win = window.open(url, "_blank");
-        if (win)
-          win.addEventListener("load", () => URL.revokeObjectURL(url), {
-            once: true
-          });
+        const frame = document.createElement("iframe");
+        frame.style.position = "fixed";
+        frame.style.width = "0";
+        frame.style.height = "0";
+        frame.style.border = "0";
+        frame.style.opacity = "0";
+        frame.setAttribute("aria-hidden", "true");
+        frame.src = url;
+        document.body.appendChild(frame);
+        const cleanup = () => {
+          try {
+            frame.remove();
+          } finally {
+            URL.revokeObjectURL(url);
+          }
+        };
+        frame.addEventListener(
+          "load",
+          () => {
+            const targetWindow = frame.contentWindow;
+            if (!targetWindow) {
+              cleanup();
+              alert(
+                "[p5.book] Print was blocked by the browser. Use Download \u2192 PDF and print the file directly."
+              );
+              return;
+            }
+            targetWindow.focus();
+            targetWindow.print();
+            window.setTimeout(cleanup, 1200);
+          },
+          { once: true }
+        );
       } catch (e) {
         alert(e.message);
       }

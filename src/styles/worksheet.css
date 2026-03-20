@@ -9,14 +9,6 @@
 }
 
 @font-face {
-  font-family: "Apfel Grotezk Brukt";
-  src: url("../fonts/ApfelGrotezk-Brukt.woff") format("woff"),
-    url("../fonts/ApfelGrotezk-Brukt.ttf") format("truetype");
-  font-weight: 400;
-  font-style: normal;
-}
-
-@font-face {
   font-family: "Apfel Grotezk";
   src: url("../fonts/ApfelGrotezk-Mittel.woff") format("woff"),
     url("../fonts/ApfelGrotezk-Mittel.ttf") format("truetype");
@@ -50,6 +42,10 @@ body {
   max-width: 53.75rem;
   margin: 0 auto;
   padding: 0 1.25rem 5rem;
+}
+
+a {
+  text-decoration: underline;
 }
 
 /* -- headings */
@@ -89,6 +85,43 @@ ul,
 ol {
   padding-left: 1.25rem;
   margin-bottom: 0.75rem;
+}
+
+/* -- section diagrams */
+.diagram {
+  margin: 1rem 0 1.5rem;
+  padding: 0.6rem;
+  border: 2px solid #000;
+  border-radius: 0.85rem;
+  background: #fffef9;
+}
+
+.diagram-label {
+  margin: 0 0 0.35rem;
+  font-size: 0.74em;
+  font-family: "Apfel Grotezk", sans-serif;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.diagram img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: none;
+  border-radius: 0.5rem;
+}
+
+.diagram figcaption {
+  margin-top: 0.45rem;
+  font-size: 0.82em;
+  font-family: "Apfel Grotezk", sans-serif;
+  font-weight: 500;
+}
+
+.diagram figcaption::before {
+  content: "→ ";
 }
 
 /* -- tables */
@@ -143,8 +176,8 @@ ol {
   gap: 0.5rem;
   padding: 0.45rem 0.65rem;
   background: orange;
-  font-family: "Apfel Grotezk Brukt", "Apfel Grotezk", sans-serif;
-  font-weight: 800;
+  font-family: "Apfel Grotezk", sans-serif;
+  font-weight: 500;
 }
 
 .code-block-language {
@@ -221,7 +254,7 @@ ol {
   border-radius: 50%;
   background: orange;
   border: 2px solid #000;
-  font-family: "Apfel Grotezk Brukt", "Apfel Grotezk", sans-serif;
+  font-family: "Apfel Grotezk", sans-serif;
   font-weight: 700;
   font-size: 0.95rem;
   line-height: 1;

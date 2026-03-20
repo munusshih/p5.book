@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 420" role="img" aria-labelledby="title desc">
+  <title id="title">Spread pairing</title>
+  <desc id="desc">Cover and back are solo pages while inside pages pair into spreads.</desc>
+  <defs>
+    <style>
+      .bg { fill: #fffef0; }
+      .solo { fill: #ffd77d; stroke: #000; stroke-width: 3; }
+      .left { fill: #fff8dc; stroke: #000; stroke-width: 3; }
+      .right { fill: #ffe7b8; stroke: #000; stroke-width: 3; }
+      .t { font: 19px "Apfel Grotezk", Arial, sans-serif; fill: #000; }
+      .arrow { stroke: #000; stroke-width: 3; fill: none; marker-end: url(#ah); }
+    </style>
+    <marker id="ah" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#000" />
+    </marker>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="1200" height="420" />
+
+  <rect class="solo" x="78" y="108" width="122" height="210" rx="10" />
+  <text class="t" x="139" y="352" text-anchor="middle">cover</text>
+
+  <path class="arrow" d="M 214 214 L 256 214" />
+
+  <rect class="left" x="276" y="108" width="122" height="210" rx="10" />
+  <rect class="right" x="402" y="108" width="122" height="210" rx="10" />
+  <line x1="401" y1="118" x2="401" y2="308" stroke="#000" stroke-width="2" stroke-dasharray="7 7" />
+
+  <path class="arrow" d="M 540 214 L 582 214" />
+
+  <rect class="left" x="602" y="108" width="122" height="210" rx="10" />
+  <rect class="right" x="728" y="108" width="122" height="210" rx="10" />
+  <line x1="727" y1="118" x2="727" y2="308" stroke="#000" stroke-width="2" stroke-dasharray="7 7" />
+
+  <path class="arrow" d="M 866 214 L 908 214" />
+
+  <rect class="solo" x="928" y="108" width="122" height="210" rx="10" />
+  <text class="t" x="989" y="352" text-anchor="middle">back</text>
+</svg>

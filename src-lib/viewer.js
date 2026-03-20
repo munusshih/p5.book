@@ -561,13 +561,48 @@ export function showViewer(book) {
       } else {
         pdf = book._spread ? book._buildSpreadPDF() : book._pdf;
       }
+
       const blob = pdf.output("blob");
       const url = URL.createObjectURL(blob);
-      const win = window.open(url, "_blank");
-      if (win)
-        win.addEventListener("load", () => URL.revokeObjectURL(url), {
-          once: true,
-        });
+
+      // Print via an invisible iframe to avoid popup/ad-block issues
+      // with blob URLs in some browsers (for example Arc Shields).
+      const frame = document.createElement("iframe");
+      frame.style.position = "fixed";
+      frame.style.width = "0";
+      frame.style.height = "0";
+      frame.style.border = "0";
+      frame.style.opacity = "0";
+      frame.setAttribute("aria-hidden", "true");
+      frame.src = url;
+      document.body.appendChild(frame);
+
+      const cleanup = () => {
+        try {
+          frame.remove();
+        } finally {
+          URL.revokeObjectURL(url);
+        }
+      };
+
+      frame.addEventListener(
+        "load",
+        () => {
+          const targetWindow = frame.contentWindow;
+          if (!targetWindow) {
+            cleanup();
+            alert(
+              "[p5.book] Print was blocked by the browser. Use Download → PDF and print the file directly.",
+            );
+            return;
+          }
+
+          targetWindow.focus();
+          targetWindow.print();
+          window.setTimeout(cleanup, 1200);
+        },
+        { once: true },
+      );
     } catch (e) {
       alert(e.message);
     }
