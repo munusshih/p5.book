@@ -12,6 +12,12 @@ const { frontmatter } = Astro.props;
   <div class="content">
     <slot />
   </div>
+  <div class="section-jump" aria-label="Jump between sections">
+    <button id="section-up" type="button" aria-label="Previous section">
+      ↑
+    </button>
+    <button id="section-down" type="button" aria-label="Next section">↓</button>
+  </div>
   <nav class="bottom-nav" id="bottom-nav">
     <!-- Auto-populated by JavaScript -->
   </nav>
@@ -21,28 +27,121 @@ const { frontmatter } = Astro.props;
   // Auto-populate navigation from headings
   const nav = document.getElementById("bottom-nav");
   const content = document.querySelector(".content");
+  const sectionUpButton = document.getElementById("section-up");
+  const sectionDownButton = document.getElementById("section-down");
 
   if (nav && content) {
-    const headings = content.querySelectorAll("h2");
-    headings.forEach((heading) => {
+    const headings = Array.from(content.querySelectorAll("h2"));
+    const navLinks = [];
+
+    const slugify = (text) =>
+      text
+        .toLowerCase()
+        .trim()
+        .replace(/[^\w\s-]/g, "")
+        .replace(/\s+/g, "-");
+
+    headings.forEach((heading, index) => {
       const kbd = heading.querySelector("kbd");
       if (kbd) {
         const letter = kbd.textContent;
-        // Get the full text after the em-dash
         const fullText = heading.textContent;
         const titleMatch = fullText.match(/[A-Z]\s*—\s*(.+)/);
         const title = titleMatch ? titleMatch[1].trim() : fullText;
+        if (!heading.id) heading.id = `section-${slugify(fullText) || index + 1}`;
 
         const link = document.createElement("a");
-        link.href = "#" + heading.id || "";
+        link.href = `#${heading.id}`;
+        link.dataset.sectionIndex = String(index);
         link.innerHTML = `<span class="nav-letter">${letter}</span><span class="nav-label">${title}</span>`;
         link.addEventListener("click", (e) => {
           e.preventDefault();
-          heading.scrollIntoView({ behavior: "smooth", block: "start" });
+          const nextIndex = Number.parseInt(link.dataset.sectionIndex || "0", 10);
+          goToSection(nextIndex);
         });
         nav.appendChild(link);
+        navLinks.push(link);
       }
     });
+
+    let activeSectionIndex = 0;
+
+    const setActiveSection = (index) => {
+      if (!headings.length) return;
+
+      const boundedIndex = Math.max(0, Math.min(index, headings.length - 1));
+      activeSectionIndex = boundedIndex;
+
+      navLinks.forEach((link, linkIndex) => {
+        const isActive = linkIndex === boundedIndex;
+        link.classList.toggle("is-active", isActive);
+        if (isActive) link.setAttribute("aria-current", "true");
+        else link.removeAttribute("aria-current");
+      });
+
+      if (sectionUpButton) sectionUpButton.disabled = boundedIndex === 0;
+      if (sectionDownButton)
+        sectionDownButton.disabled = boundedIndex === headings.length - 1;
+
+      navLinks[boundedIndex]?.scrollIntoView({
+        behavior: "smooth",
+        block: "nearest",
+        inline: "center",
+      });
+    };
+
+    const goToSection = (index) => {
+      if (!headings.length) return;
+      const boundedIndex = Math.max(0, Math.min(index, headings.length - 1));
+      headings[boundedIndex].scrollIntoView({ behavior: "smooth", block: "start" });
+      setActiveSection(boundedIndex);
+    };
+
+    sectionUpButton?.addEventListener("click", () => {
+      goToSection(activeSectionIndex - 1);
+    });
+
+    sectionDownButton?.addEventListener("click", () => {
+      goToSection(activeSectionIndex + 1);
+    });
+
+    const updateActiveSectionFromScroll = () => {
+      if (!headings.length) return;
+
+      const offset = Math.min(window.innerHeight * 0.33, 240);
+      let currentIndex = 0;
+      headings.forEach((heading, index) => {
+        if (heading.getBoundingClientRect().top - offset <= 0) {
+          currentIndex = index;
+        }
+      });
+      setActiveSection(currentIndex);
+    };
+
+    let scrollTicking = false;
+    const scheduleActiveUpdate = () => {
+      if (scrollTicking) return;
+      scrollTicking = true;
+      window.requestAnimationFrame(() => {
+        updateActiveSectionFromScroll();
+        scrollTicking = false;
+      });
+    };
+
+    window.addEventListener("scroll", scheduleActiveUpdate, { passive: true });
+    window.addEventListener("resize", scheduleActiveUpdate);
+    updateActiveSectionFromScroll();
+
+    if (!headings.length) {
+      if (sectionUpButton) sectionUpButton.disabled = true;
+      if (sectionDownButton) sectionDownButton.disabled = true;
+    } else {
+      setActiveSection(0);
+      scheduleActiveUpdate();
+    }
+  } else {
+    if (sectionUpButton) sectionUpButton.disabled = true;
+    if (sectionDownButton) sectionDownButton.disabled = true;
   }
 
   if (content) {

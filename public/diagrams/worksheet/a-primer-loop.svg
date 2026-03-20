@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 420" role="img" aria-labelledby="title desc">
+  <title id="title">setup and draw rhythm</title>
+  <desc id="desc">setup runs once, draw runs repeatedly.</desc>
+  <defs>
+    <style>
+      .bg { fill: #fffef0; }
+      .box { fill: #fff8dc; stroke: #000; stroke-width: 3; }
+      .hi { fill: #ffd77d; stroke: #000; stroke-width: 3; }
+      .chip { fill: #ffe7b8; stroke: #000; stroke-width: 2; }
+      .t { font: 22px "Apfel Grotezk", Arial, sans-serif; fill: #000; }
+      .s { font: 18px "Apfel Grotezk", Arial, sans-serif; fill: #000; }
+      .arrow { stroke: #000; stroke-width: 3; fill: none; marker-end: url(#ah); }
+    </style>
+    <marker id="ah" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#000" />
+    </marker>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="1200" height="420" />
+
+  <rect class="box" x="72" y="88" width="410" height="246" rx="16" />
+  <text class="t" x="277" y="136" text-anchor="middle">setup()</text>
+  <rect class="hi" x="132" y="166" width="290" height="84" rx="12" />
+  <text class="s" x="277" y="216" text-anchor="middle">createCanvas(...)</text>
+  <text class="s" x="277" y="292" text-anchor="middle">once</text>
+
+  <path class="arrow" d="M 500 210 L 594 210" />
+
+  <rect class="box" x="612" y="62" width="516" height="296" rx="16" />
+  <text class="t" x="870" y="110" text-anchor="middle">draw()</text>
+
+  <rect class="chip" x="668" y="146" width="118" height="160" rx="10" />
+  <rect class="chip" x="812" y="146" width="118" height="160" rx="10" />
+  <rect class="hi" x="956" y="146" width="118" height="160" rx="10" />
+
+  <path class="arrow" d="M 668 334 C 668 374, 1074 374, 1074 334" />
+  <text class="s" x="871" y="392" text-anchor="middle">loop</text>
+</svg>

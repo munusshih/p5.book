@@ -17,9 +17,9 @@ import Diagram from "@/components/Diagram.astro";
   <source src="/assets/book-cover.webm" type="video/webm" />
 </video>
 
-This workshop teaches you how to make a printable book with code. We'll use p5.js for drawing and p5.book for paging, previewing, and exporting PDF.
+This is a workshop to make a book with code. We'll use [p5.js](https://p5js.org/) to draw each page, and [p5.book](https://github.com/munusshih/p5.book) to turn it into a print-ready, downloadable PDF. Who needs Adobe InDesign when you have JavaScript?
 
-p5.book adds one key idea on top of p5.js: **`draw()` is treated as one book page per capture.**
+In fact, the spinning book cover animation you see above is made with p5.js and p5.book! I wrote the code for the sketch in about 30 minutes (mostly on trying different colors). You can check out the entire code [here](https://editor.p5js.org/munusshih/sketches/-JiQEqzeK).
 
 <div class="note">
   Hi everyone! I'm Munus (pronounce: Moo-nus), a Taiwanese designer, coder and teacher based in NYC. You can find me on [Instagram](https://www.instagram.com/munusshih/), [Github](https://github.com/munusshih) or [my own website](https://munusshih.com).
@@ -41,6 +41,8 @@ I also don't want to have to rely on other closed source softwares like Adobe In
 
 If you don't know what [p5.js](https://p5js.org/) is: it's a JavaScript library that makes coding visual art easier. It provides a simple API for drawing shapes, handling user input, and creating animations.
 
+Let's begin with a quick primer on how p5.js works. You can write p5.js code in any JavaScript environment, but the most common way is to use the p5.js web editor at [editor.p5js.org](https://editor.p5js.org/). When you create a new sketch, you get a `sketch.js` file where you can write your code.
+
 You write your code in two main functions: `setup()` runs once to set up your canvas and variables, while `draw()` runs in a loop to create dynamic visuals. p5.js is great for learning programming concepts and making interactive graphics.
 
 ```js
@@ -56,9 +58,72 @@ function draw() {
 }
 ```
 
-Hopefully you have some experience with p5.js already, but if not, no worries! We will cover the basics as we go, and you can also check out the [p5.js reference](https://p5js.org/reference/) for more details on how to use it.
+<div class="step" data-step="1">
+  Here, we are using many different functions from p5.js to draw a red circle on a background that changes to a random color every frame. You can use any p5.js functions you like to create your pages — there are no limitations on the visuals you can create.
 
-I also recommend opening the p5.js editor in another tab so you can follow along with the code examples and experiment on your own. You can find it at [editor.p5js.org](https://editor.p5js.org/).
+```js
+functionName(argument1, argument2, ...);
+background("orange");
+circle(x, y, diameter);
+```
+
+A function is a pre-defined block of code that performs a specific task. For example, `background("orange")` is a function that fills the canvas with orange color, and `circle(x, y, diameter)` is a function that draws a circle at position (x, y) with the specified diameter.
+
+</div>
+
+<div class="step" data-step="2">
+ A function consists of a function name (like `background` or `circle`), followed by parentheses `()`. Inside the parentheses, you can pass arguments that tell the function how to do its job. For example, `background(255, 0, 0)` tells the background function to fill the canvas with red color (255 for red, 0 for green and blue). The `circle(100, 150, 50)` function call tells it to draw a circle at x=100, y=150 with a diameter of 50 pixels.
+
+```js
+background(color);
+background(255, 0, 0); // red background
+background("blue"); // blue background
+background(0, 255, 0, 128); // semi-transparent green background
+background(random(255), random(255), random(255)); // random background color
+```
+
+Every time you call a function, it performs its task immediately. So when you call `background("orange")`, it fills the canvas with a giant box of orange right away. When you call `circle(width / 2, height / 2, 50)`, it draws the circle on the canvas immediately. The order of your function calls matters, because they are executed in sequence. If you call `background()` after `circle()`, the background will cover the circle and you won't see it.
+
+</div>
+
+<div class="step" data-step="3">
+  Every function is designed to do one specific thing, and you can combine them to create complex visuals. For example, you can use `fill()` to set the color for shapes, `stroke()` to set the outline color, and `text()` to draw text on the canvas. You can also use variables to store values and make your code more dynamic.
+
+```js
+fill(255, 0, 0); // set fill color to red
+stroke(0); // set stroke color to black
+strokeWeight(2); // set stroke thickness
+circle(100, 150, 50); // draw a circle with the current fill
+text("Hello, world!", 200, 100); // draw text at position (200, 100)
+```
+
+Every function is also unique in how it works and what arguments it takes. For example, `background()` can take a color name like "orange", or RGB values like `background(255, 165, 0)`, while shape functions like `circle(x, y, diameter)` takes x and y coordinates and a diameter.
+
+```js
+background("orange"); // background takes a color argument
+circle(100, 150, 50); // circle takes x, y, and diameter
+text("Hello", 200, 100); // text takes a string and x, y
+```
+
+The best way to learn is to experiment with different functions and see what they do. You can check out the [p5.js reference](https://beta.p5js.org/reference/) for a complete list of functions and how to use them.
+
+Or here is a [cheatsheet](https://bmoren.github.io/p5js-cheat-sheet/) with the most commonly used functions to get you started.
+
+</div>
+
+<div class="note">
+  We're also using p5 2.0, which has some new features and changes from previous
+  versions. If you have experience with p5.js, just be aware that some things
+  might work differently in 2.0. For example, the way you load images or fonts
+  has changed, and there are some new functions for handling color and
+  typography. But overall, the core concepts of drawing and animation are still
+  the same.
+
+I recommend checking out the [p5.js 2.0 release notes](https://medium.com/processing-foundation/p5-js-2-0-you-are-here-f827f40519a7) for a detailed overview of what's new and different in this version.
+
+</div>
+
+Hopefully you have some experience with p5.js already, but if not, no worries! We will cover the basics as we go, and you can also check out the [p5.js reference](https://beta.p5js.org/reference/) for more details on how to use it.
 
 ## <kbd>B</kbd> — add p5.book
 
@@ -237,10 +302,9 @@ We multiply the page number by 40 to get the x position of the circle.
 ## <kbd>E</kbd> — cover and back cover
 
 <Diagram
-  label="Cover Structure"
+  label="Book Structure"
   src="/diagrams/worksheet/d-cover-logic.svg"
   alt="Page sequence with cover, interior pages, and back cover"
-  caption="Page 1 is cover, middle pages are interior, and the last page is back cover."
 />
 
 Currently all the pages look the same. But in a real book, the cover and back cover are usually different from the inside pages.
@@ -410,72 +474,153 @@ book.setDirection("rtl"); // right-to-left
 </div>
 ---
 
-## <kbd>F</kbd> — bleed
+## <kbd>G</kbd> — bleed
 
-Bleed means artwork extends beyond the trim line so color reaches the physical edge after cutting.
+**Bleed** is extra image that extends past the cut line. If your background colour should go right to the edge of the printed page — not stop before the trim — you need bleed.
 
 <Diagram
-  label="Bleed Map"
+  label="Bleed/Trim/Safe"
   src="/diagrams/worksheet/f-bleed.svg"
   alt="Bleed, trim line, and safe area with legend"
-  caption="Draw full-page backgrounds on the bleed layer so edge-to-edge print works."
 />
+This is because when the pages are printed and cut, there can be a slight shift.
+If you only draw up to the trim line, you might end up with a thin white edge on
+one side of the page. By adding bleed, you ensure that even if there's a small
+shift during printing, your background will still cover the entire page.
 
 ```js
 function setup() {
   book = createBook(4, 6, 8);
-  book.setBleed(0.125); // 1/8 in (or 3 mm)
+  book.setBleed(0.125); // 1/8 inch — US standard (use 3, "mm" for Europe)
 }
 
 function draw() {
-  book.bleed.background(220, 60, 80); // bleed layer
+  // book.bleed covers the full bleed area — draw backgrounds here
+  book.bleed.background(220, 60, 80);
 
-  clear(); // keep trim area transparent so bleed is visible
+  // the main canvas sits on top, inside the trim marks
+  clear(); // transparent so bleed shows through
+
   fill(255);
-  textAlign(LEFT, TOP);
   textSize(20);
+  textAlign(LEFT, TOP);
   text(book.pageNumber, 20, 24);
 
   book.addPage();
 }
 ```
 
-Try: [bleed & print marks](/examples/05-bleed).
+<div class="step" data-step="1">
+  Try adding `book.setBleed(0.125)` in `setup()`, and see how the bleed area is
+  added around the canvas.
+</div>
 
----
+<div class="step" data-step="2">
+  To draw on the bleed area, use `book.bleed` instead of the main canvas. For
+  example, `book.bleed.background(220, 60, 80)` will fill the entire bleed area
+  with that colour. The main canvas is still where you draw your content, but
+  the bleed layer is where you draw any backgrounds or elements that should
+  extend to the edge of the page.
+</div>
 
-## <kbd>G</kbd> — typography
-
-Typography can be the whole concept of a book.
+<div class="step" data-step="3">
+  You can also use the bleed layer to add design elements that intentionally go past the trim line, like an image.
 
 ```js
-const WORD = "WORKSHOP";
+let img;
 
-function setup() {
-  book = createBook(4, 6, WORD.length);
+async function setup() {
+  book = createBook(4, 6, 8);
+  book.setBleed(0.125);
+
+  img = await loadImage("https://picsum.photos/200/300");
 }
 
 function draw() {
-  background(book.page % 2 === 0 ? 0 : 255);
-  fill(book.page % 2 === 0 ? 255 : 0);
+  // draw a big circle that extends into the bleed area
+  book.bleed.image(img, 0, 0, book.bleed.width, book.bleed.height);
 
-  textAlign(CENTER, CENTER);
-  textFont("Georgia");
-  textStyle(BOLD);
-  textSize(width * 0.52);
-  text(WORD[book.page], width / 2, height / 2);
+  // main canvas content
+  clear();
+  fill(255);
+  textSize(width / 2);
+  textAlign(LEFT, TOP);
+  text(book.pageNumber, 20, 24);
 
   book.addPage();
 }
 ```
 
-Try: [typography](/examples/04-typography) and [type rhythm](/examples/14-type-rhythm).
+Here we load an image and draw it on the bleed layer, making it extend past the trim line. The main canvas is still where we draw the page number, but the image fills the entire bleed area.
+
+</div>
+
+<div class="try">
+  - Try changing the bleed size to see how it affects the canvas and bleed area.
+  - Try drawing different shapes or images on the bleed layer to create
+  interesting designs that go to the edge of the page.
+</div>
 
 ---
 
-## <kbd>H</kbd> — generative patterns
+## <kbd>H</kbd> — typography
 
-Use randomness, loops, and rules to create visual systems that evolve across pages.
+As designers, we have a special love for typography. With p5.js, you can load any font and use it to create dynamic typographic designs that change across pages.
+
+p5.js actually has pretty good typography support, with functions for loading fonts, setting text size, alignment, and style. You can use these to create a book that explores type in a creative way. I recommend checking out the [p5.js typography reference](https://beta.p5js.org/reference/#/p5/text) for all the different functions you can use to manipulate text.
+
+<div class="step" data-step="1">
+  First, you need to load a font in `setup()`. You can use any font file (like .ttf or .otf) that you have, or you can use a web font from Google Fonts. For example, to load the "Georgia" font, you can do this:
+
+```js
+let book;
+let myFont;
+
+async function setup() {
+  book = createBook(4, 6, 8);
+  myFont = await loadFont("inconsolata.otf");
+
+  textFont(myFont); // set the font for drawing text
+}
+```
+
+</div>
+
+<div class="step" data-step="2">
+  Or you can load a Google Font like this:
+
+```js
+let book;
+let myFont;
+
+async function setup() {
+  book = createBook(4, 6, 8);
+  myFont = await loadFont(
+    "https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&display=swap",
+  );
+
+  textFont(myFont);
+}
+```
+
+</div>
+
+Here are some of my favorite resources to find open source and free fonts:
+
+- [Google Fonts](https://fonts.google.com/)
+- [Velvetyne Type Foundry](https://velvetyne.fr/)
+- [Colllettivo.it](https://colllettivo.it/)
+- [The League of Moveable Type](https://www.theleagueofmoveabletype.com/)
+- [Font Library](https://fontlibrary.org/)
+- [Open Foundry](https://open-foundry.com/)
+- [Lost Type Co-op](https://losttype.com/)
+- [Use&Modify](https://usemodify.com/)
+
+---
+
+## <kbd>I</kbd> — generative patterns
+
+The real magic of coding is that you can create things that change and evolve across pages. You can use randomness, loops, and mathematical functions to create generative patterns that are different on each page. For example, you could create a pattern of random lines that changes on every page:
 
 ```js
 function draw() {
@@ -491,80 +636,177 @@ function draw() {
 }
 ```
 
-Try: [every run different](/examples/07-every-run-different), [slow burn](/examples/06-slow-burn), and [pattern layers](/examples/15-pattern-layers).
+There are endless possibilities for generative design with p5.js. The sky is the limit! Some ideas to try:
+
+<div class="step" data-step="1">
+  You can create a beautiful pattern by using loops and mathematical functions. For example, you could create a spiral pattern that changes with each page:
+
+```js
+function draw() {
+  background(255);
+  translate(width / 2, height / 2); // move origin to center
+
+  let angle = book.pageNumber * 0.1; // change angle per page
+  let radius = book.pageNumber * 5; // change radius per page
+
+  for (let i = 0; i < 100; i++) {
+    let x = radius * cos(angle + i * 0.1);
+    let y = radius * sin(angle + i * 0.1);
+    stroke(0, 50);
+    line(0, 0, x, y);
+  }
+
+  book.addPage();
+}
+```
+
+When you run this, you'll see a spiral pattern that evolves across the pages. You can experiment with different mathematical functions, colors, and shapes to create your own unique generative patterns.
+
+</div>
+
+<div class="note">
+  When you create generative patterns, it's almost like you're making a flipbook
+  animation. Each page is a frame in the animation, and when you flip through
+  the pages, you see the pattern change and evolve. This is one of the most
+  exciting things about making books with code — you can create dynamic,
+  evolving designs that are different every time you run the sketch.
+</div>
+
+<div class="step" data-step="2">
+Here is another example of a generative pattern that uses Perlin noise to create a poetic landscape that changes across pages:
+
+```js
+function draw() {
+  background(255);
+  let noiseScale = 0.01;
+  let time = book.pageNumber * 0.1;
+
+  for (let x = 0; x < width; x++) {
+    let y = noise(x * noiseScale, time) * height;
+    stroke(0);
+    line(x, height, x, y);
+  }
+
+  book.addPage();
+}
+```
+
+The Perlin noise function creates a smooth, natural-looking pattern that resembles hills or waves. As you flip through the pages, the landscape changes and evolves.
+
+</div>
+
+In fact [here's a whole book of generative patterns I made with p5.js.](https://editor.p5js.org/munusshih/sketches/UITV8U3l6) The pattern I'm using is based on [Lissajous curves](https://en.wikipedia.org/wiki/Lissajous_curve), which are created by combining two sine waves. By changing the frequency and phase of the waves, you can create a wide variety of patterns.
 
 ---
 
-## <kbd>I</kbd> — make your book
+## <kbd>J</kbd> — make your book
 
-Pick one direction and finish a complete mini-book:
+Now it's your turn to make a book! Use everything you've learned so far to create a book that has a cover, back cover, and at least one intentional visual rule that changes across the pages. It can be as simple or as complex as you like — the important thing is to experiment and have fun with it.
 
-- **Type system book:** one word/letter per page, strong typographic rhythm.
-- **Pattern book:** one generative rule, gradual parameter shift.
-- **Story book:** explicit cover, interior narrative, back cover.
-- **Print-minded book:** include bleed and test a printed prototype.
+If you're feeling stuck, here are some prompts to get you started:
 
-Minimum done definition:
+- Make a book that explores a single shape that changes across pages (like a circle that grows bigger, or a square that rotates).
+- Make a book that uses typography to tell a story or create a poem.
+- Make a book that creates a generative pattern that evolves across pages.
+- Make a book that has a surprise on the last page (like a hidden message or image).
 
-- Has cover + back cover.
-- Uses page progression (`pageNumber`, `page`, or `progress`).
-- Has at least one intentional visual rule.
-- Exports successfully as PDF.
+## <kbd>K</kbd> — cheat sheet
 
-Try: [cover & back story](/examples/12-cover-story), [workshop remix](/examples/13-workshop-remix), and [data-driven book](/examples/09-data-driven-book).
+Here is a quick cheat sheet of the most important functions and variables in p5.book to help you remember how to use it:
 
----
+|                                        |                                                        |
+| -------------------------------------- | ------------------------------------------------------ |
+| **usually in setup() — run once**      |                                                        |
+| `createBook(4, 6, 8)`                  | 4 in wide, 6 in tall, 8 pages — canvas auto-created    |
+| `createBook("A5", 8)`                  | standard paper size (A3 A4 A5 A6 letter legal tabloid) |
+| `book.setDPI(300)`                     | high-resolution export — for printing                  |
+| `book.setBleed(0.125)`                 | 1/8 inch bleed — or `(3, "mm")` for European standard  |
+| `book.setSpread(true)`                 | pair interior pages as spreads                         |
+| **usually in draw() — captured pages** |                                                        |
+| `book.pageNumber`                      | current page — starts at 1                             |
+| `book.page`                            | same, starts at 0 — use as an array index              |
+| `book.totalPages`                      | total pages                                            |
+| `book.progress`                        | 0 on page 1 → 1 on last page                           |
+| `book.isFirstPage()`                   | true only on the first page                            |
+| `book.isLastPage()`                    | true only on the last page                             |
+| `book.bleed.background(c)`             | full-bleed background — extends past trim              |
+| `book.addPage()`                       | save this page — always put this **last**              |
 
-## <kbd>J</kbd> — 1-hour plan
+## <kbd>L</kbd> — common bugs
 
-Use this if you only have 60 minutes:
+Quick debug table for workshop problems:
 
-| time      | focus                        |
-| --------- | ---------------------------- |
-| 0-10 min  | A setup + first capture in B |
-| 10-20 min | C page logic                 |
-| 20-30 min | D cover/back                 |
-| 30-40 min | E spreads **or** F bleed     |
-| 40-55 min | I final concept build        |
-| 55-60 min | export + quick print test    |
+| symptom                                         | likely cause                                  | quick fix                                                         |
+| ----------------------------------------------- | --------------------------------------------- | ----------------------------------------------------------------- |
+| only one page exports                           | `book.addPage()` was put in `setup()`         | move it to the end of `draw()`                                    |
+| blank PDF pages                                 | capture happens before drawing                | draw first, call `book.addPage()` last                            |
+| spread helpers fail (`isLeftPage`)              | spread mode not enabled                       | call `book.setSpread(true)` in `setup()`                          |
+| bleed is not visible                            | bleed layer not used                          | draw full backgrounds on `book.bleed`, then `clear()` main canvas |
+| cover/back look same as inside                  | no first/last page conditions                 | use `book.isFirstPage()` and `book.isLastPage()`                  |
+| wrong page numbering logic                      | mixed 0-based and 1-based page values         | use `book.page` for arrays, `book.pageNumber` for display         |
+| custom font does not appear                     | font not loaded or not applied                | `await loadFont(...)`, then `textFont(myFont)`                    |
+| print preview blocked (`ERR_BLOCKED_BY_CLIENT`) | browser shields/extensions block blob preview | use **Download → PDF** and print that file                        |
+| Safari opens blank print preview                | browser PDF preview race/compat issue         | download PDF and print from the file directly                     |
 
-If you're behind schedule: skip H, keep one visual rule, and finish the export path first.
+## <kbd>M</kbd> — agent help
 
----
+If you run into any issues or have questions about how to use p5.book, you can ask an agent for help. Because we're using the latest version of p5.js and a custom library, it's possible that the agent might not have all the information it needs to answer your question. To get the best help, make sure to provide as much context and detail as possible about your issue.
 
-## <kbd>K</kbd> — cheat sheet, troubleshooting, links
+Here are some tips for asking an agent for help with p5.book:
 
-### quick cheat sheet
+- Say **I'm using p5.js 2.0 + a custom library called p5.book** at the beginning of your question, so the agent knows the context.
+- Provide enough context about the library and your code, for instance include these links or the content from these links:
+  - [p5.book library source](https://cdn.jsdelivr.net/gh/munusshih/p5.book@main/p5.book.js)
+  - [p5.book README](https://github.com/munusshih/p5.book/blob/main/README.md)
+- Here is a template you can use to structure your question to the agent. Fill in the details about your issue, and the agent will do its best to help you troubleshoot and find a solution.
 
-|                                |                                                        |
-| ------------------------------ | ------------------------------------------------------ |
-| **in setup() — run once**      |                                                        |
-| `createBook(4, 6, 8)`          | 4 in wide, 6 in tall, 8 pages — canvas auto-created    |
-| `createBook("A5", 8)`          | standard paper size (A3 A4 A5 A6 letter legal tabloid) |
-| `book.setDPI(300)`             | high-resolution export — for printing                  |
-| `book.setBleed(0.125)`         | 1/8 inch bleed — or `(3, "mm")` for European standard  |
-| `book.setSpread(true)`         | pair interior pages as spreads                         |
-| **in draw() — captured pages** |                                                        |
-| `book.pageNumber`              | current page — starts at 1                             |
-| `book.page`                    | same, starts at 0 — use as an array index              |
-| `book.totalPages`              | total pages                                            |
-| `book.progress`                | 0 on page 1 → 1 on last page                           |
-| `book.isFirstPage()`           | true only on the first page                            |
-| `book.isLastPage()`            | true only on the last page                             |
-| `book.bleed.background(c)`     | full-bleed background — extends past trim              |
-| `book.addPage()`               | save this page — always put this **last**              |
+Prompt template:
 
-### troubleshooting
+```
+I'm using p5.js 2.0 + a custom library called p5.book to create a book with code. Here's the link to the library source: https://cdn.jsdelivr.net/gh/munusshih/p5.book@main/p5.book.js and the README: https://github.com/munusshih/p5.book/blob/main/README.md
 
-- **Only one page exported:** `book.addPage()` is in `setup()`; move it to `draw()`.
-- **Blank/empty PDF pages:** make sure you draw before `book.addPage()`.
-- **`isLeftPage()` warning:** call `book.setSpread(true)` in `setup()` first.
-- **Print blocked in Arc (`ERR_BLOCKED_BY_CLIENT`):** use **Download → PDF** and print the file, or disable Shields for the p5 editor tab.
+I'm trying to [briefly describe what you're trying to do].
 
-### links
+My code looks like this:
+[insert your code here]
 
-- [p5.js editor](https://editor.p5js.org)
-- [p5.book documentation](/)
-- [examples](/#examples)
-- [p5.js reference](https://p5js.org/reference/)
-- [github.com/munusshih/p5.book](https://github.com/munusshih/p5.book)
+The console error I'm getting is:
+[exact console error]
+
+Please return:
+1) the likely cause
+2) a fixed code snippet
+3) an explanation of the fix
+```
+
+## <kbd>N</kbd> — next steps
+
+Now that you have the basics down, you can start experimenting and creating your own unique books with p5.js and p5.book.
+
+I'm excited to see what you create! Remember, the most important thing is to have fun and experiment with different ideas. Don't be afraid to try something new or make mistakes. That's how you learn and discover new possibilities!
+
+<div class="note">
+  I'm still actively developing p5.book, so if you have any feedback, suggestions, or want to contribute, please check out [the GitHub repo](https://github.com/munusshih/p5.book). I plan to have the first official release by the end of the year, but in the meantime, feel free to explore the code, report any bugs you find, or suggest new features you'd like to see.
+
+If you want to share your book or see what others have made, you can post it on social media with the hashtag **#p5book** and tag me **@munusshih**, or send it to me directly at munusshih@gmail.com. I'd love to feature your work on the future documentation and share it with the community!
+
+</div>
+
+## <kbd>O</kbd> — others (TBD)
+
+Because this workshop focuses on fundamentals, there are many p5.book features we are not covering yet. Here are future topics for undocumented or lightly documented API features:
+
+| letter | planned focus                                             | status |
+| ------ | --------------------------------------------------------- | ------ |
+| O      | different default viewer mode with `book.setViewerMode()` | TBD    |
+| P      | unknown page count workflow with `book.finish()`          | TBD    |
+| Q      | text overflow handling with `book.textBox()` return       | TBD    |
+| R      | `clear()` and redraw logic across pages                   | TBD    |
+| S      | spine basics: `book.spine` + `setPageThickness()`         | TBD    |
+| T      | `saveSaddleStitch()` export and /4 page constraints       | TBD    |
+| U      | advanced bleed tools: `bleed.draw()`, width, height       | TBD    |
+| V      | print mark control with `book.setPrintMarks()`            | TBD    |
+| W      | 3D viewer controls: `set3DBackground()`, edge colors      | TBD    |
+| X      | styling p5.book viewer UI with CSS                        | TBD    |
+| Y      | building custom helper functions for reusable pages       | TBD    |
+| Z      | contribution roadmap                                      | TBD    |

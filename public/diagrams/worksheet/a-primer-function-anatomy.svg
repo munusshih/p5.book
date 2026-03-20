@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 420" role="img" aria-labelledby="title desc">
+  <title id="title">function call anatomy</title>
+  <desc id="desc">A function name with arguments in parentheses.</desc>
+  <defs>
+    <style>
+      .bg { fill: #fffef0; }
+      .line { stroke: #000; stroke-width: 3; fill: none; }
+      .pill { fill: #ffe7b8; stroke: #000; stroke-width: 2.5; }
+      .pill-hi { fill: #ffd77d; stroke: #000; stroke-width: 2.5; }
+      .t { font: 30px "Apfel Grotezk", Arial, sans-serif; fill: #000; }
+      .s { font: 18px "Apfel Grotezk", Arial, sans-serif; fill: #000; }
+    </style>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="1200" height="420" />
+
+  <text class="t" x="228" y="204">circle</text>
+  <text class="t" x="390" y="204">(</text>
+  <text class="t" x="820" y="204">)</text>
+
+  <rect class="pill-hi" x="440" y="146" width="110" height="74" rx="36" />
+  <rect class="pill" x="568" y="146" width="110" height="74" rx="36" />
+  <rect class="pill" x="696" y="146" width="110" height="74" rx="36" />
+
+  <text class="s" x="495" y="190" text-anchor="middle">x</text>
+  <text class="s" x="623" y="190" text-anchor="middle">y</text>
+  <text class="s" x="751" y="190" text-anchor="middle">d</text>
+
+  <path class="line" d="M 228 226 L 352 226" />
+  <text class="s" x="290" y="258" text-anchor="middle">name</text>
+
+  <path class="line" d="M 440 234 L 806 234" />
+  <text class="s" x="623" y="266" text-anchor="middle">arguments</text>
+</svg>

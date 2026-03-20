@@ -23,5 +23,45 @@ const { title } = Astro.props;
   </head>
   <body>
     <slot />
+    <script is:inline>
+      (() => {
+        const setExternalLinkTargets = () => {
+          const links = document.querySelectorAll('a[href]');
+
+          links.forEach((link) => {
+            const href = link.getAttribute("href");
+            if (!href) return;
+            if (!/^https?:\/\//i.test(href)) return;
+
+            let url;
+            try {
+              url = new URL(href, window.location.href);
+            } catch {
+              return;
+            }
+
+            if (url.origin === window.location.origin) return;
+
+            link.setAttribute("target", "_blank");
+            const relParts = new Set(
+              (link.getAttribute("rel") || "")
+                .split(/\s+/)
+                .filter(Boolean),
+            );
+            relParts.add("noopener");
+            relParts.add("noreferrer");
+            link.setAttribute("rel", Array.from(relParts).join(" "));
+          });
+        };
+
+        if (document.readyState === "loading") {
+          document.addEventListener("DOMContentLoaded", setExternalLinkTargets, {
+            once: true,
+          });
+        } else {
+          setExternalLinkTargets();
+        }
+      })();
+    </script>
   </body>
 </html>
