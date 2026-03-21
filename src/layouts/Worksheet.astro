@@ -6,6 +6,13 @@ const { frontmatter } = Astro.props;
 ---
 
 <Base title={frontmatter.title ?? "p5.book workshop"}>
+  <head slot="head">
+    <!-- Book emoji favicon -->
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>📖</text></svg>"
+    />
+  </head>
   <div class="title-section">
     <h1>{frontmatter.title}</h1>
   </div>
@@ -64,7 +71,8 @@ const { frontmatter } = Astro.props;
 
     headings.forEach((heading, index) => {
       const meta = getHeadingNavMeta(heading, index);
-      if (!heading.id) heading.id = `section-${slugify(meta.idBase) || index + 1}`;
+      if (!heading.id)
+        heading.id = `section-${slugify(meta.idBase) || index + 1}`;
 
       const link = document.createElement("a");
       link.href = `#${heading.id}`;
@@ -117,7 +125,10 @@ const { frontmatter } = Astro.props;
     const goToSection = (index) => {
       if (!headings.length) return;
       const boundedIndex = Math.max(0, Math.min(index, headings.length - 1));
-      headings[boundedIndex].scrollIntoView({ behavior: "smooth", block: "start" });
+      headings[boundedIndex].scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
       setActiveSection(boundedIndex);
     };
 

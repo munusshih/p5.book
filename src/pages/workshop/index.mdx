@@ -5,7 +5,7 @@ title: "p5.book: make a book with code"
 
 import Diagram from "@/components/Diagram.astro";
 
-[← see this on github](https://github.com/munusshih/p5.book)
+[← see the doc](../index.html)
 
 <video
   style="width: 100%; max-height: 500px; margin: auto;"
@@ -745,7 +745,7 @@ Quick debug table for workshop problems:
 | cover/back look same as inside                  | no first/last page conditions                 | use `book.isFirstPage()` and `book.isLastPage()`                  |
 | wrong page numbering logic                      | mixed 0-based and 1-based page values         | use `book.page` for arrays, `book.pageNumber` for display         |
 | custom font does not appear                     | font not loaded or not applied                | `await loadFont(...)`, then `textFont(myFont)`                    |
-| print preview blocked (`ERR_BLOCKED_BY_CLIENT`) | browser shields/extensions block blob preview | p5.book now opens a non-blob preview tab; use `Ctrl/Cmd+P` there |
+| print preview blocked (`ERR_BLOCKED_BY_CLIENT`) | browser shields/extensions block blob preview | p5.book now opens a non-blob preview tab; use `Ctrl/Cmd+P` there  |
 | Safari opens blank print preview                | browser PDF preview race/compat issue         | use the non-blob preview tab, or download and print the PDF       |
 
 ## <kbd>M</kbd> — agent help
