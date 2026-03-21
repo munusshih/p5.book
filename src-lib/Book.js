@@ -444,8 +444,8 @@ export class Book {
     if (this.totalPages != null && this._page >= this.totalPages) {
       if (!this._addPageOverflowWarned) {
         this._addPageOverflowWarned = true;
-        console.warn(
-          `[p5.book] addPage() called after totalPages (${this.totalPages}) was reached. Extra pages are ignored.`,
+        console.info(
+          `[p5.book] Successfully generated ${this.totalPages} pages. Additional addPage() calls are ignored.`,
         );
       }
       return this._pageQueue;

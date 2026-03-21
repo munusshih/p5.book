@@ -570,6 +570,15 @@ export function showViewer(book) {
           : dlType === "cover"
             ? `${baseName}-cover.pdf`
             : `${baseName}.pdf`;
+      const blockedPrintMsg =
+        "[p5.book] Your browser couldn't open the print dialog here.\n\n" +
+        "This can happen in sandboxed/embedded previews.\n\n" +
+        "Try this:\n" +
+        "1) Click Download -> PDF\n" +
+        "2) Open the downloaded file\n" +
+        "3) Print from your PDF viewer\n\n" +
+        "If you want the print button to open the dialog directly, run your sketch locally (localhost).";
+
       const blob = pdf.output("blob");
       const url = URL.createObjectURL(blob);
 
@@ -599,31 +608,33 @@ export function showViewer(book) {
         }
       };
 
-      const fallbackToDownload = (msg) => {
+      const fallbackToDownload = () => {
         if (done) return;
         cleanup();
+        let downloaded = false;
         try {
           pdf.save(fallbackName);
+          downloaded = true;
         } catch {
-          // swallow; message below still tells user what to do
+          // ignore
         }
-        alert(`${msg} Downloaded the PDF instead.`);
+        alert(
+          downloaded
+            ? `${blockedPrintMsg} Downloaded the PDF instead.`
+            : blockedPrintMsg,
+        );
       };
 
       frame.addEventListener(
         "error",
         () => {
-          fallbackToDownload(
-            "[p5.book] Browser blocked loading the print preview.",
-          );
+          fallbackToDownload();
         },
         { once: true },
       );
 
       loadTimeout = window.setTimeout(() => {
-        fallbackToDownload(
-          "[p5.book] Browser blocked opening the print preview.",
-        );
+        fallbackToDownload();
       }, 4000);
 
       frame.addEventListener(
@@ -636,9 +647,7 @@ export function showViewer(book) {
           }
           const targetWindow = frame.contentWindow;
           if (!targetWindow) {
-            fallbackToDownload(
-              "[p5.book] Print was blocked by the browser.",
-            );
+            fallbackToDownload();
             return;
           }
 
@@ -662,7 +671,7 @@ export function showViewer(book) {
               targetWindow.focus();
               targetWindow.print();
             } catch {
-              fallbackToDownload("[p5.book] Print failed in this browser.");
+              fallbackToDownload();
               return;
             }
 

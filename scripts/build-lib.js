@@ -11,6 +11,10 @@ const config = {
   format: "iife",
   outfile: "p5.book.js",
   banner: { js: banner },
+  // Keep code structure mostly intact, but strip extra whitespace in build output.
+  minifyWhitespace: !watch,
+  minifyIdentifiers: false,
+  minifySyntax: false,
   // import './viewer.css' in viewer.js is bundled as an inlined text string
   loader: { ".css": "text" },
 };
