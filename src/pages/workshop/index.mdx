@@ -28,6 +28,11 @@ I currently teach at [Pratt Institute MFA Communications Design](https://www.pra
 
 </div>
 
+<iframe
+  src="https://editor.p5js.org/munusshih/full/-JiQEqzeK"
+  style="width: 100%; height: 500px; border: 1px solid #eee;"
+></iframe>
+
 **Why this library exists:** p5.js is a great library for coding visuals. In
 fact it's one of my favorite libraries, but print workflows and preparing
 files are annoying to build repeatedly: page counting, PDF export, bleed,
@@ -51,15 +56,20 @@ function setup() {
 }
 
 function draw() {
-  background(random(255), random(255), random(255));
+  background("pink");
   fill(255, 0, 0);
-  circle(width / 2, height / 2, 50);
+  circle(mouseX, mouseY, 50);
   // draw() runs in a loop, so this circle will be drawn every frame
 }
 ```
 
+<iframe
+  src="https://editor.p5js.org/munusshih/full/oIt_CK3Zp"
+  style="width: 100%; height: 500px; border: 1px solid #eee;"
+></iframe>
+
 <div class="step" data-step="1">
-  Here, we are using many different functions from p5.js to draw a red circle on a background that changes to a random color every frame. You can use any p5.js functions you like to create your pages — there are no limitations on the visuals you can create.
+  Here, we are using many different functions from p5.js to draw a red circle on a pink background. You can use any p5.js functions you like to create your pages — there are no limitations on the visuals you can create.
 
 ```js
 functionName(argument1, argument2, ...);
@@ -72,7 +82,18 @@ A function is a pre-defined block of code that performs a specific task. For exa
 </div>
 
 <div class="step" data-step="2">
- A function consists of a function name (like `background` or `circle`), followed by parentheses `()`. Inside the parentheses, you can pass arguments that tell the function how to do its job. For example, `background(255, 0, 0)` tells the background function to fill the canvas with red color (255 for red, 0 for green and blue). The `circle(100, 150, 50)` function call tells it to draw a circle at x=100, y=150 with a diameter of 50 pixels.
+ A function consists of a function name (like `background` or `circle`), followed by parentheses `()`. Inside the parentheses, you can pass arguments that tell the function how to do its job.
+
+For example:
+
+- `background(255, 0, 0)` tells the background function to fill the canvas with red color (255 for red, 0 for green and blue).
+- The `circle(100, 150, 50)` function call tells it to draw a circle at x=100, y=150 with a diameter of 50 pixels.
+
+You can use either RGB, hex codes, or color names to specify colors in p5.js. For example, `background("blue")`, `background(0, 0, 255)` and `background("#0000ff")` will fill the canvas with blue color.
+
+- Try the color picker here: <input type="color" id="colorPicker" value="#0000ff" />
+
+- Or see a list of [color names here](https://www.w3schools.com/tags/ref_colornames.asp)
 
 ```js
 background(color);
@@ -82,12 +103,15 @@ background(0, 255, 0, 128); // semi-transparent green background
 background(random(255), random(255), random(255)); // random background color
 ```
 
-Every time you call a function, it performs its task immediately. So when you call `background("orange")`, it fills the canvas with a giant box of orange right away. When you call `circle(width / 2, height / 2, 50)`, it draws the circle on the canvas immediately. The order of your function calls matters, because they are executed in sequence. If you call `background()` after `circle()`, the background will cover the circle and you won't see it.
+Every time you call a function, it performs its task immediately.
+
+- So when you call `background("orange")`, it fills the canvas with a giant box of orange right away. When you call `circle(width / 2, height / 2, 50)`, it draws the circle on the canvas immediately.
+- The order of your function calls matters, because they are executed in sequence. If you call `background()` after `circle()`, the background will cover the circle and you won't see it.
 
 </div>
 
 <div class="step" data-step="3">
-  Every function is designed to do one specific thing, and you can combine them to create complex visuals. For example, you can use `fill()` to set the color for shapes, `stroke()` to set the outline color, and `text()` to draw text on the canvas. You can also use variables to store values and make your code more dynamic.
+  Every function is designed to do one specific thing, and you can combine them to create complex visuals. For example, you can use `fill()` to set the color for shapes, `stroke()` to set the outline color, and `text()` to draw text on the canvas.
 
 ```js
 fill(255, 0, 0); // set fill color to red
@@ -97,7 +121,20 @@ circle(100, 150, 50); // draw a circle with the current fill
 text("Hello, world!", 200, 100); // draw text at position (200, 100)
 ```
 
-Every function is also unique in how it works and what arguments it takes. For example, `background()` can take a color name like "orange", or RGB values like `background(255, 165, 0)`, while shape functions like `circle(x, y, diameter)` takes x and y coordinates and a diameter.
+You can also save these values in variables and reuse them across your sketch. For example:
+
+```js
+let circleColor = [255, 0, 0]; // red color
+fill(circleColor);
+```
+
+Every function is unique!
+
+They're unique in how it works and what arguments it takes.
+
+For example:
+- `background()` can take a color name like "orange", or RGB values like `background(255, 165, 0)`
+- While shape functions like `circle(x, y, diameter)` takes x and y coordinates and a diameter.
 
 ```js
 background("orange"); // background takes a color argument
@@ -123,7 +160,7 @@ I recommend checking out the [p5.js 2.0 release notes](https://medium.com/proces
 
 </div>
 
-Hopefully you have some experience with p5.js already, but if not, no worries! We will cover the basics as we go, and you can also check out the [p5.js reference](https://beta.p5js.org/reference/) for more details on how to use it.
+Hopefully you have some experience with p5.js already, but if not, no worries! We will try to explain and cover the basics as we go, and you can also check out the [p5.js reference](https://beta.p5js.org/reference/) for more details on how to use it.
 
 ## <kbd>B</kbd> — add p5.book
 
