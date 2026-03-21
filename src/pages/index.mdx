@@ -1,17 +1,13 @@
 ---
-layout: "@/layouts/Doc.astro"
+layout: "@/layouts/Worksheet.astro"
 title: p5.book — documentation
 ---
 
-import ExampleList from "@/components/ExampleList.astro";
-
 [← github](https://github.com/munusshih/p5.book)
-
-# p5.book
 
 A PDF book generator for [p5.js 2.0](https://p5js.org). No build tools. Just a `<script>` tag.
 
-## getting started
+## Getting Started
 
 ```html
 <!-- load these three scripts in order -->
@@ -36,17 +32,15 @@ function draw() {
 }
 ```
 
-## examples
+<div class="note">
+  Start with a tiny test book first (like 6-10 pages), make sure your page logic
+  works, then scale up. It is much easier to debug composition and sequence
+  before you render 100 pages at high DPI.
+</div>
 
-<ExampleList />
+---
 
-## workshop
-
-- [worksheet](/workshop/worksheet) — step-by-step exercises, no install required
-
-## setup
-
-_→ [hello book](/examples/01-hello-book) — createBook(), setDPI()_
+## Setup
 
 ### createBook( … )
 
@@ -68,14 +62,6 @@ book = createBook(5, 8, 12, "in", "my-zine"); // with filename
 | **named sizes** | `A3` `A4` `A5` `A6` `letter` `legal` `tabloid` — any size jsPDF knows |
 | **units**       | `"in"` inches (default) · `"cm"` · `"mm"` · `"px"` · `"pt"`           |
 
-You can pass an **options object** as the last argument:
-
-```js
-book = createBook(5, 8, 12, { imageType: "png" }); // lossless PNG
-book = createBook(5, 8, 12, { jpegQuality: 0.98 }); // JPEG quality 0–1 (default 0.92)
-book = createBook(5, 8, 12, { progressBar: true }); // full-screen overlay instead of corner counter
-```
-
 ### book.setDPI( dpi )
 
 Set print resolution. The canvas pixel density and height are adjusted automatically so that both axes hit exactly `dpi` pixels per inch. Call in `setup()` before `addPage()`. Prefer this over calling `pixelDensity()` directly.
@@ -87,9 +73,9 @@ book.setDPI(150); // lighter file size
 
 **Note:** if `setBleed()` was already called, `setDPI()` rebuilds the bleed graphics buffer at the correct density automatically.
 
-## pages
+---
 
-_→ [page numbers](/examples/02-page-numbers) · [color progression](/examples/03-color-progression) · [slow burn](/examples/06-slow-burn)_
+## Pages
 
 ### book.addPage()
 
@@ -151,12 +137,9 @@ function draw() {
 }
 ```
 
-**Note (LTR):** odd indices = left, even indices = right.
-**Note (RTL):** odd indices = right, even indices = left.
+---
 
-## layout
-
-_→ [spread layout](/examples/10-spread-layout) — setSpread(), isLeftPage(), isRightPage(), setSaddleStitch()_
+## Layout
 
 ### book.setDirection( "ltr" | "rtl" )
 
@@ -199,9 +182,9 @@ book.setPageThickness(0.3); // thick newsprint
 | ---- | ---------------------------------- |
 |      | `"mm"` (default) · `"in"` · `"pt"` |
 
-## bleed & print
+---
 
-_→ [bleed & print marks](/examples/05-bleed) — setBleed(), book.bleed.draw(), bleedWidth, bleedHeight_
+## Bleed & Print
 
 ### book.setBleed( amount, [unit] )
 
@@ -255,9 +238,9 @@ circle(book.bleedWidth / 2, book.bleedHeight / 2, book.bleedWidth);
 
 Show or hide trim/bleed marks. `setBleed()` enables them automatically.
 
-## spine
+---
 
-_→ [spine & cover](/examples/11-spine-cover) — book.spine.draw(), saveCover(), setPageThickness(), set3DBackground()_
+## Spine
 
 ### book.spine
 
@@ -290,9 +273,15 @@ book.saveCover(); // auto filename
 book.saveCover("my-book-cover.pdf");
 ```
 
-## typography
+<div class="note">
+  For print shops, I usually export both files: the interior PDF and the cover
+  PDF. Ask for their exact bleed + spine requirements first, then set bleed and
+  page thickness to match before final export.
+</div>
 
-_→ [typography](/examples/04-typography) · [text flow](/examples/08-text-flow)_
+---
+
+## Typography
 
 ### book.letterSpacing( px )
 
@@ -339,9 +328,9 @@ function draw() {
 }
 ```
 
-## export
+---
 
-_→ [text flow](/examples/08-text-flow) — book.finish(), textBox() overflow reflow_
+## Export
 
 ### book.save([filename])
 
@@ -386,9 +375,9 @@ book.exportFrames("jpeg"); // JPEG, uses the book's jpegQuality setting
 
 Files are named `<basename>-0001.png`, `-0002.png`, … downloaded one by one with a small stagger to prevent browser throttling.
 
-## viewer
+---
 
-_→ [spine & cover](/examples/11-spine-cover) — set3DBackground(), set3DEdgeColor()_
+## Viewer
 
 ### book.set3DBackground( color )
 
@@ -416,7 +405,9 @@ Show or hide the background / edge color pickers in the 3D viewer GUI. Pass `fal
 book.showColorPickers(false); // hide the color controls
 ```
 
-## tips
+---
+
+## Tips
 
 - **Canvas size:** match your page ratio. For a 5×8 in page, use `createCanvas(500, 800)`. p5.book creates the canvas automatically with the correct aspect ratio.
 - **Resolution:** call `book.setDPI(300)` in `setup()` for crisp print output. This is preferred over calling `pixelDensity()` directly because it also resizes the canvas height so both axes are exactly on-spec.

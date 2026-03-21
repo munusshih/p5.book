@@ -41,27 +41,51 @@ const { frontmatter } = Astro.props;
         .replace(/[^\w\s-]/g, "")
         .replace(/\s+/g, "-");
 
-    headings.forEach((heading, index) => {
-      const kbd = heading.querySelector("kbd");
-      if (kbd) {
-        const letter = kbd.textContent;
-        const fullText = heading.textContent;
-        const titleMatch = fullText.match(/[A-Z]\s*—\s*(.+)/);
-        const title = titleMatch ? titleMatch[1].trim() : fullText;
-        if (!heading.id) heading.id = `section-${slugify(fullText) || index + 1}`;
+    const getHeadingNavMeta = (heading, index) => {
+      const fullText = (heading.textContent || "").trim();
+      const kbdText = heading.querySelector("kbd")?.textContent?.trim();
+      const fallbackTitle = fullText || `Section ${index + 1}`;
 
-        const link = document.createElement("a");
-        link.href = `#${heading.id}`;
-        link.dataset.sectionIndex = String(index);
-        link.innerHTML = `<span class="nav-letter">${letter}</span><span class="nav-label">${title}</span>`;
-        link.addEventListener("click", (e) => {
-          e.preventDefault();
-          const nextIndex = Number.parseInt(link.dataset.sectionIndex || "0", 10);
-          goToSection(nextIndex);
-        });
-        nav.appendChild(link);
-        navLinks.push(link);
+      if (kbdText) {
+        const titleMatch = fullText.match(/[A-Z0-9]\s*—\s*(.+)/);
+        return {
+          badge: kbdText,
+          title: titleMatch ? titleMatch[1].trim() : fallbackTitle,
+          idBase: fullText,
+        };
       }
+
+      return {
+        badge: String(index + 1),
+        title: fallbackTitle,
+        idBase: fallbackTitle,
+      };
+    };
+
+    headings.forEach((heading, index) => {
+      const meta = getHeadingNavMeta(heading, index);
+      if (!heading.id) heading.id = `section-${slugify(meta.idBase) || index + 1}`;
+
+      const link = document.createElement("a");
+      link.href = `#${heading.id}`;
+      link.dataset.sectionIndex = String(index);
+
+      const badge = document.createElement("span");
+      badge.className = "nav-letter";
+      badge.textContent = meta.badge;
+
+      const label = document.createElement("span");
+      label.className = "nav-label";
+      label.textContent = meta.title;
+
+      link.append(badge, label);
+      link.addEventListener("click", (e) => {
+        e.preventDefault();
+        const nextIndex = Number.parseInt(link.dataset.sectionIndex || "0", 10);
+        goToSection(nextIndex);
+      });
+      nav.appendChild(link);
+      navLinks.push(link);
     });
 
     let activeSectionIndex = 0;
