@@ -173,7 +173,7 @@ Add these inside `<head>`:
 ```html
 <script src="https://cdn.jsdelivr.net/npm/p5@2/lib/p5.min.js"></script>
 <script src="https://unpkg.com/jspdf@latest/dist/jspdf.umd.min.js"></script>
-<script src="https://cdn.jsdelivr.net/gh/munusshih/p5.book@main/p5.book.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/munusshih/p5.book@main/p5.book.js?v=2"></script>
 ```
 
 Then go back to `sketch.js`. We will code in `sketch.js` as usual, but now we have access to the p5.book API to create books and export PDFs.
@@ -793,14 +793,14 @@ Here are some tips for asking an agent for help with p5.book:
 
 - Say **I'm using p5.js 2.0 + a custom library called p5.book** at the beginning of your question, so the agent knows the context.
 - Provide enough context about the library and your code, for instance include these links or the content from these links:
-  - [p5.book library source](https://cdn.jsdelivr.net/gh/munusshih/p5.book@main/p5.book.js)
+  - [p5.book library source](https://cdn.jsdelivr.net/gh/munusshih/p5.book@main/p5.book.js?v=2)
   - [p5.book README](https://github.com/munusshih/p5.book/blob/main/README.md)
 - Here is a template you can use to structure your question to the agent. Fill in the details about your issue, and the agent will do its best to help you troubleshoot and find a solution.
 
 Prompt template:
 
 ```
-I'm using p5.js 2.0 + a custom library called p5.book to create a book with code. Here's the link to the library source: https://cdn.jsdelivr.net/gh/munusshih/p5.book@main/p5.book.js and the README: https://github.com/munusshih/p5.book/blob/main/README.md
+I'm using p5.js 2.0 + a custom library called p5.book to create a book with code. Here's the link to the library source: https://cdn.jsdelivr.net/gh/munusshih/p5.book@main/p5.book.js?v=2 and the README: https://github.com/munusshih/p5.book/blob/main/README.md
 
 I'm trying to [briefly describe what you're trying to do].
 

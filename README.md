@@ -21,7 +21,7 @@ Add these three scripts to your HTML, **in order**:
 <script src="https://unpkg.com/jspdf@latest/dist/jspdf.umd.min.js"></script>
 
 <!-- 3. p5.book -->
-<script src="https://cdn.jsdelivr.net/gh/munusshih/p5.book@main/p5.book.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/munusshih/p5.book@main/p5.book.js?v=2"></script>
 ```
 
 ## Quick Start
@@ -491,7 +491,7 @@ book.spine.draw((g) => {
   <head>
     <script src="https://cdn.jsdelivr.net/npm/p5@2/lib/p5.min.js"></script>
     <script src="https://unpkg.com/jspdf@latest/dist/jspdf.umd.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/munusshih/p5.book@main/p5.book.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/munusshih/p5.book@main/p5.book.js?v=2"></script>
   </head>
   <body>
     <script>
