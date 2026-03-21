@@ -3,7 +3,11 @@
 A simple PDF book generator for [p5.js 2.0](https://p5js.org).  
 Turn your generative sketches into real, multi-page PDFs — no build tools, no npm, just `<script>` tags.
 
----
+## Start Here
+
+- [Step-by-step workshop guide](https://p5-book.vercel.app/workshop/)
+- [Docs index](https://p5-book.vercel.app/)
+- [Starter sketch (p5 editor)](https://editor.p5js.org/munusshih/sketches/u8Ox1CmnM)
 
 ## Setup
 
@@ -20,9 +24,9 @@ Add these three scripts to your HTML, **in order**:
 <script src="https://cdn.jsdelivr.net/gh/munusshih/p5.book@main/p5.book.js"></script>
 ```
 
----
-
 ## Quick Start
+
+If you want to start fast, open the starter sketch above and remix it.
 
 ```js
 let book;
@@ -57,8 +61,6 @@ function draw() {
 
 That's it! Run your sketch — it will loop through all pages and download **book.pdf** when done.
 
----
-
 ## How It Works
 
 Each call to `draw()` produces one page.  
@@ -69,8 +71,6 @@ After the last page, the PDF is saved and the sketch stops automatically.
 setup()  →  createBook(w, h, pages)
 draw()   →  [draw your art]  →  book.addPage()  →  repeat...  →  PDF saved!
 ```
-
----
 
 ## API
 
@@ -111,8 +111,6 @@ book = createBook(5, 8, 20, { progressBar: true }); // full-screen overlay inste
 | `"px"` | Pixels           |
 | `"pt"` | Points           |
 
----
-
 ### `book.addPage()`
 
 Capture the current canvas as the next page. Call this **once at the end of `draw()`**.
@@ -124,13 +122,9 @@ function draw() {
 }
 ```
 
----
-
 ### `book.page`
 
 Current page index, **0-based**. The first page is `0`.
-
----
 
 ### `book.pageNumber`
 
@@ -140,13 +134,9 @@ Current page number, **1-based**. Easier to display to readers.
 text("Page " + book.pageNumber, 20, 20); // shows "Page 1", "Page 2", ...
 ```
 
----
-
 ### `book.totalPages`
 
 The total number of pages you passed to `createBook()`.
-
----
 
 ### `book.progress`
 
@@ -159,8 +149,6 @@ background(lerp(0, 255, book.progress));
 // shape grows across the book
 circle(width / 2, height / 2, book.progress * width);
 ```
-
----
 
 ### `book.isFirstPage()` / `book.isLastPage()`
 
@@ -175,8 +163,6 @@ if (book.isFirstPage()) {
   text("Page " + book.pageNumber, 50, 50);
 }
 ```
-
----
 
 ### `book.isLeftPage()` / `book.isRightPage()`
 
@@ -209,8 +195,6 @@ function draw() {
 - RTL: odd indices (1, 3, 5...) = **right**, even indices (2, 4, 6...) = **left**
 - Last page (back cover) — solo, neither left nor right
 
----
-
 ### `book.setDPI(dpi)`
 
 Set the canvas DPI for high-quality print output. Call in `setup()`, **before** `addPage()`.
@@ -220,8 +204,6 @@ book.setDPI(300); // standard print resolution
 ```
 
 This automatically adjusts `pixelDensity()` based on your trim width, so you don't need to call `pixelDensity()` yourself.
-
----
 
 ### `book.setBleed(amount, [unit])`
 
@@ -238,8 +220,6 @@ The PDF page expands to include bleed on all four sides plus a mark margin. Two 
 | --------------- | ------------ | ---------------------------------- |
 | **Trim marks**  | solid lines  | Where the paper gets **cut**       |
 | **Bleed marks** | dashed lines | Where artwork should **extend to** |
-
----
 
 ### `book.bleed`
 
@@ -265,8 +245,6 @@ function draw() {
 - If `setBleed()` was not called, `book.bleed` is a no-op — all calls are silently ignored
 - If `setBleed()` is called but you never draw into `book.bleed`, the bleed area stays blank (print marks are still drawn)
 
----
-
 ### `book.setPrintMarks(enabled)`
 
 Show or hide all print marks (trim + bleed). `setBleed()` enables them automatically; call this to turn them off while keeping the bleed.
@@ -275,8 +253,6 @@ Show or hide all print marks (trim + bleed). `setBleed()` enables them automatic
 book.setBleed(0.125);
 book.setPrintMarks(false); // bleed is still there, marks are not drawn
 ```
-
----
 
 ### `book.setSpread(enabled)`
 
@@ -297,8 +273,6 @@ When enabled:
 - Pages 2–3, 4–5, etc. are displayed as spreads
 - Last page (back cover) is displayed alone
 - PDF export automatically creates spread pages without inner bleed at the gutter
-
----
 
 ### `book.setDirection(dir)`
 
@@ -331,8 +305,6 @@ When enabled, the viewer shows a dropdown to choose between:
 - **PDF** — normal page order
 - **Saddle Stitch** — printer spread imposition for saddle-stitch binding
 
----
-
 ### `book.bleedWidth` / `book.bleedHeight`
 
 Trim size + bleed on both sides, in the book's unit. Read-only. These are provided for reference — you don't need to use them to size your canvas anymore.
@@ -343,8 +315,6 @@ console.log(book.bleedWidth); // 5.25
 console.log(book.bleedHeight); // 8.25
 ```
 
----
-
 ### `book.save([filename])`
 
 Manually trigger the PDF download. You usually don't need this — it's called automatically after the last `addPage()`.
@@ -354,8 +324,6 @@ book.save("my-zine.pdf");
 ```
 
 When `setSpread(true)` is enabled, this exports the spread-format PDF automatically.
-
----
 
 ### `book.saveSaddleStitch([filename])`
 
@@ -372,8 +340,6 @@ Pages are reordered into printer spreads for saddle-stitch binding:
 
 **Note:** This is called automatically when the user selects "Saddle Stitch" in the viewer dropdown (if `setSaddleStitch(true)` was enabled).
 
----
-
 ### `book.exportFrames([format])`
 
 Download every captured page as an individual image file. Useful for importing pages into InDesign, Affinity Publisher, Figma, or video compositing tools.
@@ -385,8 +351,6 @@ book.exportFrames("jpeg"); // JPEG, using the book's jpegQuality setting
 ```
 
 Files are named `<basename>-0001.png`, `-0002.png`, … and downloaded one by one with a small stagger to avoid browser throttling. Also accessible via **Frames (PNG)** / **Frames (JPG)** in the viewer's download dropdown.
-
----
 
 ### `book.finish([filename])`
 
@@ -407,8 +371,6 @@ function draw() {
 ```
 
 When a total page count is passed to `createBook()`, the viewer opens automatically after the last page — you don't need `finish()`.
-
----
 
 ### `book.textBox(str, x, y, w, h)`
 
@@ -436,8 +398,6 @@ Respects current `textSize()`, `textLeading()`, `textAlign()`, `book.letterSpaci
 
 Chinese, Japanese, and Korean text is automatically detected and wrapped character-by-character (no space needed between characters).
 
----
-
 ### `book.columnNum(n, [gutter])`
 
 Set the number of columns for `textBox()`. Returns the current column count if called with no arguments.
@@ -451,8 +411,6 @@ let cols = book.columnNum(); // get current count
 
 Persists like `textSize()` — affects all subsequent `textBox()` calls until changed.
 
----
-
 ### `book.letterSpacing(px)`
 
 Set CSS letter-spacing. Persists like `textSize()`. Negative values tighten, positive loosen. Applied to both the main canvas and the bleed layer.
@@ -462,8 +420,6 @@ book.letterSpacing(-2); // tighten — good for large headlines
 book.letterSpacing(4); // loosen — spaced-out labels
 book.letterSpacing(0); // reset to normal
 ```
-
----
 
 ### `book.bleed.draw(fn)`
 
@@ -481,8 +437,6 @@ book.bleed.draw((g) => {
 ```
 
 If `setBleed()` was not called, `bleed.draw()` is a no-op — the function is never called.
-
----
 
 ### `book.spine`
 
@@ -528,8 +482,6 @@ book.spine.draw((g) => {
 - The spine canvas is 200 px wide × canvas height tall. Scale your drawings accordingly.
 - If you never draw on `book.spine`, a default spine is auto-generated (dark gradient + filename).
 - Spine thickness in the 3D viewer is automatically calculated from `totalPages` (≈ 0.1 mm per leaf).
-
----
 
 ## Full Example
 
@@ -585,8 +537,6 @@ book.spine.draw((g) => {
   </body>
 </html>
 ```
-
----
 
 ## Tips
 
