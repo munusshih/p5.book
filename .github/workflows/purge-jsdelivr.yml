@@ -1,0 +1,27 @@
+name: Purge jsDelivr Cache
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - p5.book.js
+  workflow_dispatch:
+
+jobs:
+  purge:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Purge jsDelivr for p5.book.js
+        env:
+          PURGE_URL: https://purge.jsdelivr.net/gh/${{ github.repository }}@main/p5.book.js
+        run: |
+          set -euo pipefail
+
+          response="$(curl -fsSL "$PURGE_URL")"
+          echo "$response"
+
+          if ! echo "$response" | grep -q '"status":[[:space:]]*"finished"'; then
+            echo "jsDelivr purge did not finish successfully."
+            exit 1
+          fi
