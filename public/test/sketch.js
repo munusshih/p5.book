@@ -3,7 +3,7 @@ let font;
 
 async function setup() {
   // createBook(widthInches, heightInches, totalPages)
-  book = createBook(4, 6, 104, "inch");
+  book = createBook(10, 6, 104, "inch");
   font = await loadFont(
     "https://fonts.googleapis.com/css2?family=Kode+Mono:wght@400..700&display=swap",
   );

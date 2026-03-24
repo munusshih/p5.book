@@ -3,7 +3,7 @@ let font1;
 let font2;
 
 async function setup() {
-  book = createBook(4, 8, 26, "in");
+  book = createBook("letter", 26);
   book.setSpread(true);
   book.setDPI(300);
   book.setPageThickness(3);

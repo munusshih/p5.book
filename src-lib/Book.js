@@ -637,22 +637,21 @@ export class Book {
     const soloW = this.bleedWidth; // trimW + 2b
     const soloH = this.bleedHeight; // trimH + 2b
     const spreadW = 2 * this._trimW + 2 * b; // no inner bleed at gutter
+    const orientationFor = (w, h) => (w > h ? "l" : "p");
 
     const firstIsSolo = pairs[0][1] === null;
     const firstW = firstIsSolo ? soloW : spreadW;
     const pdf = new jsPDF({
       unit: this._unit,
       format: [firstW, soloH],
-      orientation: firstIsSolo ? "p" : "l",
+      orientation: orientationFor(firstW, soloH),
     });
 
     pairs.forEach(([li, ri], i) => {
       const isSolo = ri === null;
+      const pageW = isSolo ? soloW : spreadW;
       if (i > 0)
-        pdf.addPage(
-          isSolo ? [soloW, soloH] : [spreadW, soloH],
-          isSolo ? "p" : "l",
-        );
+        pdf.addPage([pageW, soloH], orientationFor(pageW, soloH));
 
       const _fmt = this._imageType === "png" ? "image/png" : "image/jpeg";
       const _pdfFmt = this._imageType === "png" ? "PNG" : "JPEG";
