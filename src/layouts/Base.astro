@@ -7,10 +7,20 @@ interface Props {
   image?: string;
 }
 
-const { title, description = "Create PDF books with p5.js using a simple capture-and-export workflow.", image } = Astro.props;
-const siteUrl = Astro.site ? Astro.site.toString().replace(/\/$/, "") : "https://p5-book.vercel.app";
+const {
+  title,
+  description = "Create PDF books with p5.js using a simple capture-and-export workflow.",
+  image,
+} = Astro.props;
+const siteUrl = Astro.site
+  ? Astro.site.toString().replace(/\/$/, "")
+  : "https://p5-book.vercel.app";
 const pageUrl = new URL(Astro.url.pathname, siteUrl).toString();
-const ogImage = new URL(image || "/og-image.svg", siteUrl).toString();
+const ogImage = new URL(
+  image || "/assets/book-cover-poster.png",
+  siteUrl,
+).toString();
+const ogImageAlt = "p5.book generative coding PDF book preview";
 ---
 
 <!doctype html>
@@ -31,10 +41,13 @@ const ogImage = new URL(image || "/og-image.svg", siteUrl).toString();
     <meta property="og:description" content={description} />
     <meta property="og:url" content={pageUrl} />
     <meta property="og:image" content={ogImage} />
+    <meta property="og:image:alt" content={ogImageAlt} />
+    <meta property="og:image:type" content="image/png" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImage} />
+    <meta name="twitter:image:alt" content={ogImageAlt} />
     <link rel="canonical" href={pageUrl} />
     <slot name="head" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
