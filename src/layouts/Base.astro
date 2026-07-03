@@ -3,9 +3,14 @@ import "highlight.js/styles/github.css";
 
 interface Props {
   title: string;
+  description?: string;
+  image?: string;
 }
 
-const { title } = Astro.props;
+const { title, description = "Create PDF books with p5.js using a simple capture-and-export workflow.", image } = Astro.props;
+const siteUrl = Astro.site ? Astro.site.toString().replace(/\/$/, "") : "https://p5-book.vercel.app";
+const pageUrl = new URL(Astro.url.pathname, siteUrl).toString();
+const ogImage = new URL(image || "/og-image.svg", siteUrl).toString();
 ---
 
 <!doctype html>
@@ -19,6 +24,19 @@ const { title } = Astro.props;
     />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta property="og:site_name" content="p5.book" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={pageUrl} />
+    <meta property="og:image" content={ogImage} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+    <link rel="canonical" href={pageUrl} />
+    <slot name="head" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link

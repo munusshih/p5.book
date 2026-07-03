@@ -1,6 +1,6 @@
 {
     "name": "p5.book",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "description": "PDF book generator addon for p5.js 2.x",
     "author": "Munus Shih",
     "license": "MIT",
