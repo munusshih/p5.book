@@ -2,6 +2,8 @@ name: Release to npm
 
 on:
   push:
+    branches:
+      - "main"
     tags:
       - "v*"
   workflow_dispatch:
@@ -22,11 +24,40 @@ jobs:
           node-version: 20
           registry-url: https://registry.npmjs.org
 
+      - name: Check if publish is needed
+        id: version_check
+        run: |
+          set -euo pipefail
+
+          PACKAGE_NAME=$(node -p "JSON.parse(require('fs').readFileSync('package.json', 'utf8')).name")
+          LOCAL_VERSION=$(node -p "JSON.parse(require('fs').readFileSync('package.json', 'utf8')).version")
+
+          if npm view "$PACKAGE_NAME" version >/tmp/npm_version.txt 2>/dev/null; then
+            REMOTE_VERSION=$(cat /tmp/npm_version.txt)
+          else
+            REMOTE_VERSION="0.0.0"
+          fi
+
+          echo "package_name=$PACKAGE_NAME" >> "$GITHUB_OUTPUT"
+          echo "local_version=$LOCAL_VERSION" >> "$GITHUB_OUTPUT"
+          echo "remote_version=$REMOTE_VERSION" >> "$GITHUB_OUTPUT"
+
+          if [ "$LOCAL_VERSION" = "$REMOTE_VERSION" ]; then
+            echo "should_publish=false" >> "$GITHUB_OUTPUT"
+            echo "Version $LOCAL_VERSION is already published. Skipping npm publish."
+          else
+            echo "should_publish=true" >> "$GITHUB_OUTPUT"
+            echo "Publishing $PACKAGE_NAME@$LOCAL_VERSION (npm has $REMOTE_VERSION)."
+          fi
+
       - name: Install dependencies
+        if: steps.version_check.outputs.should_publish == 'true'
         run: npm ci
 
       - name: Build package
+        if: steps.version_check.outputs.should_publish == 'true'
         run: npm run build
 
       - name: Publish to npm
+        if: steps.version_check.outputs.should_publish == 'true'
         run: npm publish --access public --provenance
