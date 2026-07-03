@@ -14,15 +14,20 @@
     <!-- jsPDF (required by p5.book) -->
     <script src="https://unpkg.com/jspdf@latest/dist/jspdf.umd.min.js"></script>
 
-    <!-- p5.book -->
-    <script src="../p5.book.js"></script>
+        <!-- p5.book (local build copied by npm run test:public:prep) -->
+        <script>
+            const __v = Date.now();
+            document.write(`<script src="./p5.book.local.js?v=${__v}"><\/script>`);
+        </script>
 
     <link rel="stylesheet" type="text/css" href="style.css" />
 </head>
 
 <body>
     <main></main>
-    <script src="work.js"></script>
+        <script>
+            document.write(`<script src="work.js?v=${Date.now()}"><\/script>`);
+        </script>
 </body>
 
 </html>

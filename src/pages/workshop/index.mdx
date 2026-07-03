@@ -169,12 +169,14 @@ However, we are not just making any sketch, we are making a book! So we need to 
 
 Open your sketch in the p5.js editor. Click the **▼** arrow next to your sketch name, then click `index.html`. Or open [this starter file](https://editor.p5js.org/munusshih/sketches/u8Ox1CmnM) and choose `File > Duplicate`.
 
+Prefer OpenProcessing? Use this [starter template](https://openprocessing.org/@u261940/2975856).
+
 Add these inside `<head>`:
 
 ```html
 <script src="https://cdn.jsdelivr.net/npm/p5@2/lib/p5.min.js"></script>
 <script src="https://unpkg.com/jspdf@latest/dist/jspdf.umd.min.js"></script>
-<script src="https://cdn.jsdelivr.net/gh/munusshih/p5.book@main/p5.book.js?v=2"></script>
+<script src="https://unpkg.com/p5.book@latest/p5.book.js"></script>
 ```
 
 Then go back to `sketch.js`. We will code in `sketch.js` as usual, but now we have access to the p5.book API to create books and export PDFs.
@@ -464,14 +466,27 @@ A **spread** is two pages that face each other in a book. When you open a book, 
 To set your book to spreads, add this line in `setup()`:
 
 ```js
-book.setSpread(true);
+book.setSpread(true, true);
+```
+
+The two booleans mean:
+
+- first `true` = spread layout in the **viewer**
+- second `true` = spread layout in **PDF export/print**
+
+Common combinations:
+
+```js
+book.setSpread(true, true); // spreads in viewer and export
+book.setSpread(true, false); // spreads in viewer, single-page export (common print workflow)
+book.setSpread(false, false); // no spreads
 ```
 
 When you do this, the canvas doubles in width to fit both the left and right pages. The left page is drawn on the left half of the canvas, and the right page is drawn on the right half. When you export the PDF, it will still be two separate pages, but they will be designed as a spread.
 
 <div class="step" data-step="1">
-  Try it out! Add `book.setSpread(true)` in `setup()`, and see how the canvas
-  changes.
+  Try it out! Add `book.setSpread(true, true)` in `setup()`, and see how the
+  canvas changes.
 </div>
 
 <div class="step" data-step="2">
@@ -504,11 +519,11 @@ book.setDirection("rtl"); // right-to-left
 </div>
 
 <div class="try">
-  - What happens if you set `book.setSpread(true)` but don't draw anything that
-  spans across the pages? Try it out and see how the left and right pages are
-  still separate, but the canvas is wider. - Try making a spread where the left
-  page has a shape that continues onto the right page. For example, a big circle
-  that starts on the left and finishes on the right.
+  - What happens if you set `book.setSpread(true, true)` but don't draw anything
+  that spans across the pages? Try it out and see how the left and right pages
+  are still separate, but the canvas is wider. - Try making a spread where the
+  left page has a shape that continues onto the right page. For example, a big
+  circle that starts on the left and finishes on the right.
 </div>
 ---
 
@@ -593,9 +608,27 @@ Here we load an image and draw it on the bleed layer, making it extend past the 
 
 </div>
 
+<div class="step" data-step="4">
+  `setBleed()` turns crop marks on automatically, but you can toggle them.
+
+```js
+function setup() {
+  book = createBook(4, 6, 8);
+  book.setBleed(0.125);
+
+  book.setCropMarks(false); // hide crop marks
+  book.setCropMark(true); // singular alias, show them again
+  book.setTrimMark(false); // alternate alias, hide them again
+  // book.setCropMarks(true); // show them again
+}
+```
+
+</div>
+
 <div class="try">
   - Try changing the bleed size to see how it affects the canvas and bleed area.
-  - Try drawing different shapes or images on the bleed layer to create
+  - Try turning crop marks off and on with `book.setCropMarks(false/true)`. -
+  Try drawing different shapes or images on the bleed layer to create
   interesting designs that go to the edge of the page.
 </div>
 
@@ -737,7 +770,53 @@ In fact [here's a whole book of generative patterns I made with p5.js.](https://
 
 ---
 
-## <kbd>J</kbd> — make your book
+## <kbd>J</kbd> — custom spine
+
+Beyond page content, you can also design the spine itself. p5.book exposes `book.spine`, a drawing surface that appears in the 3D preview and the cover PDF.
+
+Use `setPageThickness()` when you want the spine width to be estimated from page count and paper thickness. Use `setSpineThickness()` when you already know the exact finished spine width from your printer specs.
+
+```js
+let book;
+
+function setup() {
+  book = createBook(5, 8, 120);
+  book.setSpineThickness(12, "mm"); // explicit value takes priority
+  book.setDPI(300);
+}
+
+function draw() {
+  background(245);
+
+  if (book.isFirstPage()) {
+    // front cover content
+  } else if (book.isLastPage()) {
+    // back cover content
+  }
+
+  // draw custom spine artwork
+  book.spine.draw((g) => {
+    g.clear();
+    g.background("#111");
+    g.fill("#f5f5f5");
+    g.textAlign(CENTER, CENTER);
+    g.textSize(18);
+    g.push();
+    g.translate(g.width / 2, g.height / 2);
+    g.rotate(HALF_PI); // bottom -> top reading direction
+    g.text("MY BOOK TITLE", 0, 0);
+    g.pop();
+  });
+
+  book.addPage();
+}
+```
+
+Quick tips: If you use both methods, `setSpineThickness()` takes precedence over `setPageThickness()`.
+
+---
+
+## <kbd>K</kbd> — make your book
 
 Now it's your turn to make a book! Use everything you've learned so far to create a book that has a cover, back cover, and at least one intentional visual rule that changes across the pages. It can be as simple or as complex as you like — the important thing is to experiment and have fun with it.
 
@@ -748,7 +827,69 @@ If you're feeling stuck, here are some prompts to get you started:
 - Make a book that creates a generative pattern that evolves across pages.
 - Make a book that has a surprise on the last page (like a hidden message or image).
 
-## <kbd>K</kbd> — cheat sheet
+---
+
+## <kbd>L</kbd> — ready for print
+
+This part is really about exporting your files cleanly for print.
+
+### Export flow
+
+1. Use `book.setDPI(300)` in `setup()` for print-quality output.
+2. Add bleed with `book.setBleed(0.125)` (US) or `book.setBleed(3, "mm")` (EU) if your printer needs it.
+3. Keep `book.addPage()` as the last line in `draw()` so every page is captured correctly.
+4. For most workflows: `book.setSpread(true, false)` (or `book.setViewSpread(true)` + `book.setExportSpread(false)`).
+5. If covers should be delivered separately, call `book.setSkipCoversInMainPDF(true)` in `setup()`.
+6. Export from the viewer and review at 100% zoom before sending to print.
+
+For booklet printing/folding, enable Saddle Stitch before export:
+
+```js
+book.setSaddleStitch(true);
+```
+
+Then choose **Download -> Saddle Stitch** in the viewer.
+
+You can also choose from:
+
+- **PDF (all pages)**
+- **PDF (no cover)**
+
+For perfect binding (separate cover stock), use:
+
+```js
+book.setSeparateCoverStock(true);
+```
+
+This makes `Cover` export include a second side with `first interior | inner spine | last interior`, and makes the regular PDF export skip cover/back and also first/last interior pages.
+
+```js
+book.innerSpine = "#ffffff"; // blank/paper-like center panel
+```
+
+### Color note (important)
+
+p5.book currently exports RGB PDFs. It does **not** support CMYK export yet.
+
+That means:
+
+- Bright neon RGB colors may print duller than on screen.
+- Deep blacks may shift unless your printer applies proper conversion.
+- You should ask your print shop for their preferred RGB-to-CMYK workflow/profile.
+
+If your printer requires strict CMYK delivery, use p5.book for layout/content generation, then convert the exported PDF in a prepress tool before final print submission.
+
+### Print preflight checklist
+
+- Page count and order are correct (especially with spreads).
+- Trim size matches your intended final book size.
+- Bleed is present on all edges that need it.
+- No critical text is too close to trim or spine.
+- Cover, spine, and back cover align with your printer template.
+- Fonts and thin lines remain readable at real print size.
+- If using saddle stitch, page count is divisible by 4 and imposition order looks correct.
+
+## <kbd>M</kbd> — cheat sheet
 
 Here is a quick cheat sheet of the most important functions and variables in p5.book to help you remember how to use it:
 
@@ -759,7 +900,7 @@ Here is a quick cheat sheet of the most important functions and variables in p5.
 | `createBook("A5", 8)`                  | standard paper size (A3 A4 A5 A6 letter legal tabloid) |
 | `book.setDPI(300)`                     | high-resolution export — for printing                  |
 | `book.setBleed(0.125)`                 | 1/8 inch bleed — or `(3, "mm")` for European standard  |
-| `book.setSpread(true)`                 | pair interior pages as spreads                         |
+| `book.setSpread(true, true)`           | pair interior pages as spreads for viewer and export   |
 | **usually in draw() — captured pages** |                                                        |
 | `book.pageNumber`                      | current page — starts at 1                             |
 | `book.page`                            | same, starts at 0 — use as an array index              |
@@ -770,7 +911,7 @@ Here is a quick cheat sheet of the most important functions and variables in p5.
 | `book.bleed.background(c)`             | full-bleed background — extends past trim              |
 | `book.addPage()`                       | save this page — always put this **last**              |
 
-## <kbd>L</kbd> — common bugs
+## <kbd>N</kbd> — common bugs
 
 Quick debug table for workshop problems:
 
@@ -778,7 +919,7 @@ Quick debug table for workshop problems:
 | ----------------------------------------------- | --------------------------------------------- | ----------------------------------------------------------------- |
 | only one page exports                           | `book.addPage()` was put in `setup()`         | move it to the end of `draw()`                                    |
 | blank PDF pages                                 | capture happens before drawing                | draw first, call `book.addPage()` last                            |
-| spread helpers fail (`isLeftPage`)              | spread mode not enabled                       | call `book.setSpread(true)` in `setup()`                          |
+| spread helpers fail (`isLeftPage`)              | spread mode not enabled                       | call `book.setSpread(true, true)` in `setup()`                    |
 | bleed is not visible                            | bleed layer not used                          | draw full backgrounds on `book.bleed`, then `clear()` main canvas |
 | cover/back look same as inside                  | no first/last page conditions                 | use `book.isFirstPage()` and `book.isLastPage()`                  |
 | wrong page numbering logic                      | mixed 0-based and 1-based page values         | use `book.page` for arrays, `book.pageNumber` for display         |
@@ -786,7 +927,7 @@ Quick debug table for workshop problems:
 | print preview blocked (`ERR_BLOCKED_BY_CLIENT`) | browser shields/extensions block blob preview | p5.book now opens a non-blob preview tab; use `Ctrl/Cmd+P` there  |
 | Safari opens blank print preview                | browser PDF preview race/compat issue         | use the non-blob preview tab, or download and print the PDF       |
 
-## <kbd>M</kbd> — agent help
+## <kbd>O</kbd> — agent help
 
 If you run into any issues or have questions about how to use p5.book, you can ask an agent for help. Because we're using the latest version of p5.js and a custom library, it's possible that the agent might not have all the information it needs to answer your question. To get the best help, make sure to provide as much context and detail as possible about your issue.
 
@@ -794,14 +935,14 @@ Here are some tips for asking an agent for help with p5.book:
 
 - Say **I'm using p5.js 2.0 + a custom library called p5.book** at the beginning of your question, so the agent knows the context.
 - Provide enough context about the library and your code, for instance include these links or the content from these links:
-  - [p5.book library source](https://cdn.jsdelivr.net/gh/munusshih/p5.book@main/p5.book.js?v=2)
+  - [p5.book library source](https://unpkg.com/p5.book@latest/p5.book.js)
   - [p5.book README](https://github.com/munusshih/p5.book/blob/main/README.md)
 - Here is a template you can use to structure your question to the agent. Fill in the details about your issue, and the agent will do its best to help you troubleshoot and find a solution.
 
 Prompt template:
 
 ```
-I'm using p5.js 2.0 + a custom library called p5.book to create a book with code. Here's the link to the library source: https://cdn.jsdelivr.net/gh/munusshih/p5.book@main/p5.book.js?v=2 and the README: https://github.com/munusshih/p5.book/blob/main/README.md
+I'm using p5.js 2.0 + a custom library called p5.book to create a book with code. Here's the link to the library source: https://unpkg.com/p5.book@latest/p5.book.js and the README: https://github.com/munusshih/p5.book/blob/main/README.md
 
 I'm trying to [briefly describe what you're trying to do].
 
@@ -817,7 +958,7 @@ Please return:
 3) an explanation of the fix
 ```
 
-## <kbd>N</kbd> — next steps
+## <kbd>P</kbd> — next steps
 
 Now that you have the basics down, you can start experimenting and creating your own unique books with p5.js and p5.book.
 
@@ -830,21 +971,20 @@ If you want to share your book or see what others have made, you can post it on 
 
 </div>
 
-## <kbd>O</kbd> — others (TBD)
+## <kbd>Q</kbd> — others (TBD)
 
 Because this workshop focuses on fundamentals, there are many p5.book features we are not covering yet. Here are future topics for undocumented or lightly documented API features:
 
-| letter | planned focus                                             | status |
-| ------ | --------------------------------------------------------- | ------ |
-| O      | different default viewer mode with `book.setViewerMode()` | TBD    |
-| P      | unknown page count workflow with `book.finish()`          | TBD    |
-| Q      | text overflow handling with `book.textBox()` return       | TBD    |
-| R      | `clear()` and redraw logic across pages                   | TBD    |
-| S      | spine basics: `book.spine` + `setPageThickness()`         | TBD    |
-| T      | `saveSaddleStitch()` export and /4 page constraints       | TBD    |
-| U      | advanced bleed tools: `bleed.draw()`, width, height       | TBD    |
-| V      | print mark control with `book.setPrintMarks()`            | TBD    |
-| W      | 3D viewer controls: `set3DBackground()`, edge colors      | TBD    |
-| X      | styling p5.book viewer UI with CSS                        | TBD    |
-| Y      | building custom helper functions for reusable pages       | TBD    |
-| Z      | contribution roadmap                                      | TBD    |
+| letter | planned focus                                                   | status |
+| ------ | --------------------------------------------------------------- | ------ |
+| P      | unknown page count workflow with `book.finish()`                | TBD    |
+| Q      | text overflow handling with `book.textBox()` return             | TBD    |
+| R      | `clear()` and redraw logic across pages                         | TBD    |
+| S      | advanced spine styling: textures, type systems, edge-safe rules | TBD    |
+| T      | `saveSaddleStitch()` export and /4 page constraints             | TBD    |
+| U      | advanced bleed tools: `bleed.draw()`, width, height             | TBD    |
+| V      | crop mark control with `book.setCropMarks()`                    | TBD    |
+| W      | 3D viewer controls: `set3DBackground()`, edge colors            | TBD    |
+| X      | styling p5.book viewer UI with CSS                              | TBD    |
+| Y      | building custom helper functions for reusable pages             | TBD    |
+| Z      | contribution roadmap                                            | TBD    |

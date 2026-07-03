@@ -106,7 +106,11 @@ export class Book {
     this._filename = filename;
     this._bleed = 0;
     this._printMarks = false;
-    this._spread = false;
+    this._viewSpread = false;
+    this._exportSpread = false;
+    this._skipCoversInMainPDF = false;
+    this._coverInnerPagesInCoverPDF = false;
+    this._innerSpineColor = "#ffffff"; // inside spine panel for separate-cover-stock export
     this._saddleStitch = false;
     this._rtl = false;
     this._dpi = null;
@@ -133,6 +137,7 @@ export class Book {
     );
     // ── spine — lazy-init getter (suggestion #3) ─────────────────────────
     this._spineGfx = null;
+    this._spineThicknessMM = null; // null = auto-calculate from page count
     this._pageImages = [];
     this._rawCanvases = [];
     this._columns = 1;
@@ -195,25 +200,56 @@ export class Book {
     return this._page;
   }
 
+  _spineWidthPx() {
+    const trimHmm = this._trimH * (MM_PER_UNIT[this._unit] || 25.4);
+    const spineMM =
+      this._spineThicknessMM ??
+      Math.max(
+        3,
+        Math.ceil((this.totalPages || 1) / 2) * this._pageThickMM + 2,
+      );
+    return Math.max(8, Math.round((this._p.height * spineMM) / trimHmm));
+  }
+
+  _createSpineGraphics(copyFrom = null) {
+    const gfx = this._p.createGraphics(this._spineWidthPx(), this._p.height);
+    gfx.pixelDensity(this._p.pixelDensity());
+    gfx.draw = (fn) => fn(gfx);
+
+    if (copyFrom?.canvas) {
+      const ctx = gfx.canvas.getContext("2d");
+      ctx.save();
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.drawImage(
+        copyFrom.canvas,
+        0,
+        0,
+        copyFrom.canvas.width,
+        copyFrom.canvas.height,
+        0,
+        0,
+        gfx.canvas.width,
+        gfx.canvas.height,
+      );
+      ctx.restore();
+    }
+
+    return gfx;
+  }
+
+  _rebuildSpineGraphics() {
+    if (!this._spineGfx) return;
+    const old = this._spineGfx;
+    this._spineGfx = this._createSpineGraphics(old);
+    old.remove?.();
+  }
+
   /** A p5.Graphics buffer for the spine face. Created lazily on first access.
    *  Width is proportional to the computed spine thickness; height matches the canvas.
    *  Call draw(fn) for a scoped helper, or use p5 methods directly. */
   get spine() {
     if (!this._spineGfx) {
-      const trimHmm = this._trimH * (MM_PER_UNIT[this._unit] || 25.4);
-      const spineMM = Math.max(
-        3,
-        Math.ceil((this.totalPages || 1) / 2) * this._pageThickMM + 2,
-      );
-      const spineWpx = Math.max(
-        8,
-        Math.round((this._p.height * spineMM) / trimHmm),
-      );
-      this._spineGfx = this._p.createGraphics(spineWpx, this._p.height);
-      this._spineGfx.pixelDensity(this._p.pixelDensity());
-      // Add scoped draw() helper directly onto the graphics object
-      const _g = this._spineGfx;
-      _g.draw = (fn) => fn(_g);
+      this._spineGfx = this._createSpineGraphics();
     }
     return this._spineGfx;
   }
@@ -234,6 +270,7 @@ export class Book {
     const logH = Math.round(physH / density);
     this._p.pixelDensity(density);
     if (logH !== this._p.height) this._p.resizeCanvas(this._p.width, logH);
+    this._rebuildSpineGraphics();
     // Rebuild bleed gfx at correct density if setBleed() was called first
     if (this._bleedGfx) {
       this._bleedGfx.remove();
@@ -295,20 +332,103 @@ export class Book {
     }
   }
 
-  /** Set the thickness of one leaf (sheet of paper) for spine-width calculation.
-   *  @param {number} thickness  Thickness of one leaf.
-   *  @param {string} [unit]     'mm' (default), 'in', or 'pt'. */
-  setPageThickness(thickness, unit = "mm") {
-    this._pageThickMM = thickness * (MM_PER_UNIT[unit] || 1);
+  /** Override the computed spine width with an explicit value.
+   *  By default the spine width is derived from `totalPages × pageThickness`.
+   *  Use this when you know the exact finished spine thickness (e.g. from a
+   *  printer spec sheet) and want to skip the auto-calculation entirely.
+   *  Pass `null` to revert to the automatic calculation.
+   *
+   * @param {number|null} thickness  Spine thickness (or null to auto-calculate).
+   * @param {string}      [unit]     'mm' (default), 'in', or 'pt'.
+   *
+   * @example
+   * // fix spine to exactly 12 mm
+   * book.setSpineThickness(12);
+   *
+   * // same value in inches
+   * book.setSpineThickness(0.47, 'in');
+   *
+   * // revert to automatic calculation
+   * book.setSpineThickness(null);
+   */
+  setSpineThickness(thickness, unit = "mm") {
+    if (thickness === null || thickness === undefined) {
+      this._spineThicknessMM = null;
+    } else {
+      this._spineThicknessMM = thickness * (MM_PER_UNIT[unit] || 1);
+    }
+    this._rebuildSpineGraphics();
   }
 
-  /** Enable spread layout: cover + back cover are solo pages; inner pages pair
-   *  as two-page spreads in the preview, PDF export, and print.
-   *  Total page count must be even. Call in setup() before addPage(). */
-  setSpread(enabled) {
+  setPageThickness(thickness, unit = "mm") {
+    this._pageThickMM = thickness * (MM_PER_UNIT[unit] || 1);
+    this._rebuildSpineGraphics();
+  }
+
+  /** Enable spread layout for viewer and export in one call.
+   *  setSpread(true)          => view=true, export=true (backward compatible)
+   *  setSpread(true, false)   => view=true, export=false
+   *  setSpread(false, true)   => view=false, export=true
+   *  Total page count must be even when export spread is enabled.
+   *  Call in setup() before addPage(). */
+  setSpread(viewEnabled, exportEnabled = viewEnabled) {
     if (this.page > 0)
       throw new Error("[p5.book] setSpread() must be called before addPage()");
-    this._spread = !!enabled;
+    this._viewSpread = !!viewEnabled;
+    this._exportSpread = !!exportEnabled;
+  }
+
+  /** Control spread pairing in viewer/preview only.
+   *  @param {boolean} enabled  true = cover/back solo + interior spreads in viewer. */
+  setViewSpread(enabled = true) {
+    if (this.page > 0)
+      throw new Error(
+        "[p5.book] setViewSpread() must be called before addPage()",
+      );
+    this._viewSpread = !!enabled;
+  }
+
+  /** Control spread pairing in main PDF export/print only.
+   *  @param {boolean} enabled  true = export spread PDF, false = export single pages. */
+  setExportSpread(enabled = true) {
+    if (this.page > 0)
+      throw new Error(
+        "[p5.book] setExportSpread() must be called before addPage()",
+      );
+    this._exportSpread = !!enabled;
+  }
+
+  /** Skip the first and last page in the main PDF export.
+   *  Useful when you want covers to export only via saveCover().
+   *  Applies to both download and print when export type is "PDF".
+   *  @param {boolean} skip  true = omit cover/back cover (default false). */
+  setSkipCoversInMainPDF(skip = true) {
+    this._skipCoversInMainPDF = !!skip;
+  }
+
+  /** Perfect-binding cover mode (separate cover stock).
+   *  When enabled:
+   *  - saveCover() exports 2 sides:
+   *    side 1 = back cover | spine | front cover
+   *    side 2 = first interior | inner spine | last interior
+   *  - main PDF download/print excludes cover/back and first/last interior pages.
+   *  @param {boolean} enabled  true to enable (default), false to disable. */
+  setSeparateCoverStock(enabled = true) {
+    const on = !!enabled;
+    this._coverInnerPagesInCoverPDF = on;
+    this._skipCoversInMainPDF = on;
+  }
+
+  /** Inside spine panel color for separate-cover-stock cover export.
+   *  Used on cover PDF page 2 (inside side) between first and last interior pages.
+   *  Set to a CSS color string (for example "#fff", "black", "orange").
+   *  Defaults to white.
+   */
+  get innerSpine() {
+    return this._innerSpineColor;
+  }
+  set innerSpine(color) {
+    this._innerSpineColor = color || "#ffffff";
   }
 
   /** Set reading direction. "ltr" (default) = left-to-right; "rtl" = right-to-left
@@ -358,8 +478,23 @@ export class Book {
   }
 
   /** Show or hide crop marks. setBleed() enables them automatically. */
-  setPrintMarks(enabled) {
+  setCropMarks(enabled) {
     this._printMarks = !!enabled;
+  }
+
+  /** Singular alias for setCropMarks(). */
+  setCropMark(enabled) {
+    this.setCropMarks(enabled);
+  }
+
+  /** Alternate singular alias for setCropMarks(). */
+  setTrimMark(enabled) {
+    this.setCropMarks(enabled);
+  }
+
+  /** Backward-compatible alias for setCropMarks(). */
+  setPrintMarks(enabled) {
+    this.setCropMarks(enabled);
   }
 
   /**
@@ -408,9 +543,9 @@ export class Book {
   }
 
   isLeftPage() {
-    if (!this._spread) {
+    if (!this._viewSpread) {
       console.warn(
-        "isLeftPage() is only meaningful when setSpread(true) is enabled",
+        "isLeftPage() is only meaningful when view spread is enabled (setViewSpread(true) or setSpread(true))",
       );
       return false;
     }
@@ -424,9 +559,9 @@ export class Book {
   }
 
   isRightPage() {
-    if (!this._spread) {
+    if (!this._viewSpread) {
       console.warn(
-        "isRightPage() is only meaningful when setSpread(true) is enabled",
+        "isRightPage() is only meaningful when view spread is enabled (setViewSpread(true) or setSpread(true))",
       );
       return false;
     }
@@ -650,8 +785,7 @@ export class Book {
     pairs.forEach(([li, ri], i) => {
       const isSolo = ri === null;
       const pageW = isSolo ? soloW : spreadW;
-      if (i > 0)
-        pdf.addPage([pageW, soloH], orientationFor(pageW, soloH));
+      if (i > 0) pdf.addPage([pageW, soloH], orientationFor(pageW, soloH));
 
       const _fmt = this._imageType === "png" ? "image/png" : "image/jpeg";
       const _pdfFmt = this._imageType === "png" ? "PNG" : "JPEG";
@@ -701,6 +835,125 @@ export class Book {
     return this._buildSpreadsFromPairs(pairs);
   }
 
+  _buildSimplePDFFromIndices(indices) {
+    const { jsPDF } = window.jspdf;
+    if (!indices || indices.length === 0) {
+      throw new Error("[p5.book] no interior pages to export.");
+    }
+
+    const pageW = this.bleedWidth;
+    const pageH = this.bleedHeight;
+    const orientation = pageW > pageH ? "l" : "p";
+    const pdf = new jsPDF({
+      unit: this._unit,
+      format: [pageW, pageH],
+      orientation,
+    });
+
+    const _fmt = this._imageType === "png" ? "image/png" : "image/jpeg";
+    const _pdfFmt = this._imageType === "png" ? "PNG" : "JPEG";
+    const b = this._bleed;
+
+    indices.forEach((idx, i) => {
+      if (i > 0) pdf.addPage([pageW, pageH], orientation);
+      pdf.addImage(
+        this._rawCanvases[idx].toDataURL(_fmt, this._jpegQuality),
+        _pdfFmt,
+        0,
+        0,
+        pageW,
+        pageH,
+      );
+      if (this._printMarks) {
+        this._drawPrintMarksOn(pdf, this._trimW, this._trimH, b);
+      }
+    });
+
+    return pdf;
+  }
+
+  _buildMainPDF() {
+    const n = this._rawCanvases.length;
+    if (n === 0) throw new Error("[p5.book] no pages to export.");
+
+    if (!this._skipCoversInMainPDF) {
+      return this._exportSpread ? this._buildSpreadPDF() : this._pdf;
+    }
+
+    const skipInnerEnds = this._coverInnerPagesInCoverPDF;
+    const start = 1 + (skipInnerEnds ? 1 : 0); // skip cover (+ first interior in separate-cover mode)
+    const end = n - 1 - (skipInnerEnds ? 1 : 0); // skip back cover (+ last interior in separate-cover mode)
+    const interiorCount = end - start;
+
+    if (interiorCount <= 0) {
+      throw new Error(
+        skipInnerEnds
+          ? "[p5.book] no pages left for main PDF after excluding first/last interior pages in separate-cover-stock mode."
+          : "[p5.book] cover-only book: no interior pages left after skipping cover/back cover.",
+      );
+    }
+
+    if (this._exportSpread) {
+      if (interiorCount % 2 !== 0) {
+        throw new Error("[p5.book] spread requires an even total page count");
+      }
+      const pairs = [];
+      for (let i = start; i < end; i += 2) {
+        pairs.push(this._rtl ? [i + 1, i] : [i, i + 1]);
+      }
+      return this._buildSpreadsFromPairs(pairs);
+    }
+
+    const indices = [];
+    for (let i = start; i < end; i++) indices.push(i);
+    return this._buildSimplePDFFromIndices(indices);
+  }
+
+  // Main PDF with every page (cover through back cover).
+  _buildAllPagesPDF() {
+    return this._exportSpread ? this._buildSpreadPDF() : this._pdf;
+  }
+
+  // Main PDF without cover/back cover; keeps all interior pages.
+  _buildNoCoverPDF() {
+    const n = this._rawCanvases.length;
+    const skipInnerEnds = this._coverInnerPagesInCoverPDF;
+    const start = 1 + (skipInnerEnds ? 1 : 0);
+    const end = n - 1 - (skipInnerEnds ? 1 : 0);
+    const interiorCount = end - start;
+
+    if (interiorCount <= 0) {
+      throw new Error(
+        skipInnerEnds
+          ? "[p5.book] no pages left after excluding first/last interior pages in separate-cover-stock mode."
+          : "[p5.book] no interior pages to export.",
+      );
+    }
+
+    if (this._exportSpread) {
+      if (interiorCount % 2 !== 0) {
+        throw new Error("[p5.book] spread requires an even total page count");
+      }
+      const pairs = [];
+      for (let i = start; i < end; i += 2) {
+        pairs.push(this._rtl ? [i + 1, i] : [i, i + 1]);
+      }
+      return this._buildSpreadsFromPairs(pairs);
+    }
+
+    const indices = [];
+    for (let i = start; i < end; i++) indices.push(i);
+    return this._buildSimplePDFFromIndices(indices);
+  }
+
+  // PDF with only front + back cover pages as separate pages.
+  _buildCoversOnlyPDF() {
+    const n = this._rawCanvases.length;
+    if (n === 0) throw new Error("[p5.book] no pages to export.");
+    if (n === 1) return this._buildSimplePDFFromIndices([0]);
+    return this._buildSimplePDFFromIndices([0, n - 1]);
+  }
+
   // Saddle-stitch imposition: reorder pages into printer spread pairs.
   _buildSaddleStitchPDF() {
     const n = this._rawCanvases.length;
@@ -736,14 +989,14 @@ export class Book {
   }
 
   // Build view items for the flipbook/grid viewer.
-  // With setSpread(true): cover solo, inner page pairs composited, back cover solo.
+  // With view spread enabled: cover solo, inner page pairs composited, back cover solo.
   // Without: every raw page individually.
   // showBleed: if true use full bleed canvas; if false crop to trim area.
   _buildViewItems(showBleed = true) {
     const n = this._rawCanvases.length;
     const mainW = this._p.canvas.width;
     const mainH = this._p.canvas.height;
-    const isValidSpread = this._spread && n >= 2 && (n - 2) % 2 === 0;
+    const isValidSpread = this._viewSpread && n >= 2 && (n - 2) % 2 === 0;
     const _fmt = this._imageType === "png" ? "image/png" : "image/jpeg";
     const toSrc = (cvs) => cvs.toDataURL(_fmt, this._jpegQuality);
     const mayTrim = (cvs, tw, th) =>
@@ -795,18 +1048,48 @@ export class Book {
     this._showViewer();
   }
 
-  /** Download the PDF. When setSpread(true), exports the spread-format PDF. */
+  /** Download the main PDF using current export settings. */
   save(filename) {
     const name = filename || this._filename;
-    if (this._spread) {
-      try {
-        this._buildSpreadPDF().save(name);
-      } catch (e) {
-        console.error("[p5.book]", e.message);
-        this._pdf.save(name);
-      }
-    } else {
-      this._pdf.save(name);
+    try {
+      this._buildMainPDF().save(name);
+    } catch (e) {
+      console.error("[p5.book]", e.message);
+      alert("[p5.book] save(): " + e.message);
+    }
+  }
+
+  /** Download PDF with every page (front cover through back cover). */
+  saveAllPages(filename) {
+    const name = filename || this._filename;
+    try {
+      this._buildAllPagesPDF().save(name);
+    } catch (e) {
+      console.error("[p5.book]", e.message);
+      alert("[p5.book] saveAllPages(): " + e.message);
+    }
+  }
+
+  /** Download PDF without cover/back cover. */
+  saveNoCover(filename) {
+    const name = filename || this._filename.replace(/\.pdf$/i, "-no-cover.pdf");
+    try {
+      this._buildNoCoverPDF().save(name);
+    } catch (e) {
+      console.error("[p5.book]", e.message);
+      alert("[p5.book] saveNoCover(): " + e.message);
+    }
+  }
+
+  /** Download PDF with only front and back covers. */
+  saveCoversOnly(filename) {
+    const name =
+      filename || this._filename.replace(/\.pdf$/i, "-covers-only.pdf");
+    try {
+      this._buildCoversOnlyPDF().save(name);
+    } catch (e) {
+      console.error("[p5.book]", e.message);
+      alert("[p5.book] saveCoversOnly(): " + e.message);
     }
   }
 
@@ -818,10 +1101,12 @@ export class Book {
     if (n === 0) throw new Error("[p5.book] no pages to export.");
 
     // Spine thickness (same formula as render3D)
-    const spineMM = Math.max(
-      3,
-      Math.ceil((this.totalPages || 1) / 2) * this._pageThickMM + 2,
-    );
+    const spineMM =
+      this._spineThicknessMM ??
+      Math.max(
+        3,
+        Math.ceil((this.totalPages || 1) / 2) * this._pageThickMM + 2,
+      );
     const spineU = spineMM / mmPerUnit;
 
     const frontCvs = this._rawCanvases[0];
@@ -834,35 +1119,37 @@ export class Book {
       Math.round((spineU / this.bleedWidth) * pageW),
     );
 
-    // Composite canvas: [back cover | spine | front cover]
-    const compound = document.createElement("canvas");
-    compound.width = pageW * 2 + spineWpx;
-    compound.height = pageH;
-    const ctx = compound.getContext("2d");
+    const makeTriptychCanvas = (leftCvs, rightCvs, side = "outer") => {
+      const compound = document.createElement("canvas");
+      compound.width = pageW * 2 + spineWpx;
+      compound.height = pageH;
+      const ctx = compound.getContext("2d");
 
-    // Back cover on the left
-    ctx.drawImage(backCvs, 0, 0);
+      // Left panel
+      ctx.drawImage(leftCvs, 0, 0);
 
-    // Spine in the middle — use canvas.width/height (physical px) not .width/.height (logical)
-    if (this._spineGfx) {
-      ctx.drawImage(
-        this._spineGfx.canvas,
-        0,
-        0,
-        this._spineGfx.canvas.width,
-        this._spineGfx.canvas.height,
-        pageW,
-        0,
-        spineWpx,
-        pageH,
-      );
-    } else {
-      ctx.fillStyle = "#1a1a1a";
-      ctx.fillRect(pageW, 0, spineWpx, pageH);
-    }
+      // Spine panel: outer side uses custom spine art; inner side uses configurable fill color.
+      if (side === "outer" && this._spineGfx) {
+        ctx.drawImage(
+          this._spineGfx.canvas,
+          0,
+          0,
+          this._spineGfx.canvas.width,
+          this._spineGfx.canvas.height,
+          pageW,
+          0,
+          spineWpx,
+          pageH,
+        );
+      } else {
+        ctx.fillStyle = side === "inner" ? this._innerSpineColor : "#1a1a1a";
+        ctx.fillRect(pageW, 0, spineWpx, pageH);
+      }
 
-    // Front cover on the right
-    ctx.drawImage(frontCvs, pageW + spineWpx, 0);
+      // Right panel
+      ctx.drawImage(rightCvs, pageW + spineWpx, 0);
+      return compound;
+    };
 
     const b = this._bleed;
     const totalW = 2 * this.bleedWidth + spineU;
@@ -874,8 +1161,9 @@ export class Book {
     });
     const _fmt = this._imageType === "png" ? "image/png" : "image/jpeg";
     const _pdfFmt = this._imageType === "png" ? "PNG" : "JPEG";
+    // Side 1: outer cover (back | spine | front)
     pdf.addImage(
-      compound.toDataURL(_fmt, this._jpegQuality),
+      makeTriptychCanvas(backCvs, frontCvs).toDataURL(_fmt, this._jpegQuality),
       _pdfFmt,
       0,
       0,
@@ -920,6 +1208,59 @@ export class Book {
       pdf.setLineWidth(hair);
       lines.forEach(([ax, ay, bx, by]) => pdf.line(ax, ay, bx, by));
       pdf.setGState(new pdf.GState({ "blend-mode": "Normal" }));
+    }
+
+    // Side 2: inside cover (first interior | inner spine | last interior)
+    if (this._coverInnerPagesInCoverPDF) {
+      if (n < 3) {
+        throw new Error(
+          "[p5.book] separate cover stock mode needs at least 1 interior page.",
+        );
+      }
+      const firstInterior = this._rawCanvases[1];
+      const lastInterior = this._rawCanvases[n - 2];
+      pdf.addPage([totalW, totalH], "l");
+      pdf.addImage(
+        makeTriptychCanvas(firstInterior, lastInterior, "inner").toDataURL(
+          _fmt,
+          this._jpegQuality,
+        ),
+        _pdfFmt,
+        0,
+        0,
+        totalW,
+        totalH,
+      );
+      if (this._printMarks && b > 0) {
+        const gap = 1 / mmPerUnit;
+        const hair = 0.3 / mmPerUnit;
+        const y0 = b,
+          y1 = b + this._trimH,
+          ph = totalH;
+        const bx0 = b;
+        const fx1 = totalW - b;
+        const sf0 = this.bleedWidth;
+        const sf1 = this.bleedWidth + spineU;
+        const lines = [
+          [0, y0, bx0 - gap, y0],
+          [bx0, 0, bx0, y0 - gap],
+          [0, y1, bx0 - gap, y1],
+          [bx0, ph, bx0, y1 + gap],
+          [totalW, y0, fx1 + gap, y0],
+          [fx1, 0, fx1, y0 - gap],
+          [totalW, y1, fx1 + gap, y1],
+          [fx1, ph, fx1, y1 + gap],
+          [sf0, 0, sf0, y0 - gap],
+          [sf0, ph, sf0, y1 + gap],
+          [sf1, 0, sf1, y0 - gap],
+          [sf1, ph, sf1, y1 + gap],
+        ];
+        pdf.setGState(new pdf.GState({ "blend-mode": "Difference" }));
+        pdf.setDrawColor(255, 255, 255);
+        pdf.setLineWidth(hair);
+        lines.forEach(([ax, ay, bx, by]) => pdf.line(ax, ay, bx, by));
+        pdf.setGState(new pdf.GState({ "blend-mode": "Normal" }));
+      }
     }
 
     return pdf;

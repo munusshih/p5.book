@@ -45,9 +45,10 @@ export function showViewer(book) {
       ${book._bleed > 0 ? '<label class="p5book-chk-label"><input type="checkbox" id="p5book-chk-bleed" checked> bleed</label>' : ""}
       <span style="flex:1"></span>
       <select id="p5book-dl-sel">
-        <option value="pdf">PDF</option>
+        <option value="pdf-all">PDF (all pages)</option>
+        <option value="pdf-no-cover">PDF (no cover)</option>
+        <option value="cover-wrap">Only Cover PDF</option>
         ${book._saddleStitch ? '<option value="saddle">Saddle Stitch</option>' : ""}
-        <option value="cover">Cover</option>
         <option value="frames-png">Frames (PNG)</option>
         <option value="frames-jpg">Frames (JPG)</option>
       </select>
@@ -132,10 +133,12 @@ export function showViewer(book) {
     const trimHmm = book._trimH * (MM_PER_UNIT[book._unit] || 25.4);
     const trimWmm = book._trimW * (MM_PER_UNIT[book._unit] || 25.4);
     // page thickness per leaf (two-sided sheet), plus ~2 mm for cover boards
-    const spineMM = Math.max(
-      3,
-      Math.ceil((book.totalPages || 1) / 2) * book._pageThickMM + 2,
-    );
+    const spineMM =
+      book._spineThicknessMM ??
+      Math.max(
+        3,
+        Math.ceil((book.totalPages || 1) / 2) * book._pageThickMM + 2,
+      );
     const coverH = Math.min(
       window.innerHeight - 100,
       Math.max(
@@ -543,33 +546,41 @@ export function showViewer(book) {
   viewer.querySelector("#p5book-btn-download").addEventListener("click", () => {
     const sel = viewer.querySelector("#p5book-dl-sel");
     const val = sel?.value;
-    if (val === "saddle") book.saveSaddleStitch();
-    else if (val === "cover") book.saveCover();
+    if (val === "pdf-all") book.saveAllPages();
+    else if (val === "pdf-no-cover") book.saveNoCover();
+    else if (val === "cover-wrap") book.saveCover();
+    else if (val === "saddle") book.saveSaddleStitch();
     else if (val === "frames-png") book.exportFrames("png");
     else if (val === "frames-jpg") book.exportFrames("jpeg");
-    else book.save();
+    else book.saveAllPages();
   });
 
   viewer.querySelector("#p5book-btn-print").addEventListener("click", () => {
     try {
       const sel = viewer.querySelector("#p5book-dl-sel");
-      const dlType = sel?.value || "pdf";
+      const dlType = sel?.value || "pdf-all";
       let pdf;
-      if (dlType === "saddle") {
-        pdf = book._buildSaddleStitchPDF();
-      } else if (dlType === "cover") {
+      if (dlType === "pdf-all") {
+        pdf = book._buildAllPagesPDF();
+      } else if (dlType === "pdf-no-cover") {
+        pdf = book._buildNoCoverPDF();
+      } else if (dlType === "cover-wrap") {
         pdf = book._buildCoverPDF();
+      } else if (dlType === "saddle") {
+        pdf = book._buildSaddleStitchPDF();
       } else {
-        pdf = book._spread ? book._buildSpreadPDF() : book._pdf;
+        pdf = book._buildAllPagesPDF();
       }
 
       const baseName = (book._filename || "p5-book.pdf").replace(/\.pdf$/i, "");
       const fallbackName =
-        dlType === "saddle"
-          ? `${baseName}-saddle-stitch.pdf`
-          : dlType === "cover"
+        dlType === "pdf-no-cover"
+          ? `${baseName}-no-cover.pdf`
+          : dlType === "cover-wrap"
             ? `${baseName}-cover.pdf`
-            : `${baseName}.pdf`;
+            : dlType === "saddle"
+              ? `${baseName}-saddle-stitch.pdf`
+              : `${baseName}.pdf`;
       const blockedPrintMsg =
         "[p5.book] Your browser couldn't open the print dialog here.\n\n" +
         "This can happen in sandboxed/embedded previews.\n\n" +

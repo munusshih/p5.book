@@ -17,10 +17,10 @@
 //   Full bleed page dimensions in your book's unit.
 //   Use to size geometry that should exactly reach the bleed edges.
 //
-// book.setPrintMarks(bool) — show or hide the trim/bleed crop marks.
+// book.setCropMarks(bool) — show or hide the trim/bleed crop marks.
 //
 // TRY: Change setBleed(0.125) to setBleed(3, "mm") for European standard.
-//      Add book.setPrintMarks(false) to hide the crop marks.
+//      Add book.setCropMarks(false) to hide the crop marks.
 
 let book;
 

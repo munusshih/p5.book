@@ -14,6 +14,7 @@ Here are some resources to get you started:
 - [Step-by-step workshop guide](./workshop/)
 - [Docs index](./docs/)
 - [Starter sketch (p5 editor)](https://editor.p5js.org/munusshih/sketches/u8Ox1CmnM)
+- [Starter template (OpenProcessing)](https://openprocessing.org/@u261940/2975856)
 
 ## Getting Started
 
@@ -23,7 +24,7 @@ You need to load p5.js, jsPDF, and p5.book in your sketch.
 <!-- load these three scripts in order -->
 <script src="https://cdn.jsdelivr.net/npm/p5@2/lib/p5.min.js"></script>
 <script src="https://unpkg.com/jspdf@latest/dist/jspdf.umd.min.js"></script>
-<script src="https://cdn.jsdelivr.net/gh/munusshih/p5.book@main/p5.book.js?v=2"></script>
+<script src="https://unpkg.com/p5.book@latest/p5.book.js"></script>
 ```
 
 ```js
@@ -160,15 +161,40 @@ book.setSpread(true);
 book.setDirection("rtl");
 ```
 
-### book.setSpread( bool )
+### book.setSpread( viewSpread, [exportSpread] )
 
-Enable two-page spread layout. The cover and back cover are kept as solo pages; all inner pages are paired as spreads in the viewer and in the exported PDF. Total page count must be even. Call in `setup()` before `addPage()`.
+Set spread behavior for viewer and export in one call. The cover and back cover are kept as solo pages; inner pages are paired when spread is enabled. Total page count must be even when export spread is enabled. Call in `setup()` before `addPage()`.
 
 ```js
-book.setSpread(true);
+book.setSpread(true); // backward-compatible: view=true, export=true
+book.setSpread(true, false); // spreads in viewer, single-page export
+book.setSpread(true, true); // explicit both on
 ```
 
 Use `isLeftPage()` and `isRightPage()` to position content based on which side of the spread the current page is on.
+
+### book.setViewSpread( bool )
+
+Control spread pairing in the viewer only.
+
+```js
+book.setViewSpread(true);
+```
+
+### book.setExportSpread( bool )
+
+Control spread pairing in main PDF export and print only.
+
+```js
+book.setExportSpread(false); // export single pages
+```
+
+Common workflow:
+
+```js
+book.setViewSpread(true);
+book.setExportSpread(false);
+```
 
 ### book.setSaddleStitch( bool )
 
@@ -176,6 +202,48 @@ Enables the _Saddle Stitch_ download option in the viewer, which reorders pages 
 
 ```js
 book.setSaddleStitch(true);
+```
+
+### book.setSkipCoversInMainPDF( bool )
+
+Control whether the main PDF export includes cover + back cover.
+
+- `false` (default): main PDF includes all pages.
+- `true`: main PDF exports only interior pages (covers are still available in `saveCover()`).
+
+Applies to both **Download -> PDF** and **Print** in the viewer.
+
+```js
+book.setSkipCoversInMainPDF(true); // main PDF = interior pages only
+book.setSkipCoversInMainPDF(false); // include covers again
+```
+
+### book.setSeparateCoverStock( bool )
+
+Enable perfect-binding cover workflow when the cover is printed as a separate sheet.
+
+When enabled:
+
+- `saveCover()` exports 2 pages:
+  - page 1: back cover + spine + front cover
+  - page 2: first interior + inner spine + last interior
+- Main PDF (`Download -> PDF` and `Print`) excludes cover/back and first/last interior pages.
+
+```js
+book.setSeparateCoverStock(true);
+```
+
+Disable to return to the normal single-page cover export:
+
+```js
+book.setSeparateCoverStock(false);
+```
+
+Inside spine styling for page 2 (separate-cover-stock mode):
+
+```js
+book.innerSpine = "#ffffff"; // default, blank/paper-like
+book.innerSpine = "#f5f0e8"; // custom color
 ```
 
 ### book.setPageThickness( thickness, [unit] )
@@ -191,6 +259,18 @@ book.setPageThickness(0.3); // thick newsprint
 | unit |                                    |
 | ---- | ---------------------------------- |
 |      | `"mm"` (default) · `"in"` · `"pt"` |
+
+### book.setSpineThickness( thickness, [unit] )
+
+Override the computed spine width with an explicit value. Use this when your printer gives you an exact spine thickness and you want that value to be used directly.
+
+```js
+book.setSpineThickness(12); // 12 mm
+book.setSpineThickness(0.47, "in"); // inches
+book.setSpineThickness(null); // revert to auto-calculation
+```
+
+If both `setPageThickness()` and `setSpineThickness()` are used, `setSpineThickness()` takes precedence.
 
 ---
 
@@ -244,9 +324,11 @@ Read-only getters — the full bleed page size (trim + bleed on both sides) in y
 circle(book.bleedWidth / 2, book.bleedHeight / 2, book.bleedWidth);
 ```
 
-### book.setPrintMarks( bool )
+### book.setCropMarks( bool )
 
-Show or hide trim/bleed marks. `setBleed()` enables them automatically.
+Show or hide crop marks (trim/bleed guides). `setBleed()` enables them automatically.
+
+`book.setCropMark(bool)`, `book.setTrimMark(bool)`, and `book.setPrintMarks(bool)` are supported as aliases.
 
 ---
 
@@ -346,6 +428,35 @@ function draw() {
 
 Manually download the single-page or spread PDF. Usually not needed — triggered automatically after the last `addPage()`.
 
+### book.saveAllPages([filename])
+
+Download PDF with all pages (cover + interior).
+
+```js
+book.saveAllPages();
+```
+
+### book.saveNoCover([filename])
+
+Download interior-focused PDF.
+
+```js
+book.saveNoCover();
+```
+
+Behavior:
+
+- default: excludes front/back cover
+- with `book.setSeparateCoverStock(true)`: also excludes first/last interior pages
+
+### book.saveCoversOnly([filename])
+
+Download a PDF with only cover pages.
+
+```js
+book.saveCoversOnly();
+```
+
 ### book.finish([filename])
 
 Stop the loop and open the viewer without a known total page count. Use this instead of relying on `totalPages` when the page count is determined at runtime (e.g. text reflow).
@@ -388,6 +499,18 @@ Files are named `<basename>-0001.png`, `-0002.png`, … downloaded one by one wi
 ---
 
 ## Viewer
+
+### book.setViewerMode( mode )
+
+Set which viewer mode opens by default after the book finishes rendering. Use `"3d"` when you want the detailed view to be the 3D book viewer.
+
+```js
+book.setViewerMode("3d"); // open directly in the 3D viewer
+book.setViewerMode("grid"); // open in thumbnail grid view
+book.setViewerMode("flipbook"); // default page-by-page view
+```
+
+Accepted values are `"flipbook"` (default), `"grid"`, and `"3d"`. Call this in `setup()` before the viewer opens.
 
 ### book.set3DBackground( color )
 

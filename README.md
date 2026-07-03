@@ -21,7 +21,7 @@ Add these three scripts to your HTML, **in order**:
 <script src="https://unpkg.com/jspdf@latest/dist/jspdf.umd.min.js"></script>
 
 <!-- 3. p5.book -->
-<script src="https://cdn.jsdelivr.net/gh/munusshih/p5.book@main/p5.book.js?v=2"></script>
+<script src="https://unpkg.com/p5.book@latest/p5.book.js"></script>
 ```
 
 ## Quick Start
@@ -245,21 +245,56 @@ function draw() {
 - If `setBleed()` was not called, `book.bleed` is a no-op — all calls are silently ignored
 - If `setBleed()` is called but you never draw into `book.bleed`, the bleed area stays blank (print marks are still drawn)
 
-### `book.setPrintMarks(enabled)`
+### `book.setCropMarks(enabled)`
 
-Show or hide all print marks (trim + bleed). `setBleed()` enables them automatically; call this to turn them off while keeping the bleed.
+Show or hide crop marks (trim + bleed guides). `setBleed()` enables them automatically; call this to turn them off while keeping the bleed.
 
 ```js
 book.setBleed(0.125);
-book.setPrintMarks(false); // bleed is still there, marks are not drawn
+book.setCropMarks(false); // bleed is still there, marks are not drawn
 ```
 
-### `book.setSpread(enabled)`
+`book.setPrintMarks(enabled)` is still supported as a backward-compatible alias.
+`book.setCropMark(enabled)` and `book.setTrimMark(enabled)` are also supported as aliases.
 
-Enable spread layout: cover and back cover are solo pages, inner pages pair as two-page spreads in the preview, PDF export, and print. Call in `setup()`, **before** `addPage()`.
+### `book.setSpread(viewEnabled, [exportEnabled])`
+
+Set spread behavior for viewer and export in one call. Call in `setup()`, **before** `addPage()`.
 
 ```js
-book.setSpread(true);
+book.setSpread(true); // backward-compatible: view=true, export=true
+book.setSpread(true, false); // viewer spread on, export spread off
+book.setSpread(true, true); // explicit: both on
+```
+
+Equivalent to:
+
+```js
+book.setViewSpread(true);
+book.setExportSpread(true);
+```
+
+### `book.setViewSpread(enabled)`
+
+Control spread pairing in the viewer/preview only.
+
+```js
+book.setViewSpread(true); // show interior pages as spreads in viewer
+```
+
+### `book.setExportSpread(enabled)`
+
+Control spread pairing in main PDF export/print only.
+
+```js
+book.setExportSpread(false); // export single pages even if viewer shows spreads
+```
+
+Common workflow (recommended):
+
+```js
+book.setViewSpread(true);
+book.setExportSpread(false);
 ```
 
 **Requirements:**
@@ -267,7 +302,7 @@ book.setSpread(true);
 - Total page count must be **even**
 - Must be called before the first `addPage()`
 
-When enabled:
+When export spread is enabled:
 
 - Page 1 (cover) is displayed alone
 - Pages 2–3, 4–5, etc. are displayed as spreads
@@ -302,8 +337,66 @@ book.setSaddleStitch(true);
 
 When enabled, the viewer shows a dropdown to choose between:
 
-- **PDF** — normal page order
+- **PDF (all pages)** — include cover + interiors
+- **PDF (no cover)** — interiors only (and in separate-cover-stock mode, also excludes first/last interior)
 - **Saddle Stitch** — printer spread imposition for saddle-stitch binding
+
+### `book.setSkipCoversInMainPDF(enabled)`
+
+Control whether the main PDF export includes the cover and back cover.
+
+```js
+book.setSkipCoversInMainPDF(true); // main PDF exports interior pages only
+book.setSkipCoversInMainPDF(false); // include cover + back cover in main PDF
+```
+
+When enabled:
+
+- **Download -> PDF** exports interior pages only
+- **Print** (PDF mode) prints interior pages only
+- `book.saveCover()` still exports the cover file
+
+### `book.setSeparateCoverStock(enabled)`
+
+Enable perfect-binding cover workflow when the cover is printed on a separate sheet.
+
+```js
+book.setSeparateCoverStock(true);
+```
+
+When enabled:
+
+- Main PDF export automatically excludes:
+  - front cover + back cover
+  - first interior + last interior
+- `book.saveCover()` exports a 2-page cover PDF:
+  - Page 1: back cover + spine + front cover
+  - Page 2: first interior + inner spine + last interior
+
+Inside spine styling (page 2 middle panel):
+
+```js
+book.innerSpine = "#ffffff"; // default, blank/paper-like
+book.innerSpine = "#f5f0e8"; // custom color
+```
+
+Disable to return to normal single-page cover export:
+
+```js
+book.setSeparateCoverStock(false);
+```
+
+### `book.setSpineThickness(thickness, [unit])`
+
+Override the automatic spine calculation with an explicit value.
+
+```js
+book.setSpineThickness(12); // 12 mm
+book.setSpineThickness(0.47, "in"); // inches
+book.setSpineThickness(null); // revert to auto-calculated spine thickness
+```
+
+If both `setPageThickness()` and `setSpineThickness()` are used, `setSpineThickness()` takes precedence.
 
 ### `book.bleedWidth` / `book.bleedHeight`
 
@@ -324,6 +417,35 @@ book.save("my-zine.pdf");
 ```
 
 When `setSpread(true)` is enabled, this exports the spread-format PDF automatically.
+
+### `book.saveAllPages([filename])`
+
+Export all pages as PDF (cover + interiors).
+
+```js
+book.saveAllPages();
+```
+
+### `book.saveNoCover([filename])`
+
+Export interior-focused PDF.
+
+```js
+book.saveNoCover();
+```
+
+Behavior:
+
+- Default: excludes front and back cover
+- With `book.setSeparateCoverStock(true)`: also excludes first and last interior pages
+
+### `book.saveCoversOnly([filename])`
+
+Export only cover pages as PDF.
+
+```js
+book.saveCoversOnly();
+```
 
 ### `book.saveSaddleStitch([filename])`
 
@@ -371,6 +493,18 @@ function draw() {
 ```
 
 When a total page count is passed to `createBook()`, the viewer opens automatically after the last page — you don't need `finish()`.
+
+### `book.setViewerMode(mode)`
+
+Set which viewer mode opens by default after the book finishes rendering. Use `"3d"` when you want the detailed view to be the 3D book viewer.
+
+```js
+book.setViewerMode("3d"); // open directly in the 3D viewer
+book.setViewerMode("grid"); // open in thumbnail grid view
+book.setViewerMode("flipbook"); // default page-by-page view
+```
+
+Accepted values are `"flipbook"` (default), `"grid"`, and `"3d"`. Call this in `setup()` before the viewer opens.
 
 ### `book.textBox(str, x, y, w, h)`
 
@@ -491,7 +625,7 @@ book.spine.draw((g) => {
   <head>
     <script src="https://cdn.jsdelivr.net/npm/p5@2/lib/p5.min.js"></script>
     <script src="https://unpkg.com/jspdf@latest/dist/jspdf.umd.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/munusshih/p5.book@main/p5.book.js?v=2"></script>
+    <script src="https://unpkg.com/p5.book@latest/p5.book.js"></script>
   </head>
   <body>
     <script>
@@ -544,6 +678,7 @@ book.spine.draw((g) => {
 - **Resolution** — use `book.setDPI(300)` in `setup()` for crisp print quality. This is preferred over `pixelDensity()` because it also resizes the canvas height so both axes are exactly on-spec.
 - **Bleed size** — standard bleed: 0.125 in (US) or 3 mm (Europe).
 - **Spread layout** — use `book.setSpread(true)` for books where the cover/back are solo and inner pages pair as spreads.
+- **View vs export spread** — most workflows prefer `book.setViewSpread(true)` with `book.setExportSpread(false)`.
 - **Saddle-stitch** — enable `book.setSaddleStitch(true)` to add a printer spread export option (page count must be divisible by 4).
 - **Text reflow** — use `book.textBox()` with `book.columnNum()` to flow long text across multiple pages automatically. RTL books use `book.setDirection("rtl")` — column order and text direction are handled automatically.
 - **Slow down** — p5.book captures every frame, so `frameRate(1)` can give you more time to animate per page.
@@ -551,6 +686,51 @@ book.spine.draw((g) => {
 - **Export frames** — use `book.exportFrames()` or the **Frames (PNG/JPG)** option in the download dropdown to save each page as a standalone image.
 - **Viewer shortcuts** — `←`/`→` to flip pages, `[` first page, `]` last page, `?` keyboard cheat sheet.
 - **Viewer styling** — override CSS variables in your stylesheet — see [test/style.css](test/style.css) for the full list.
+
+---
+
+## Local Dev Testing
+
+Use this when you want to test the library locally before publishing.
+
+1. Install dependencies:
+
+```bash
+npm install
+```
+
+2. Build the library and copy it into the local test harness:
+
+```bash
+npm run test:public:prep
+```
+
+This creates `public/test/p5.book.local.js` from your current source.
+
+3. Start the docs dev server:
+
+```bash
+npm run dev
+```
+
+4. Open the local test page:
+
+```text
+http://localhost:4321/test/
+```
+
+Quick one-command flow:
+
+```bash
+npm run test:public
+```
+
+This runs the prep step and then starts the dev server.
+
+Notes:
+
+- `public/test/index.html` is wired to `./p5.book.local.js`, so `/test/` always uses your local build.
+- Re-run `npm run test:public:prep` after library code changes to refresh the test bundle.
 
 ---
 
