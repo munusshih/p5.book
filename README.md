@@ -1,5 +1,9 @@
 # p5.book
 
+[![npm version](https://img.shields.io/npm/v/p5.book.svg)](https://www.npmjs.com/package/p5.book)
+[![npm downloads](https://img.shields.io/npm/dm/p5.book.svg)](https://www.npmjs.com/package/p5.book)
+[![GitHub Actions](https://img.shields.io/github/actions/workflow/status/munusshih/p5.book/release.yml?branch=main)](https://github.com/munusshih/p5.book/actions/workflows/release.yml)
+
 A simple PDF book generator for [p5.js 2.0](https://p5js.org).  
 Turn your generative sketches into real, multi-page PDFs — no build tools, no npm, just `<script>` tags.
 
@@ -731,6 +735,27 @@ Notes:
 
 - `public/test/index.html` is wired to `./p5.book.local.js`, so `/test/` always uses your local build.
 - Re-run `npm run test:public:prep` after library code changes to refresh the test bundle.
+
+## Release
+
+Publishing to npm is automated from GitHub tags.
+
+1. Update the version in `package.json`.
+2. Commit and push your changes.
+3. Create and push a tag like `v1.0.2`.
+4. GitHub Actions will build the package and publish it to npm.
+
+This workflow uses npm trusted publishing (`--provenance`), so you do not need an `NPM_TOKEN` secret.
+
+Before the first release, enable trusted publishing for this package in npm and allow GitHub Actions for this repository.
+
+### How to verify the connection
+
+- Run `npm whoami` in your terminal. If it returns your npm username, your local npm auth is good.
+- Run `npm publish --dry-run` to confirm the package can build and that `package.json` metadata looks right.
+- Push a release tag like `v1.0.2` and check the GitHub Actions tab for the `Release to npm` workflow.
+- If the workflow fails at publish time, the most common cause is that npm trusted publishing has not been enabled for the package yet.
+- If you want to confirm npm access manually, run `npm ping` and `npm access ls-packages` if you have the right npm account permissions.
 
 ---
 
