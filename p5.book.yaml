@@ -1,0 +1,12 @@
+name: p5.book
+description: Create multi-page, print-ready PDF books from p5.js sketches.
+category: export
+sourceUrl: https://github.com/munusshih/p5.book
+websiteUrl: https://p5-book.vercel.app/
+featuredImage: ../images/p5.book.png
+featuredImageAlt: An open book with colorful generative artwork flowing across its pages beside a creative coding editor
+author:
+  name: Munus Shih
+  url: https://github.com/munusshih
+npm: p5.book
+license: MIT
