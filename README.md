@@ -4,8 +4,9 @@
 [![npm downloads](https://img.shields.io/npm/dm/p5.book.svg)](https://www.npmjs.com/package/p5.book)
 [![GitHub Actions](https://img.shields.io/github/actions/workflow/status/munusshih/p5.book/release.yml?branch=main)](https://github.com/munusshih/p5.book/actions/workflows/release.yml)
 
-A simple PDF book generator for [p5.js 2.0](https://p5js.org).  
-Turn your generative sketches into real, multi-page PDFs — no build tools, no npm, just `<script>` tags.
+![A banner showing what p5.book can do](/public/assets/banner.gif)
+
+p5.book is an experimental library that generator for [p5.js 2.0](https://p5js.org) that turns your generative sketches into both digitally previewable and physically print-ready, multi-page PDF book. It requires no build tools, just `<script>` tags.
 
 ## Start Here
 
