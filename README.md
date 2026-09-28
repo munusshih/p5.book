@@ -4,7 +4,7 @@
 [![npm downloads](https://img.shields.io/npm/dm/p5.book.svg)](https://www.npmjs.com/package/p5.book)
 [![GitHub Actions](https://img.shields.io/github/actions/workflow/status/munusshih/p5.book/release.yml?branch=main)](https://github.com/munusshih/p5.book/actions/workflows/release.yml)
 
-![A banner showing what p5.book can do](/public/assets/banner.gif)
+![A banner showing what p5.book can do](/assets/banner.gif)
 
 p5.book is a PDF book generator for [p5.js 2.0](https://p5js.org). It captures each canvas frame as a page, compiles them into a PDF, and opens a built-in viewer with 3D preview and print-ready export options.
 
