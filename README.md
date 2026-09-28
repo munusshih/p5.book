@@ -6,7 +6,9 @@
 
 ![A banner showing what p5.book can do](/public/assets/banner.gif)
 
-p5.book is an experimental library that generator for [p5.js 2.0](https://p5js.org) that turns your generative sketches into both digitally previewable and physically print-ready, multi-page PDF book. It requires no build tools, just `<script>` tags.
+p5.book is a PDF book generator for [p5.js 2.0](https://p5js.org). It captures each canvas frame as a page, compiles them into a PDF, and opens a built-in viewer with 3D preview and print-ready export options.
+
+Designed specifically for artists, designers, and educators who want to create custom books with code! The library is capable of creating everything from simple binded zines to generative photo books, portfolios, and computational novels.
 
 ## Start Here
 
