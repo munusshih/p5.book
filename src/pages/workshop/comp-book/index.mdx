@@ -30,12 +30,10 @@ By the end of the workshop, everyone will have a computationally-generated, prin
 
 The workshop is structured in four parts:
 
-1. **p5.book + Short History:** meet p5.book and look at a brief
-   history of computational books.
-2. **Guided Coding Session:** build the core 100-page book together,
-   one step at a time.
-3. **Play:** change the content, colors, and page-to-page rule.
-4. **Q&A + Sharing:** show what we made, ask questions, and share
+1. p5.book Introduction meet p5.book!
+2. Guided Coding Session
+3. Play with the Library
+4. Show what we made, ask questions, and share
    discoveries.
 
 <div class="about-speaker">
@@ -47,8 +45,8 @@ The workshop is structured in four parts:
     <p>
       I’m **Munus** (pronounced Moo-nus), a Taiwanese Minnan-Hakka creative
       coder, designer, educator, and organizer based in New York City. I’m an
-      Assistant Professor in Pratt Institute’s MFA Communications Design
-      program. My work connects open-source software, collective publishing,
+      Assistant Professor in Graduate Communications Design at Pratt
+      Institute. My work connects open-source software, collective publishing,
       design education, and community infrastructure.
     </p>
     <p>
@@ -62,7 +60,7 @@ The workshop is structured in four parts:
 
 ## <kbd>A</kbd> — What Is p5.book?
 
-p5.book is a community library designed to simplify the process of creating
+p5.book is an open-source library designed to simplify the process of creating
 printable books from [p5.js](https://p5js.org/) sketches.
 
 <br />
@@ -151,16 +149,16 @@ function drawPage() {
 }
 ```
 
-p5.book is a related branch of that inquiry. It explores how p5.js can create a
-more flexible range of books, formats, and structures by treating each frame as
-a separate page.
+p5.book is a related branch of that inquiry. It explores how p5.js can support
+a broader range of books, formats, and structures by treating each frame as a
+separate page.
 
 ```javascript
 let book;
 
 function setup() {
   book = createBook(4, 6, 8); // 4 inches wide, 6 inches tall, 8 pages
-  // book = createBook("A5", 8); // standard paper size (A3 A4 A5 A6 letter legal tabloid)
+  // book = createBook("A5", 8); // standard paper size (A3, A4, A5, A6, letter, legal, tabloid)
   // book = createBook(100, 150, 100, "mm"); // custom size in millimeters
   // book.setDPI(300); // high-resolution export — for printing
 }
@@ -224,7 +222,7 @@ Then return to `sketch.js`. We’ll continue coding as usual, but now we can use
 the p5.book API to create books and export PDFs.
 
 <div class="note">
-For anyone who is curious, we’re loading three libraries here:
+If you’re curious, we’re loading three libraries here:
 
 1. `p5.js` is the core library for drawing and animation. It provides the canvas and all the drawing functions we will use to create our book pages.
 
@@ -291,7 +289,7 @@ interests or the kind of book you want to create.
 
 ---
 
-## <kbd>F</kbd> — Choose Your Book Size
+## <kbd>E</kbd> — Choose Your Book Size
 
 <div class="try">
 
@@ -318,7 +316,7 @@ You can also use `"A3"`, `"A4"`, `"A6"`, `"letter"`, `"legal"`, or
 
 ---
 
-## <kbd>G</kbd> — Design the Cover, Back Cover, and Page Numbers
+## <kbd>F</kbd> — Design the Cover, Back Cover, and Page Numbers
 
 The cover and back cover are part of the total page count. Use
 `isFirstPage()` and `isLastPage()` to design them differently, then use
@@ -364,7 +362,7 @@ Use whichever version is easiest for you to read.
 
 ---
 
-## <kbd>H</kbd> — Choose a Page Background
+## <kbd>G</kbd> — Choose a Page Background
 
 p5.book generates one page at a time and then combines those pages into a
 complete book. What you do at the beginning of `draw()` changes how each page
@@ -382,7 +380,7 @@ Try all three. Accumulation can become the book’s visual rule, while
 
 ---
 
-## <kbd>I</kbd> — Add Bleed
+## <kbd>H</kbd> — Add Bleed
 
 **Bleed** is extra artwork that extends beyond the trim line. If a color or
 image should reach the edge of the printed page, draw it on `book.bleed`, then
@@ -416,7 +414,7 @@ them, use `book.setCropMarks(false)`.
 
 ---
 
-## <kbd>J</kbd> — Design a Custom Spine
+## <kbd>I</kbd> — Design a Custom Spine
 
 `book.spine` is its own drawing surface. Let p5.book estimate its width from
 the page count and paper thickness, or use the exact finished width supplied by
@@ -452,7 +450,7 @@ Check the spine in the **3D viewer** and in the separate **Cover PDF**.
 
 ---
 
-## <kbd>K</kbd> — Get Ready for Print
+## <kbd>J</kbd> — Get Ready for Print
 
 Before printing, export the files carefully and inspect every part of the book.
 
@@ -482,7 +480,7 @@ book.innerSpine = "#ffffff";
 
 ---
 
-## <kbd>L</kbd> — Books Made with p5.book
+## <kbd>K</kbd> — Books Made with p5.book
 
 Here are some books people made with p5.book!
 
@@ -544,39 +542,40 @@ Here are some books people made with p5.book!
 
 ---
 
-## <kbd>M</kbd> — Contribute
+## <kbd>L</kbd> — Contribute
 
-p5.book is completely open sourced, under an MIT License, and will love contributions from the community.
+p5.book is completely open source, released under the MIT License, and welcomes
+contributions from the community.
 
-Currently, we are looking for contributions in the following areas:
+**Want to contribute?**
 
-- [Open the source repository](https://github.com/munusshih/p5.book)
-- [Start a GitHub issue](https://github.com/munusshih/p5.book/issues)
+[Open the source repository](https://github.com/munusshih/p5.book) ·
+[Start a GitHub issue](https://github.com/munusshih/p5.book/issues)
 
 <div class="contribution-menu">
   <div>
     <strong>Example</strong>
     <p>
-      Share a beautiful book made with p5.book with us, so we can showcase it in
-      the community gallery!
+      Share a book you made with p5.book so we can feature it in the community
+      gallery.
     </p>
   </div>
   <div>
     <strong>Documentation</strong>
     <p>
-      Rewrite one confusing instruction or document an undocumented function, or
-      document the project in other languages!
+      Clarify a confusing instruction, document an undocumented function, or
+      translate the documentation into another language.
     </p>
   </div>
   <div>
     <strong>Bug Report</strong>
-    <p>Record the browser, code, expected result, and actual result.</p>
+    <p>Include your browser, relevant code, expected result, and actual result.</p>
   </div>
   <div>
     <strong>Feature Proposal</strong>
     <p>
-      If you have a very specific idea for a new feature, describe it in detail
-      and explain why it would be useful. If you have a mockup, even better!
+      If you have an idea for a new feature, describe it in detail and explain
+      why it would be useful. A mockup is even better.
     </p>
   </div>
 </div>
@@ -589,9 +588,10 @@ Currently, we are looking for contributions in the following areas:
 
 ---
 
-## <kbd>N</kbd> — Compare Publishing Approaches
+## <kbd>M</kbd> — Compare Publishing Approaches
 
-What are some other projects other than p5.book that can help you make a book with code? Here are three approaches to computational publishing:
+What other approaches are there to making books with code? Here are three
+approaches to computational publishing:
 
 <div class="reference-projects">
   <article>
