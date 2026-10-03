@@ -2,16 +2,16 @@
 
 @font-face {
   font-family: "Apfel Grotezk";
-  src: url("../fonts/ApfelGrotezk-Regular.woff") format("woff"),
-    url("../fonts/ApfelGrotezk-Regular.ttf") format("truetype");
+  src: url("/fonts/ApfelGrotezk-Regular.woff2") format("woff2"),
+    url("/fonts/ApfelGrotezk-Regular.woff") format("woff");
   font-weight: 300;
   font-style: normal;
 }
 
 @font-face {
   font-family: "Apfel Grotezk";
-  src: url("../fonts/ApfelGrotezk-Mittel.woff") format("woff"),
-    url("../fonts/ApfelGrotezk-Mittel.ttf") format("truetype");
+  src: url("/fonts/ApfelGrotezk-Mittel.woff2") format("woff2"),
+    url("/fonts/ApfelGrotezk-Mittel.woff") format("woff");
   font-weight: 500;
   font-style: normal;
 }
@@ -129,6 +129,8 @@ ol {
   border: none;
   border-radius: 0.5rem;
 }
+
+
 
 .diagram figcaption {
   margin-top: 0.45rem;
@@ -383,6 +385,259 @@ ol {
   margin-bottom: 0;
 }
 
+/* -- comp-book workshop */
+.workshop-intro {
+  margin: 1.25rem 0 1.5rem;
+  padding: 1.1rem 1.2rem 1.25rem;
+  border: 2px solid #000;
+  border-radius: 1rem;
+  background: #fff6dc;
+}
+
+.workshop-kicker {
+  margin: 0 0 0.7rem;
+  font-size: 0.76em;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.workshop-lede {
+  margin: 0;
+  font-size: clamp(1.3rem, 3.5vw, 2.1rem);
+  font-weight: 500;
+  line-height: 1.12;
+  letter-spacing: -0.015em;
+}
+
+.about-speaker,
+.library-hero,
+.relation-grid {
+  display: grid;
+  grid-template-columns: minmax(8rem, 0.75fr) minmax(0, 2fr);
+  gap: 1.1rem;
+  align-items: center;
+  margin: 1rem 0 1.5rem;
+}
+
+.about-speaker {
+  padding: 1rem;
+  border: 2px solid #000;
+  border-radius: 1rem;
+  background: #fffaf0;
+}
+
+.about-speaker>img {
+  display: block;
+  width: min(100%, 10rem);
+  margin: auto;
+}
+
+.about-speaker p,
+.library-hero p,
+.relation-grid p {
+  margin-top: 0;
+}
+
+.about-speaker>div> :last-child,
+.library-hero>div> :last-child,
+.relation-grid>div> :last-child {
+  margin-bottom: 0;
+}
+
+.library-hero {
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  align-items: stretch;
+  overflow: hidden;
+  border: 2px solid #000;
+  border-radius: 1rem;
+  background: #fff6dc;
+}
+
+.library-hero video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 19rem;
+  object-fit: cover;
+  border-right: 2px solid #000;
+}
+
+.library-hero>div {
+  align-self: center;
+  padding: 1rem;
+}
+
+.relation-grid {
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  align-items: start;
+}
+
+.relation-grid figure {
+  margin: 0;
+  overflow: hidden;
+  border: 2px solid #000;
+  border-radius: 1rem;
+  background: #fffef9;
+}
+
+.relation-grid figure img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-bottom: 1px solid #000;
+}
+
+.relation-grid figcaption {
+  padding: 0.5rem 0.65rem 0.6rem;
+  font-size: 0.72em;
+  line-height: 1.3;
+}
+
+.history-lineage {
+  margin: 1.25rem 0 1.5rem;
+  border-left: 3px solid #000;
+}
+
+.history-stop {
+  position: relative;
+  padding: 0.15rem 0 1.15rem 1.25rem;
+}
+
+.history-stop::before {
+  content: "";
+  position: absolute;
+  top: 0.42rem;
+  left: -0.48rem;
+  width: 0.75rem;
+  height: 0.75rem;
+  border: 2px solid #000;
+  border-radius: 50%;
+  background: orange;
+}
+
+.history-stop>p {
+  margin: 0.3rem 0 0;
+}
+
+.reference-projects {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.8rem;
+  margin: 1rem 0 1.5rem;
+}
+
+.reference-projects article {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  overflow: hidden;
+  border: 2px solid #000;
+  border-radius: 0.9rem;
+  background: #fffef9;
+}
+
+.reference-projects img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: contain;
+  border-bottom: 1px solid #000;
+  background: #f1efe9;
+}
+
+.reference-projects article>div {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding: 0.7rem 0.75rem 0.8rem;
+}
+
+.reference-projects h3,
+.reference-projects p {
+  margin: 0 0 0.4rem;
+}
+
+.reference-projects p {
+  font-size: 0.86em;
+}
+
+.reference-projects a {
+  margin-top: auto;
+  font-weight: 500;
+}
+
+.book-playground {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin: 1.25rem 0 1.5rem;
+}
+
+.play-book {
+  overflow: hidden;
+  border: 2px solid #000;
+  border-radius: 1rem;
+  background: #fffef9;
+}
+
+.play-book:last-child {
+  grid-column: 1 / -1;
+}
+
+.play-book iframe {
+  display: block;
+  width: 100%;
+  height: 24rem;
+  border: 0;
+  border-bottom: 2px solid #000;
+  background: #eee;
+}
+
+.play-book>div {
+  padding: 0.75rem 0.85rem 0.9rem;
+}
+
+.play-book h3,
+.play-book p {
+  margin: 0 0 0.35rem;
+}
+
+.play-book a {
+  font-weight: 500;
+}
+
+.core-options,
+.contribution-menu {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.65rem;
+  margin: 1rem 0 1.5rem;
+}
+
+.core-options>div,
+.contribution-menu>div {
+  padding: 0.8rem 0.9rem;
+  border: 1px solid #000;
+  border-radius: 0.8rem;
+  background: #fffaf0;
+}
+
+.core-options>div:last-child {
+  grid-column: 1 / -1;
+}
+
+.core-options code {
+  font-weight: 600;
+}
+
+.core-options p,
+.contribution-menu p {
+  margin: 0.35rem 0 0;
+  font-size: 0.9em;
+}
+
 /* -- footer */
 footer {
   margin-top: 3.75rem;
@@ -414,6 +669,27 @@ kbd {
   line-height: 1;
   border: none;
   box-shadow: none;
+}
+
+.setup-heading {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.setup-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.25em;
+  height: 1.25em;
+  flex: 0 0 1.25em;
+  border-radius: 50%;
+  background: #000;
+  color: orange;
+  font-size: 0.72em;
+  font-weight: 600;
+  line-height: 1;
 }
 
 /* -- bottom navigation */
@@ -662,6 +938,59 @@ hr {
     background-size: 4.2rem 4.2rem;
     top: -0.28rem;
     left: -0.3rem;
+  }
+
+  .workshop-intro {
+    margin-top: 0.8rem;
+    padding: 0.85rem 0.8rem 0.95rem;
+  }
+
+  .workshop-lede {
+    font-size: 1.25rem;
+  }
+
+  .about-speaker,
+  .library-hero,
+  .relation-grid,
+  .reference-projects {
+    grid-template-columns: 1fr;
+  }
+
+  .about-speaker {
+    align-items: start;
+    grid-template-columns: 4.5rem minmax(0, 1fr);
+    gap: 0.7rem;
+    padding: 0.75rem;
+  }
+
+  .library-hero video {
+    min-height: 13rem;
+    max-height: 18rem;
+    border-right: 0;
+    border-bottom: 2px solid #000;
+  }
+
+  .relation-grid {
+    gap: 0.75rem;
+  }
+
+  .reference-projects img {
+    aspect-ratio: 16 / 9;
+  }
+
+  .book-playground,
+  .core-options,
+  .contribution-menu {
+    grid-template-columns: 1fr;
+  }
+
+  .play-book:last-child,
+  .core-options>div:last-child {
+    grid-column: auto;
+  }
+
+  .play-book iframe {
+    height: 19rem;
   }
 
   .section-jump {

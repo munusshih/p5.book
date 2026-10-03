@@ -1,0 +1,662 @@
+---
+layout: "@/layouts/Worksheet.astro"
+title: "p5.book: A Computational Book Workshop"
+description: "A computational book workshop on p5.book, open-source publishing, and making a 100-page book with p5.js."
+---
+
+import Diagram from "@/components/Diagram.astro";
+import "@/styles/comp-book.css";
+
+[← p5.book home](../../index.html)
+
+<video
+  style="width: 100%; max-height: 500px; margin: auto;"
+  autoplay
+  loop
+  muted
+  playsinline
+  poster="/assets/book-cover-poster.png"
+>
+  <source src="/assets/book-cover.webm" type="video/webm" />
+</video>
+
+This workshop is about making a book with code. We’ll use
+[p5.js](https://p5js.org/) to draw each page and
+[p5.book](https://github.com/munusshih/p5.book) to turn those pages into a
+print-ready, downloadable PDF. Who needs Adobe InDesign when you have
+JavaScript?
+
+**By the end of the workshop:** everyone will have a 100-page PDF and be able to describe the
+rule that changes their composition from one page to the next.
+
+1. **p5.book + Short History:** meet p5.book and look at a brief
+   history of computational books.
+2. **Guided Coding Session:** build the core 100-page book together,
+   one step at a time.
+3. **Play:** change the content, colors, and page-to-page rule.
+4. **Q&A + Sharing:** show what we made, ask questions, and share
+   discoveries.
+
+<div class="about-speaker">
+  <img
+    src="/assets/my-notion-face-transparent.png"
+    alt="Illustrated portrait of Munus Shih"
+  />
+  <div>
+    <p>
+      I’m **Munus** (pronounced Moo-nus), a Taiwanese Minnan-Hakka creative
+      coder, designer, educator, and organizer based in New York City. I’m an
+      Assistant Professor in Pratt Institute’s MFA Communications Design
+      program. My work connects open-source software, collective publishing,
+      design education, and community infrastructure.
+    </p>
+    <p>
+      [Website](https://munusshih.com) · [GitHub](https://github.com/munusshih)
+      · [Instagram](https://www.instagram.com/munusshih/)
+    </p>
+  </div>
+</div>
+
+---
+
+## <kbd>A</kbd> — What Is p5.book?
+
+p5.book is a community library designed to simplify the process of creating
+printable books from [p5.js](https://p5js.org/) sketches.
+
+<br />
+
+<iframe
+  src="https://editor.p5js.org/munusshih/full/-JiQEqzeK"
+  style="width: 100%; height: 500px; border: 1px solid #eee;"
+></iframe>
+
+<br />
+
+p5.js is a great library for coding visuals. In fact, it’s one of my favorite
+libraries, but preparing p5.js sketches for print can be a pain. You still need
+to manage page counts, PDF export, bleed, spreads, and cover logic.
+
+p5.book grew from a desire to help artists and designers create multipage,
+print-ready books computationally without manually managing PDF generation,
+page layout, and print production.
+
+<br />
+
+<div class="note">
+
+Because our time is limited, this is not a JavaScript or p5.js fundamentals
+class. We’ll learn by reading and changing complete examples.
+
+However, you can find all the functions and syntax in the [p5.js reference](https://p5js.org/reference/). If you are new to p5.js, I recommend reading the reference and trying the examples before or after the workshop. You can also check out the [p5.js tutorials](https://p5js.org/learn/) for a more structured introduction.
+
+</div>
+
+---
+
+## <kbd>B</kbd> — How Does It Work?
+
+<figure class="subdued-figure">
+  <img
+    src="/assets/banner.gif"
+    alt="A printed zine made with p5.genzine"
+    loading="lazy"
+  />
+  <figcaption>A printed zine made with p5.genzine</figcaption>
+</figure>
+
+Before developing p5.book, I made a different library called
+[**p5.(gen)zine**](https://github.com/munusshih/p5.genzine).
+
+<figure class="subdued-figure">
+  <img
+    src="https://parsons.edu/dt-2023/wp-content/uploads/sites/26/2023/05/p5-genzine1-1.gif"
+    alt="p5.genzine running in the p5.js Web Editor with its zine controls"
+    loading="lazy"
+  />
+  <figcaption>p5.genzine in the p5.js Web Editor</figcaption>
+</figure>
+
+It offered a browser-based way to code, fork, remix, and collaboratively
+publish a printable eight-page zine. Its fixed structure and graphical controls
+used a familiar publishing format as a reason to learn code.
+
+```javascript
+function setupPage() {
+  // This replaces the old p5 setup()
+
+  /* Cover */
+  cover.randomLayout(["hello world", selfie]);
+}
+
+function drawPage() {
+  // This replaces the old p5 draw()
+
+  /* Page One */
+
+  // Name a page object—cover, one, two, three, or back—to choose
+  // where this drawing appears. The rest is regular p5.js code.
+  one.rect(one.mouseX, one.mouseY, 100);
+
+  /* Page Two */
+  two.background(random(255), random(255), random(255));
+  two.glitchLayout(["hello world", selfie]);
+
+  /* Page Three */
+  three.gridLayout(["hello world", selfie]);
+
+  /* Back Cover */
+  back.background(random(255), random(255), random(255));
+}
+```
+
+p5.book is a related branch of that inquiry. It explores how p5.js can create a
+more flexible range of books, formats, and structures by treating each frame as
+a separate page.
+
+```javascript
+let book;
+
+function setup() {
+  book = createBook(4, 6, 8); // 4 inches wide, 6 inches tall, 8 pages
+  // book = createBook("A5", 8); // standard paper size (A3 A4 A5 A6 letter legal tabloid)
+  // book = createBook(100, 150, 100, "mm"); // custom size in millimeters
+  // book.setDPI(300); // high-resolution export — for printing
+}
+
+function draw() {
+  background("orange");
+  circle(width / 2, height / 2, frameCount * 50);
+
+  book.addPage();
+  // Save this frame as a page—always call this last.
+}
+```
+
+The core operation is simple: **p5.book reinterprets p5.js’s animation loop as
+a page-generation loop.**
+
+1. `createBook(4, 6, 100)` creates a 4 × 6 inch book with 100 pages and a canvas at the same aspect ratio.
+2. `draw()` composes the current canvas with ordinary p5.js functions.
+3. `book.addPage()` captures that canvas and advances the book to its next page.
+4. p5.js calls `draw()` again. After page 100, p5.book stops the sketch and opens the viewer.
+
+<Diagram
+  label="Page state available inside draw()"
+  src="/diagrams/worksheet/c-page-state.svg"
+  alt="The current page can be read as pageNumber, page index, totalPages, or progress"
+/>
+
+- **`book.page`** is the 0-based index: 0, 1, 2… Use it to choose an item from
+  an array.
+- **`book.pageNumber`** is the visible 1-based number: 1, 2, 3… Use it to print
+  a page number.
+- **`book.totalPages`** is the page count passed to `createBook()`. Use it to
+  calculate or display the book’s length.
+- **`book.progress`** moves from 0 on the first page to 1 on the last. Use it
+  for gradual changes in movement, scale, or color.
+
+The book is generated from time: each completed frame becomes the next page in
+the sequence.
+
+You don’t need to place each page manually. The pages are generated in sequence
+and displayed automatically in the viewer.
+
+---
+
+## <kbd>C</kbd> — Getting Started
+
+To get started, open your sketch in the p5.js Web Editor. Click the **▼** arrow
+next to the sketch name, then select `index.html`. Alternatively, open
+[this starter file](https://editor.p5js.org/munusshih/sketches/u8Ox1CmnM) and
+choose **File → Duplicate**.
+
+Add these script tags inside `<head>`:
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/p5@2/lib/p5.min.js"></script>
+<script src="https://unpkg.com/jspdf@latest/dist/jspdf.umd.min.js"></script>
+<script src="https://unpkg.com/p5.book@latest/p5.book.js"></script>
+```
+
+Then return to `sketch.js`. We’ll continue coding as usual, but now we can use
+the p5.book API to create books and export PDFs.
+
+<div class="note">
+For anyone who is curious, we’re loading three libraries here:
+
+1. `p5.js` is the core library for drawing and animation. It provides the canvas and all the drawing functions we will use to create our book pages.
+
+2. `jsPDF` generates PDFs in JavaScript. p5.book uses it behind the scenes to
+   create the final PDF file.
+
+3. `p5.book` handles book-specific features such as page management, spreads,
+   bleed, and PDF export.
+
+</div>
+
+Prefer OpenProcessing? Use this [starter template](https://openprocessing.org/@u261940/2975856) instead.
+
+---
+
+## <kbd>D</kbd> — Choose a Template
+
+You don’t have to start from scratch. Choose a template that matches your
+interests or the kind of book you want to create.
+
+<div class="book-playground">
+  <article class="play-book">
+    <iframe
+      src="https://editor.p5js.org/munusshih/full/-JiQEqzeK"
+      title="p5.book A to Z"
+      loading="lazy"
+    ></iframe>
+    <div>
+      <h3>p5.book A–Z</h3>
+      <a href="https://editor.p5js.org/munusshih/sketches/-JiQEqzeK">
+        Open in the p5.js Editor →
+      </a>
+    </div>
+  </article>
+
+<article class="play-book">
+  <iframe
+    src="https://editor.p5js.org/munusshih/full/54r-ORA8i"
+    title="Parametric curve computational flipbook"
+    loading="lazy"
+  ></iframe>
+  <div>
+    <h3>Parametric Flipbook</h3>
+    <a href="https://editor.p5js.org/munusshih/sketches/54r-ORA8i">
+      Open in the p5.js Editor →
+    </a>
+  </div>
+</article>
+
+  <article class="play-book">
+    <iframe
+      src="https://editor.p5js.org/munusshih/full/z9i5h5iKW"
+      title="Open Assembly book"
+      loading="lazy"
+    ></iframe>
+    <div>
+      <h3>Open Assembly</h3>
+      <a href="https://editor.p5js.org/munusshih/sketches/z9i5h5iKW">
+        Open in the p5.js Editor →
+      </a>
+    </div>
+  </article>
+</div>
+
+---
+
+## <kbd>F</kbd> — Choose Your Book Size
+
+<div class="try">
+
+One of the most important decisions in book design is choosing its physical
+size.
+
+The size affects how the book feels, how it is held, and how its content
+is read. Do you want a tiny book that fits in a pocket or a large, expansive
+book?
+
+</div>
+
+The first arguments in `createBook()` define the trim size; the final number is
+the page count.
+
+```js
+book = createBook(4, 6, 100); // 4 × 6 inches
+book = createBook("A5", 100); // named paper size
+book = createBook(100, 150, 100, "mm"); // custom metric size
+```
+
+You can also use `"A3"`, `"A4"`, `"A6"`, `"letter"`, `"legal"`, or
+`"tabloid"`. p5.book creates a canvas with the matching page ratio.
+
+---
+
+## <kbd>G</kbd> — Design the Cover, Back Cover, and Page Numbers
+
+The cover and back cover are part of the total page count. Use
+`isFirstPage()` and `isLastPage()` to design them differently, then use
+`pageNumber` on the interior pages:
+
+<Diagram
+  label="Book structure"
+  src="/diagrams/worksheet/d-cover-logic.svg"
+  alt="Page sequence with cover, interior pages, and back cover"
+/>
+
+```js
+function draw() {
+  if (book.isFirstPage()) {
+    background("orange");
+    fill("black");
+    text("MY BOOK", width / 2, height / 2);
+  } else if (book.isLastPage()) {
+    background("black");
+    fill("white");
+    text("THE END", width / 2, height / 2);
+  } else {
+    if (book.pageNumber % 2 === 0) {
+      background("white");
+    } else {
+      background("blue");
+    }
+
+    // Draw the interior composition here.
+
+    fill("black");
+    textSize(16);
+    text(book.pageNumber, width - 32, height - 28);
+  }
+
+  book.addPage(); // Always call this last.
+}
+```
+
+There is no single correct way to write the condition. Checking
+`book.pageNumber === 1` and `book.pageNumber === book.totalPages` works too.
+Use whichever version is easiest for you to read.
+
+---
+
+## <kbd>H</kbd> — Choose a Page Background
+
+p5.book generates one page at a time and then combines those pages into a
+complete book. What you do at the beginning of `draw()` changes how each page
+is rendered:
+
+- **Start with `background("color")`:** each page begins fresh, opaque, and
+  filled with a solid color.
+- **Start with `clear()`:** each page begins fresh and transparent. Use this
+  when the bleed layer should show through.
+- **Start with neither:** the previous frame remains, so marks accumulate from
+  page to page.
+
+Try all three. Accumulation can become the book’s visual rule, while
+`background()` or `clear()` gives every page a clean start.
+
+---
+
+## <kbd>I</kbd> — Add Bleed
+
+**Bleed** is extra artwork that extends beyond the trim line. If a color or
+image should reach the edge of the printed page, draw it on `book.bleed`, then
+clear the main canvas so the bleed layer remains visible underneath.
+
+<Diagram
+  label="Bleed, trim, and safe area"
+  src="/diagrams/worksheet/f-bleed.svg"
+  alt="Bleed, trim line, and safe area with legend"
+/>
+
+```js
+function setup() {
+  book = createBook(4, 6, 100);
+  book.setBleed(0.125); // 1/8 inch; use setBleed(3, "mm") for 3 mm
+}
+
+function draw() {
+  book.bleed.background("orange"); // Extends beyond the trim.
+  clear(); // Keeps the main page transparent over the bleed layer.
+
+  fill("black");
+  text(book.pageNumber, 24, 28);
+
+  book.addPage();
+}
+```
+
+`setBleed()` turns crop marks on automatically. If your printer does not want
+them, use `book.setCropMarks(false)`.
+
+---
+
+## <kbd>J</kbd> — Design a Custom Spine
+
+`book.spine` is its own drawing surface. Let p5.book estimate its width from
+the page count and paper thickness, or use the exact finished width supplied by
+your printer:
+
+```js
+function setup() {
+  book = createBook(5, 8, 100);
+  book.setPageThickness(0.1, "mm"); // Estimate from the paper.
+  // book.setSpineThickness(12, "mm"); // Use an exact printer specification.
+
+  book.spine.draw((g) => {
+    g.background("black");
+    g.fill("white");
+    g.textAlign(CENTER, CENTER);
+    g.textSize(18);
+    g.push();
+    g.translate(g.width / 2, g.height / 2);
+    g.rotate(HALF_PI);
+    g.text("MY BOOK TITLE", 0, 0);
+    g.pop();
+  });
+}
+
+function draw() {
+  // Draw the cover, back cover, and interior pages here.
+  book.addPage();
+}
+```
+
+If you use both thickness methods, `setSpineThickness()` takes precedence.
+Check the spine in the **3D viewer** and in the separate **Cover PDF**.
+
+---
+
+## <kbd>K</kbd> — Get Ready for Print
+
+Before printing, export the files carefully and inspect every part of the book.
+
+1. Use `book.setDPI(300)` in `setup()` for print-quality output.
+2. Add bleed if the printer requires it: `0.125` inches or `3, "mm"`.
+3. Keep `book.addPage()` as the final line in `draw()`.
+4. For most workflows, preview spreads but export single pages with
+   `book.setSpread(true, false)`.
+5. Export from the viewer and review the PDF at 100% zoom.
+
+Choose the binding workflow that matches the final object:
+
+```js
+book.setSaddleStitch(true); // Folded booklet.
+
+// Or, for perfect binding with separate cover stock:
+book.setSeparateCoverStock(true);
+book.innerSpine = "#ffffff";
+```
+
+<div class="note">
+  p5.book currently exports RGB PDFs, not CMYK. Bright screen colors may print
+  duller, and deep blacks may shift. Ask the print shop about its preferred
+  RGB-to-CMYK workflow. If strict CMYK delivery is required, convert the final
+  PDF in a prepress tool.
+</div>
+
+---
+
+## <kbd>L</kbd> — Books Made with p5.book
+
+Here are some books people made with p5.book!
+
+<div class="book-gallery" aria-label="Printed books made with p5.book">
+  <figure class="book-media">
+    <video
+      autoplay
+      loop
+      muted
+      playsinline
+      preload="metadata"
+      aria-label="A community-made p5.book flipbook being held and opened"
+    >
+      <source
+        src="/assets/comp-book/community-flipbook.mp4"
+        type="video/mp4"
+      />
+    </video>
+    <figcaption>A book shared by @ccc.taiwan.</figcaption>
+  </figure>
+
+<figure class="book-media">
+  <img
+    src="/assets/comp-book/chinnnnyu-generative-book.jpg"
+    alt="A hand holding a miniature black generative book with Chinese characters across its pages and spine"
+    loading="lazy"
+  />
+  <figcaption>A miniature generative book by @chinnnnyu.</figcaption>
+</figure>
+
+<figure class="book-media">
+  <video
+    autoplay
+    loop
+    muted
+    playsinline
+    preload="metadata"
+    aria-label="A coded zine rotating in the p5.book 3D viewer"
+  >
+    <source src="/assets/comp-book/coded-zine.mp4" type="video/mp4" />
+  </video>
+  <figcaption>
+    A coded zine shown in the p5.book 3D viewer, made by @wekai111.
+  </figcaption>
+</figure>
+
+  <figure class="book-media">
+    <img
+      src="/assets/comp-book/parametric-flipbook.jpg"
+      alt="A hand holding a tall black computational flipbook outdoors"
+      loading="lazy"
+    />
+    <figcaption>
+      A printed parametric flipbook generated page by page from a single p5.js
+      equation.
+    </figcaption>
+  </figure>
+</div>
+
+---
+
+## <kbd>M</kbd> — Contribute
+
+p5.book is completely open sourced, under an MIT License, and will love contributions from the community.
+
+Currently, we are looking for contributions in the following areas:
+
+- [Open the source repository](https://github.com/munusshih/p5.book)
+- [Start a GitHub issue](https://github.com/munusshih/p5.book/issues)
+
+<div class="contribution-menu">
+  <div>
+    <strong>Example</strong>
+    <p>
+      Share a beautiful book made with p5.book with us, so we can showcase it in
+      the community gallery!
+    </p>
+  </div>
+  <div>
+    <strong>Documentation</strong>
+    <p>
+      Rewrite one confusing instruction or document an undocumented function, or
+      document the project in other languages!
+    </p>
+  </div>
+  <div>
+    <strong>Bug Report</strong>
+    <p>Record the browser, code, expected result, and actual result.</p>
+  </div>
+  <div>
+    <strong>Feature Proposal</strong>
+    <p>
+      If you have a very specific idea for a new feature, describe it in detail
+      and explain why it would be useful. If you have a mockup, even better!
+    </p>
+  </div>
+</div>
+
+<div class="note">
+  A useful report is concrete: “In Safari, with this sketch, I expected the
+  100-page viewer to open after <code>addPage()</code>. Instead, I saw a blank
+  preview.” That gives the project a reproducible condition to investigate.
+</div>
+
+---
+
+## <kbd>N</kbd> — Compare Publishing Approaches
+
+What are some other projects other than p5.book that can help you make a book with code? Here are three approaches to computational publishing:
+
+<div class="reference-projects">
+  <article>
+    <img
+      src="https://pagedjs.org/images/cityfab0.png"
+      alt="A printed publication created with Paged.js"
+      loading="lazy"
+    />
+    <div>
+      <h3>Paged.js — A Website and a Book</h3>
+      <p>
+        Paged.js starts with HTML and CSS, then adds the rules needed to turn
+        that same web document into paged, print-ready material. It is useful
+        when the website and the book should share a source and a visual
+        language. <a href="https://www.openhumanitiespress.org/books/titles/aesthetic-programming/">
+        Aesthetic Programming
+      </a> is one example of this
+        web-to-print approach.
+      </p>
+      <a href="https://pagedjs.org/en/about/">Paged.js →</a>{" "}
+
+    </div>
+
+  </article>
+
+<article>
+  <img
+    src="https://raw.githubusercontent.com/nature-of-code/noc-book-2/main/docs/images/notion-database.png"
+    alt="The Nature of Code content organized in a Notion database"
+    loading="lazy"
+  />
+  <div>
+    <h3>Magic Book + Notion — Structure into Formats</h3>
+    <p>
+      Magic Book is suited to long-form, structured content. In
+      <a href="https://natureofcode.com/introduction/">The Nature of Code</a>,
+      chapters are organized in Notion and imported as HTML for the website and
+      print pipelines. Magic Book handles the printable book build, placing the
+      content system at the center.
+    </p>
+    <a href="https://github.com/magicbookproject/magicbook">Magic Book →</a>
+  </div>
+</article>
+
+  <article>
+    <img
+      src="/assets/book-cover-poster.png"
+      alt="A colorful generative book made with p5.book"
+      loading="lazy"
+    />
+    <div>
+      <h3>p5.book — Code as Page-Making</h3>
+      <p>
+        p5.book begins with p5.js canvases rather than flowing text. It serves
+        creative coders making generative visuals, visual sequences,
+        flipbooks, zines, and experimental books. Here, the changing visual
+        system is at the center, and the drawing loop becomes the pagination
+        engine.
+      </p>
+      <a href="https://github.com/munusshih/p5.book">Source →</a>
+    </div>
+  </article>
+</div>
+
+<div class="note">
+  Though p5.book is not designed for text-heavy books, it can be used to create
+  them too. Here is an example of a text-based book made with p5.book on [100
+  ways to escape neoliberalism](../../book-generator/)
+</div>

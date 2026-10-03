@@ -1,0 +1,108 @@
+/* The comp-book workshop uses one continuous reading column at every width. */
+.content .about-speaker,
+.content .library-hero,
+.content .relation-grid,
+.content .reference-projects,
+.content .book-playground,
+.content .core-options,
+.content .contribution-menu {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.content .about-speaker,
+.content .library-hero,
+.content .relation-grid {
+  align-items: start;
+}
+
+.content .play-book:last-child,
+.content .core-options>div:last-child {
+  grid-column: auto;
+}
+
+.content .library-hero video {
+  border-right: 0;
+  border-bottom: 2px solid #000;
+}
+
+.subdued-figure figcaption {
+  color: #AAA;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.content .reference-projects img {
+  aspect-ratio: 16 / 9;
+}
+
+.book-gallery {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1.25rem, 4vw, 3rem);
+  margin: 1.5rem 0 2.5rem;
+  overflow: hidden;
+  padding: 1.5rem 1rem 2rem;
+}
+
+.book-media {
+  width: min(76%, 34rem);
+  margin: 0;
+  overflow: hidden;
+  border: 2px solid #000;
+  border-radius: 0.9rem;
+  background: #fffef9;
+  box-shadow: 0.4rem 0.45rem 0 #000;
+}
+
+.book-media:nth-child(odd) {
+  align-self: flex-start;
+  transform: rotate(-2deg);
+}
+
+.book-media:nth-child(even) {
+  align-self: flex-end;
+  transform: rotate(2.25deg);
+}
+
+.book-media:nth-child(3) {
+  width: min(64%, 29rem);
+  margin-right: 8%;
+  transform: rotate(-1deg);
+}
+
+.book-media img,
+.book-media video {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 9 / 16;
+  object-fit: cover;
+  background: #111;
+}
+
+.book-media figcaption {
+  padding: 0.65rem 0.75rem 0.75rem;
+  border-top: 1px solid #000;
+  font-size: 0.82em;
+  line-height: 1.35;
+}
+
+@media (max-width: 37.5rem) {
+  .book-gallery {
+    padding-inline: 0.4rem;
+  }
+
+  .book-media,
+  .book-media:nth-child(3) {
+    width: 88%;
+    margin-right: 0;
+  }
+
+  .book-media:nth-child(odd) {
+    transform: rotate(-1deg);
+  }
+
+  .book-media:nth-child(even) {
+    transform: rotate(1deg);
+  }
+}

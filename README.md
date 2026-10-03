@@ -12,7 +12,8 @@ Designed specifically for artists, designers, and educators who want to create c
 
 ## Start Here
 
-- [Step-by-step workshop guide](https://p5-book.vercel.app/workshop/)
+- [Comp-book: computational book workshop](https://p5-book.vercel.app/workshop/comp-book/)
+- [Full step-by-step workshop guide](https://p5-book.vercel.app/workshop/)
 - [Docs index](https://p5-book.vercel.app/)
 - [Starter sketch (p5 editor)](https://editor.p5js.org/munusshih/sketches/u8Ox1CmnM)
 
