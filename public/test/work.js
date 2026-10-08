@@ -33,7 +33,7 @@ async function setup() {
 }
 
 function draw() {
-  const bg = book.isLeftPage() ? "orange" : "black";
+  const bg = book.isLeftPage() ? "green" : "black";
   const fg = book.isLeftPage() ? "black" : "orange";
 
   // Draw full bleed background.
