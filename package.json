@@ -30,13 +30,13 @@
         "node": ">=18"
     },
     "scripts": {
-        "dev": "npm run docs:dev",
+        "dev": "npm run test:public:prep && npm run docs:dev",
         "lib:build": "node scripts/build-lib.js",
         "lib:watch": "node scripts/build-lib.js --watch",
         "docs:dev": "astro dev",
         "docs:build": "astro build",
         "docs:preview": "astro preview",
-        "test:public:prep": "npm run lib:build && cp p5.book.js public/test/p5.book.local.js",
+        "test:public:prep": "npm run lib:build && cp p5.book.js public/test/lib/p5.book.local.js",
         "test:public": "npm run test:public:prep && npm run docs:dev",
         "build": "npm run lib:build && npm run docs:build",
         "prepublishOnly": "npm run lib:build"

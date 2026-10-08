@@ -713,7 +713,7 @@ npm install
 npm run test:public:prep
 ```
 
-This creates `public/test/p5.book.local.js` from your current source.
+This creates `public/test/lib/p5.book.local.js` from your current source.
 
 3. Start the docs dev server:
 
@@ -737,7 +737,7 @@ This runs the prep step and then starts the dev server.
 
 Notes:
 
-- `public/test/index.html` is wired to `./p5.book.local.js`, so `/test/` always uses your local build.
+- `public/test/index.html` is wired to `./lib/p5.book.local.js`, so `/test/` always uses your local build.
 - Re-run `npm run test:public:prep` after library code changes to refresh the test bundle.
 
 ## Release
