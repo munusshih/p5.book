@@ -1,0 +1,18 @@
+---
+interface Props { name: 'terminal' | 'folder' | 'code' | 'save' | 'branch' | 'commit' | 'push' | 'desktop' | 'review' | 'download' | 'sync'; }
+const paths = {
+  terminal: 'M3 4h18v16H3z m4 4 4 4-4 4m6 0h4',
+  folder: 'M3 7h7l2 2h9v11H3z M3 7V4h7l2 3',
+  code: 'm8 7-5 5 5 5m8-10 5 5-5 5m-3-13-2 16',
+  save: 'M4 3h13l3 3v15H4z M8 3v6h8V3 M8 21v-8h8v8',
+  branch: 'M6 7v10m12-10v3a5 5 0 0 1-5 5H6 M6 3a2 2 0 1 0 0 4 2 2 0 0 0 0-4 M6 17a2 2 0 1 0 0 4 2 2 0 0 0 0-4 M18 3a2 2 0 1 0 0 4 2 2 0 0 0 0-4',
+  commit: 'M3 12h5m8 0h5 M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8',
+  push: 'M12 16V3m-5 5 5-5 5 5 M4 15v6h16v-6',
+  desktop: 'M3 3h18v13H3z M12 16v5m-5 0h10',
+  review: 'M4 3h16v18H4z m4 5h8m-8 4h8m-8 4h4',
+  download: 'M12 3v13m-5-5 5 5 5-5 M4 15v6h16v-6',
+  sync: 'M20 11a8 8 0 0 0-14-4L4 9 M4 4v5h5 M4 13a8 8 0 0 0 14 4l2-2 M20 20v-5h-5',
+};
+---
+<svg class="guide-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d={paths[Astro.props.name]} /></svg>
+<style>.guide-icon { width: 1.15em; height: 1.15em; display: inline-block; vertical-align: -.18em; margin-right: .35em; flex-shrink: 0; }</style>

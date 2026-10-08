@@ -30,21 +30,25 @@
         "node": ">=18"
     },
     "scripts": {
-        "dev": "npm run test:public:prep && npm run docs:dev",
+        "dev": "astro dev",
         "lib:build": "node scripts/build-lib.js",
         "lib:watch": "node scripts/build-lib.js --watch",
         "docs:dev": "astro dev",
         "docs:build": "astro build",
         "docs:preview": "astro preview",
-        "test:public:prep": "npm run lib:build && cp p5.book.js public/test/lib/p5.book.local.js",
-        "test:public": "npm run test:public:prep && npm run docs:dev",
+        "test:public:prep": "npm run lib:build",
+        "test:public": "npm run test",
         "build": "npm run lib:build && npm run docs:build",
-        "prepublishOnly": "npm run lib:build"
+        "prepublishOnly": "npm run lib:build",
+        "test": "astro dev --open /test/",
+        "previews:setup": "playwright install chromium",
+        "test:previews": "npm run lib:build && node scripts/test-previews.js --force"
     },
     "devDependencies": {
         "@astrojs/mdx": "^4.2.3",
         "astro": "^5.5.5",
         "esbuild": "^0.27.3",
+        "playwright": "^1.64.0",
         "rehype-highlight": "^7.0.0"
     }
 }

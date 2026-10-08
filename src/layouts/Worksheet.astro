@@ -2,7 +2,7 @@
 import Base from "@/layouts/Base.astro";
 import "@/styles/worksheet.css";
 
-const { frontmatter } = Astro.props;
+const { frontmatter, showNavigation = true, stepNumbering = "document" } = Astro.props;
 ---
 
 <Base title={frontmatter.title ?? "p5.book workshop"}>
@@ -16,9 +16,10 @@ const { frontmatter } = Astro.props;
   <div class="title-section">
     <h1>{frontmatter.title}</h1>
   </div>
-  <div class="content">
+  <div class="content" data-step-numbering={stepNumbering}>
     <slot />
   </div>
+  {showNavigation && <>
   <div class="section-jump" aria-label="Jump between sections">
     <button id="section-up" type="button" aria-label="Previous section">
       ↑
@@ -28,6 +29,7 @@ const { frontmatter } = Astro.props;
   <nav class="bottom-nav" id="bottom-nav">
     <!-- Auto-populated by JavaScript -->
   </nav>
+  </>}
 </Base>
 
 <script>
@@ -180,10 +182,16 @@ const { frontmatter } = Astro.props;
   }
 
   if (content) {
-    const steps = content.querySelectorAll(".step");
+    const steps = content.querySelectorAll(
+      content.getAttribute("data-step-numbering") === "section" ? "h2, .step" : ".step",
+    );
     let stepCounter = 0;
 
     steps.forEach((step) => {
+      if (step.tagName === "H2") {
+        stepCounter = 0;
+        return;
+      }
       const manualStep = step.getAttribute("data-step")?.trim();
 
       if (manualStep) {

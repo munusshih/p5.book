@@ -1,10 +1,10 @@
-import { build } from "esbuild";
+import { build, context } from "esbuild";
 import { readFileSync } from "fs";
 
 const watch = process.argv.includes("--watch");
 const banner = readFileSync("src-lib/BANNER", "utf8").trim();
 
-const config = {
+export const config = {
   entryPoints: ["src-lib/index.js"],
   bundle: true,
   platform: "browser",
@@ -19,13 +19,16 @@ const config = {
   loader: { ".css": "text" },
 };
 
-if (watch) {
-  const ctx = await build({ ...config, logLevel: "info" });
-  // esbuild v0.17+ context API
-  if (ctx && typeof ctx.watch === "function") {
+// Importing this config from Astro must not start a second build.
+if (process.argv[1] && new URL(process.argv[1], "file:").href === import.meta.url) {
+  if (watch) {
+    const ctx = await context({ ...config, logLevel: "info" });
     await ctx.watch();
     console.log("watching src-lib/ for changes…");
+    for (const signal of ["SIGINT", "SIGTERM"]) {
+      process.once(signal, async () => { await ctx.dispose(); process.exit(); });
+    }
+  } else {
+    await build(config);
   }
-} else {
-  await build(config);
 }

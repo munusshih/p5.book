@@ -1,0 +1,20 @@
+---
+interface Props {
+  title: string;
+  image: string;
+  alt: string;
+  href: string;
+  linkLabel: string;
+}
+const { title, image, alt, href, linkLabel } = Astro.props;
+---
+<article>
+  <a href={href} aria-label={linkLabel}>
+    <img src={image} alt={alt} loading="lazy" />
+  </a>
+  <div>
+    <h3>{title}</h3>
+    <slot />
+    <a href={href}>{linkLabel}</a>
+  </div>
+</article>

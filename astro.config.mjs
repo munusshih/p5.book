@@ -1,43 +1,13 @@
 import { defineConfig } from "astro/config";
 import mdx from "@astrojs/mdx";
 import rehypeHighlight from "rehype-highlight";
-import { readFileSync, copyFileSync } from "fs";
 import { fileURLToPath } from "url";
-import { resolve } from "path";
-
-const root = fileURLToPath(new URL(".", import.meta.url));
-const src = resolve(root, "src");
-
-// Serves /p5.book.js from the repo root during dev,
-// and copies it into dist/ at the end of a production build.
-const p5bookPlugin = {
-  name: "p5book-local",
-  hooks: {
-    "astro:server:setup": ({ server }) => {
-      server.middlewares.use("/p5.book.js", (_req, res) => {
-        res.setHeader("Content-Type", "application/javascript; charset=utf-8");
-        res.end(readFileSync(resolve(root, "p5.book.js")));
-      });
-      // Allows /test (no trailing slash/index.html) to load the local test
-      // harness page, mirroring how a static file server would resolve it.
-      server.middlewares.use("/test", (req, res, next) => {
-        if (req.url !== "/" && req.url !== "") return next();
-        res.setHeader("Content-Type", "text/html; charset=utf-8");
-        res.end(readFileSync(resolve(root, "public/test/index.html")));
-      });
-    },
-    "astro:build:done": ({ dir }) => {
-      copyFileSync(
-        resolve(root, "p5.book.js"),
-        fileURLToPath(new URL("p5.book.js", dir)),
-      );
-    },
-  },
-};
+import localExamples from "./scripts/local-examples.js";
+const src = fileURLToPath(new URL("./src", import.meta.url));
 
 export default defineConfig({
   site: "https://p5-book.vercel.app",
-  integrations: [mdx(), p5bookPlugin],
+  integrations: [mdx(), localExamples()],
   markdown: {
     rehypePlugins: [rehypeHighlight],
   },

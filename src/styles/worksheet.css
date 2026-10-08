@@ -254,6 +254,17 @@ ol {
   padding: 0.9rem 1rem;
 }
 
+/* Astro/Shiki adds an inline theme background; keep worksheet code surfaces
+   consistent with the existing highlight.js snippets. */
+.content pre.astro-code {
+  background-color: #fffef9 !important;
+}
+
+.content pre.astro-code code {
+  font-family: var(--font-mono);
+  font-size: 0.82em;
+}
+
 /* -- workshop callouts */
 .step {
   margin: 1rem 0 1.5rem;
@@ -653,6 +664,25 @@ a {
 }
 
 /* -- letter badges */
+/* -- inline code: readable on cream steps and grey notes */
+.content :not(pre) > code {
+  background: #fff;
+  color: #1a1a1a;
+  border: 1px solid rgba(0, 0, 0, 0.28);
+  border-bottom-width: 2px;
+  border-radius: 0.4em;
+  padding: 0.05em 0.4em;
+  font-size: 0.88em;
+  font-weight: 500;
+  overflow-wrap: anywhere;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+.content a > code {
+  text-decoration: underline;
+}
+
 kbd {
   display: inline-flex;
   align-items: center;

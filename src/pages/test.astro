@@ -1,0 +1,657 @@
+---
+import { Code } from "astro:components";
+import Worksheet from "../layouts/Worksheet.astro";
+import GuideIcon from "../components/GuideIcon.astro";
+import Diagram from "../components/Diagram.astro";
+import ProjectCard from "../components/ProjectCard.astro";
+import { getTestExamples } from "../../scripts/test-catalog.js";
+const examples = getTestExamples();
+---
+
+<Worksheet
+  stepNumbering="section"
+  frontmatter={{ title: "Let’s Contribute to the p5.book Library!" }}
+>
+  <p>
+    Welcome! This is a shared space to play with p5.book. Pick a book that
+    catches your eye, try a new color or a few words, and see where it takes
+    you.
+  </p>
+  <p>
+    You don’t need a finished idea to join in. Start with a small change—the
+    guide below will help you find your way, make something of your own, and
+    share it with the project.
+  </p>
+
+  <nav aria-label="Table of contents" class="note">
+    <p><strong>On This Page</strong></p>
+    <ul>
+      <li><a href="#set-up">A — Set Up Your Computer</a></li>
+      <li><a href="#start-preview">B — Start the Preview</a></li>
+      <li><a href="#choose-a-book">C — Choose a Book</a></li>
+      <li><a href="#getting-started">D — Make Your First Edit</a></li>
+      <li><a href="#add-a-book">E — Add Another Book</a></li>
+      <li><a href="#get-updates">F — Get the Latest Changes</a></li>
+      <li><a href="#share-your-changes">G — Share Your Changes</a></li>
+      <li><a href="#report-an-issue">H — Report a Problem (File an Issue)</a></li>
+    </ul>
+  </nav>
+
+  <h2 id="set-up"><kbd>A</kbd> — Set Up Your Computer</h2>
+  <p>
+    Do this once. You’ll install two free apps, <strong>VS Code</strong> (where you edit
+    code) and <strong>GitHub Desktop</strong> (where you download, save, and share changes),
+    plus <strong>Node.js</strong>, which runs the local preview.
+  </p>
+  <div class="note">
+    Hi, it’s Munus! If you’ve never used a terminal or GitHub before, you’re in good company. Nothing here can break your computer, and every step can be undone. Go slowly, copy the commands exactly, and if something looks strange, take a screenshot and send it to me.
+  </div>
+  <div class="step" data-step="1">
+    <h3><GuideIcon name="download" /> Install VS Code</h3>
+    <p>Download the installer for your system from <a href="https://code.visualstudio.com/download">code.visualstudio.com/download</a>, then open it.</p>
+    <ul>
+      <li><strong>Mac:</strong> open the downloaded zip, then drag <strong>Visual Studio Code</strong> into your <strong>Applications</strong> folder.</li>
+      <li><strong>Windows:</strong> run the installer and keep the default options.</li>
+    </ul>
+    <p>Open VS Code once to check that it starts. <a href="https://code.visualstudio.com/docs/setup/setup-overview">VS Code setup guide →</a></p>
+    <div class="note"><strong>What is VS Code?</strong> It’s a text editor made for code, like Word but for programs. It shows your files in a sidebar, colors the code to make it easier to read, and has a built-in terminal so you never need a second window.</div>
+  </div>
+  <div class="step" data-step="2">
+    <h3><GuideIcon name="download" /> Install Node.js</h3>
+    <p>Download the <strong>LTS</strong> version from <a href="https://nodejs.org/">nodejs.org</a> and run the installer with the default options. This provides the <code>npm</code> command used below.</p>
+    <div class="note"><strong>What are Node.js and npm?</strong> JavaScript normally runs inside a browser. <strong>Node.js</strong> lets your computer run JavaScript tools by itself, and <strong>npm</strong> (“Node package manager”) comes with it. Think of npm as a helper that fetches the small tools the project needs and runs the project’s shortcuts. You install it once and then mostly forget about it.</div>
+  </div>
+  <div class="step" data-step="3">
+    <h3><GuideIcon name="desktop" /> Install GitHub Desktop and Sign In</h3>
+    <div class="note"><strong>What are Git and GitHub?</strong> <strong>Git</strong> keeps a history of every change to a project, like a very patient “undo” button. <strong>GitHub</strong> is a website that stores that history online so many people can work on one project. <strong>GitHub Desktop</strong> is a friendly app that does the Git steps with buttons instead of typed commands.</div>
+    <p>Download it from <a href="https://desktop.github.com/">desktop.github.com</a>, install it, and open it. Choose <strong>Sign in to GitHub.com</strong> and follow the browser prompts. You’ll need a free <a href="https://github.com/signup">GitHub account</a>.</p>
+    <Diagram src="/assets/contributing/desktop-sign-in.png" alt="GitHub Desktop welcome screen with a Sign in to GitHub.com button." label="GitHub Desktop · sign in" caption="Official GitHub screenshot. Sign in with the account you’ll use to share your changes." />
+    <p><a href="https://docs.github.com/en/desktop/installing-and-authenticating-to-github-desktop/authenticating-to-github-in-github-desktop">GitHub’s sign-in guide →</a></p>
+  </div>
+  <div class="step" data-step="4">
+    <h3><GuideIcon name="download" /> Download (Clone) the p5.book Project</h3>
+    <p>Cloning copies the project from GitHub to your computer. Open <a href="https://github.com/munusshih/p5.book">github.com/munusshih/p5.book</a>, click the green <strong>Code</strong> button, then choose <strong>Open with GitHub Desktop</strong>.</p>
+    <Diagram src="/assets/contributing/github-code-button.png" alt="GitHub repository page with the green Code button." label="GitHub · the Code button" caption="Example repository; use p5.book. The button is at the top right of the file list." />
+    <Diagram src="/assets/contributing/github-open-desktop.png" alt="GitHub Code menu with Open with GitHub Desktop highlighted." label="Choose Open with GitHub Desktop" caption="Your browser may ask permission to open GitHub Desktop; allow it." />
+    <div class="note"><strong>Clone? Repository?</strong> A <strong>repository</strong> (or “repo”) is just a project folder with its full history. To <strong>clone</strong> it is to download your own working copy. Changes you make stay on your computer until you choose to share them, so you can’t hurt the original.</div>
+    <p>In the <strong>Clone a Repository</strong> window, pick a <strong>Local Path</strong> you’ll remember, such as <code>Documents</code>, then click <strong>Clone</strong>.</p>
+    <Diagram src="/assets/contributing/desktop-clone.png" alt="GitHub Desktop Clone a Repository window with the Local Path field and Choose button." label="GitHub Desktop · clone" caption="The example URL is GitHub’s docs repo. Yours should be munusshih/p5.book." />
+    <div class="note"><strong>Will GitHub Desktop ask “How are you planning to use this fork?”</strong> That prompt appears when you don’t have write access to the project yet. Choose <strong>To contribute to the parent project</strong>. It makes your own copy (a “fork”) on GitHub, and your pull request will still go back to the main project. If you’re a collaborator, you won’t see it.</div>
+    <p>Prefer VS Code? Open <strong>Source Control</strong>, click <strong>Clone Repository</strong>, and paste <code>https://github.com/munusshih/p5.book</code>.</p>
+    <Diagram src="/assets/contributing/vscode-clone.png" alt="VS Code Source Control sidebar with a Clone Repository button and repository search box." label="VS Code · Clone Repository" caption="Official VS Code screenshot, showing a search for an example repository." />
+  </div>
+  <div class="step" data-step="5">
+    <h3><GuideIcon name="code" /> Open the Project in VS Code</h3>
+    <p>The project is now a folder on your computer. Next, open that folder in VS Code so you can see its files.</p>
+    <p><strong>From GitHub Desktop:</strong> after cloning, click <strong>Open in Visual Studio Code</strong> in the middle of the window (or use <strong>Repository → Open in Visual Studio Code</strong> from the menu bar). If you don’t see that button, open <strong>Settings → Integrations</strong>, choose <strong>Visual Studio Code</strong> as your External Editor, and click <strong>Save</strong>.</p>
+    <Diagram src="/assets/contributing/desktop-integrations.png" alt="GitHub Desktop Settings with the Integrations pane open and Visual Studio Code chosen as External Editor." label="GitHub Desktop · choose VS Code as your editor" caption="Official GitHub screenshot. Once VS Code is selected here, the Open in Visual Studio Code button appears." />
+    <p><strong>From VS Code:</strong> choose <strong>File → Open Folder…</strong> (on Windows, <strong>File → Open Folder</strong>) and select the <code>p5.book</code> folder you cloned. If VS Code asks “Do you trust the authors?”, click <strong>Yes, I trust the authors</strong>; you’re opening your own copy of the project.</p>
+    <Diagram src="/assets/contributing/vscode-explorer.png" alt="VS Code with the Explorer sidebar showing a project’s folders and files." label="VS Code · the Explorer lists your project’s files" caption="Official VS Code screenshot of an example project. Yours should list folders like test, src and public, plus files like package.json." />
+    <div class="note"><strong>How do I know it worked?</strong> The left sidebar should show your project’s folder name (<code>p5.book</code>) at the top and a list of files beneath it, including <code>package.json</code>. If you only see a welcome screen, you haven’t opened the folder yet.</div>
+  </div>
+
+  <div class="step" data-step="6">
+    <h3><GuideIcon name="terminal" /> Open the Terminal in VS Code</h3>
+    <div class="note"><strong>What is a terminal?</strong> It’s a text window where you give your computer instructions by typing instead of clicking. You’ll only type one or two short commands from this guide, and pressing <kbd>Enter</kbd> sends them. Nothing happens until you press it.</div>
+    <p>With the <code>p5-book</code> project open in VS Code, choose <strong>Terminal → New Terminal</strong> from the top menu. A panel opens below your editor. Click inside the <strong>Terminal</strong> tab, beside the blinking cursor.</p>
+    <Diagram src="/assets/contributing/vscode-terminal.png" alt="VS Code with the integrated Terminal tab and shell highlighted in the bottom panel." label="VS Code · the terminal lives below your editor" caption="This official screenshot shows PowerShell on Windows. On Mac you may see zsh; you’ll type the same npm command." />
+    <p>Run the command from the project’s top-level folder—the one containing <code>package.json</code> and <code>test/</code>. A new terminal normally starts there. If you opened only a sketch folder, use <strong>File → Open Folder…</strong> to open the whole project, then create a new terminal.</p>
+  </div>
+  <div class="step" data-step="7">
+    <h3><GuideIcon name="terminal" /> Run <code>npm install</code></h3>
+    <p>Click inside the terminal, type this command, and press <kbd>Enter</kbd>:</p>
+    <Code lang="bash" code="npm install" theme="github-light" />
+    <Diagram src="/assets/contributing/vscode-terminal-command.png" alt="VS Code terminal showing a command typed after the prompt and its output printed underneath." label="Type after the prompt · then press Enter" caption="Official VS Code screenshot of an example command. Yours will show npm install and different output." />
+    <p>Text will scroll by for a minute or two. That’s npm working. You’re done when the cursor returns on a fresh line and you see a message such as <code>added 300 packages</code>.</p>
+    <div class="note"><strong>What does <code>npm install</code> do?</strong> The project borrows small tools from other people, such as the Astro website tool and the p5.js library. This command downloads them into a folder called <code>node_modules</code>. Yellow “warn” lines are normal; only a red “error” needs attention. You won’t edit that folder, and you only repeat this when the project’s <code>package.json</code> changes.</div>
+    <div class="note"><strong>Stuck?</strong> If you see <code>npm: command not found</code>, Node.js isn’t installed yet or VS Code needs a restart. Quit VS Code, reopen it, and try again. If the message is something else, send me a screenshot or <a href="#report-an-issue">file an issue</a>.</div>
+  </div>
+  <div class="step" data-step="8">
+    <h3><GuideIcon name="download" /> Run <code>npm run previews:setup</code></h3>
+    <p>One more command, also only once. Type it into the same terminal and press <kbd>Enter</kbd>:</p>
+    <Code lang="bash" code="npm run previews:setup" theme="github-light" />
+    <p>It downloads a browser called Chromium, which is about 150 MB, so give it a minute. You’re done when the cursor returns on a fresh line.</p>
+    <div class="note"><strong>Why another browser?</strong> The cover pictures on the book cards (you’ll see them in section C) are made by quietly opening each book in a hidden browser and taking a photo of its cover. Chromium is that hidden browser. It doesn’t replace Chrome or Safari, and you won’t see it. If you skip this step, the preview still works, but the cards will be missing their cover pictures and the terminal will mention <code>npm run previews:setup</code>.</div>
+  </div>
+
+
+  <hr />
+
+  <h2 id="start-preview"><kbd>B</kbd> — Start the Preview</h2>
+  <p>
+    Now let’s see the books on your own computer. You’ll start a small preview website, and then you can leave it running in the background while you play.
+  </p>
+  <div class="note">Don’t have the terminal open from section A? In VS Code, choose <strong>Terminal → New Terminal</strong>. Make sure it’s opened inside the <code>p5.book</code> folder (the terminal shows the folder name at its prompt).</div>
+  <div class="step" data-step="1">
+    <h3><GuideIcon name="terminal" /> Type <code>npm run test</code> and Press Enter</h3>
+    <p>Type or paste this into the terminal, then press <kbd>Enter</kbd>. It’s a terminal command, so don’t put it in <code>sketch.js</code>.</p>
+    <Code lang="bash" code="npm run test" theme="github-light" />
+    <Diagram src="/assets/contributing/vscode-terminal-command.png" alt="VS Code terminal showing a command after the prompt and its output underneath." label="Type beside the prompt · then press Enter" caption="The example screenshot runs dir. For this project, type npm run test instead. The text already before the cursor is the prompt; don’t copy it." />
+    <div class="note"><strong>What does <code>npm run test</code> do?</strong> It asks npm to run the project’s “test” shortcut, which starts a tiny website that lives only on your computer. That’s what <strong>localhost</strong> means: “this computer.” Nobody else can see it, and it works without internet once things are installed. The number after it (like <code>4321</code>) is just which door the site uses.</div>
+    <p>The command starts the local preview and opens <code>/test/</code> in your browser. The first run may take a moment to generate book previews.</p>
+    <p>Look for a <strong>Local</strong> address and <strong>watching for file changes</strong> in the output. For example:</p>
+    <Code lang="text" code={'Local    http://localhost:4321/\nwatching for file changes…'} theme="github-light" />
+    <p>Your browser should open this very guide at <code>/test/</code>. Scroll to section C and you’ll find a card for each book, like this:</p>
+    <Diagram src="/assets/contributing/own-gallery-cards.png" alt="Three book cards on the local test page: From A to Z, Open Assembly, and Parametric Flipbook, each with a cover picture and an Open link." label="Your browser · the book cards in section C" caption="A screenshot of the page running on localhost. Click a card’s link to open that book." />
+    <p>If the browser doesn’t open, follow the Local address shown in your terminal and add <code>/test/</code>. Use the port it prints if it differs from <code>4321</code>.</p>
+  </div>
+  <div class="note"><GuideIcon name="terminal" /> <strong>Leave this terminal running while you edit.</strong> It watches your saves and refreshes the book. You only run the command once per work session. To stop, click in the terminal and press <kbd>Ctrl C</kbd> on either Mac or Windows. To start again, run <code>npm run test</code> again. If the command reports an error, keep the message to share with the maintainer.</div>
+
+  <hr />
+
+  <h2 id="choose-a-book"><kbd>C</kbd> — Choose a Book</h2>
+  <div class="reference-projects">
+    {
+      examples.map((example) => (
+        <ProjectCard
+          title={example.title}
+          image={example.image}
+          alt={`Rendered cover of ${example.title}`}
+          href={example.href}
+          linkLabel={`Open ${example.title} →`}
+        >
+          <p>{example.description}</p>
+          <p>
+            <code>test/{example.slug}/</code>
+          </p>
+        </ProjectCard>
+      ))
+    }
+  </div>
+  {
+    !examples.length && (
+      <div class="note">
+        Add a sketch folder inside <code>test/</code> to see your first book
+        here.
+      </div>
+    )
+  }
+
+  <hr />
+
+  <h2 id="getting-started"><kbd>D</kbd> — Make Your First Edit</h2>
+  <p>
+    Start small: change one thing, save, and see what it does. Each book has its
+    own folder, so you can explore one example at a time.
+  </p>
+
+  <div class="note">Before you change anything, make your own <strong>branch</strong>: a separate copy of the project where your experiments live. That way the main version stays untouched, and you can always switch back.</div>
+  <div class="step">
+    <h3><GuideIcon name="branch" /> Create Your Own Branch</h3>
+    <p><strong>In GitHub Desktop:</strong> click <strong>Current Branch</strong> at the top, then <strong>New Branch</strong>. Name it with a few lowercase words joined by dashes, such as <code>pink-alphabet</code>, and click <strong>Create Branch</strong>. Leave it based on <code>main</code>.</p>
+    <Diagram src="/assets/contributing/desktop-new-branch.png" alt="GitHub Desktop Current Branch menu with the New Branch button highlighted." label="GitHub Desktop · New Branch" caption="Official GitHub screenshot. The example branch is my-feature; the New Branch button is beside the filter box." />
+    <p><strong>In VS Code:</strong> click the branch name in the bottom-left corner, choose <strong>Create new branch…</strong>, type your name, and press <kbd>Enter</kbd>.</p>
+    <Diagram src="/assets/contributing/vscode-choose-branch.png" alt="VS Code branch picker with the Create new branch action." label="VS Code · Create new branch…" caption="Official VS Code screenshot." />
+    <p>Check that your new name now appears as the <strong>Current Branch</strong> (or in the bottom-left corner of VS Code) before you start editing.</p>
+  </div>
+  <div class="step">
+    <h3><GuideIcon name="folder" /> Find the Test Folder in Your Editor</h3>
+    <Diagram src="/assets/contributing/vscode-explorer.png" alt="VS Code interface showing the Explorer files icon and folder tree in the left sidebar." label="VS Code · find Explorer" caption="The files icon is at the top of the far-left bar. This official example shows a different project; expand test in your p5-book folder." />
+    <p>
+      In VS Code, click <strong>Explorer</strong> (the files icon at the top of the
+      left sidebar). In the project’s file list, click the arrow beside <code
+        >test</code
+      > to expand it.
+    </p>
+    <p>
+      Here’s the part of the project you’ll use. The three book folders match
+      the previews above:
+    </p>
+    <Code
+      lang="text"
+      code={`p5-book/
+└── test/
+    ├── a-to-z/                 ← From A to Z
+    │   ├── sketch.js           ← start editing here
+    │   ├── index.html
+    │   ├── style.css
+    │   ├── ApfelGrotezk-Brukt.otf
+    │   └── ApfelGrotezk-Mittel.otf
+    ├── open-assembly/          ← Open Assembly
+    ├── parametric-flipbook/    ← Parametric Flipbook
+    └── lib/                   ← shared p5.js and jsPDF`}
+      theme="github-light"
+    />
+    <p>
+      Use the <code>test</code> folder at the project’s top level. If you see <code
+        >dist/test</code
+      >, that’s generated output; edits belong in the top-level folder.
+    </p>
+  </div>
+  <div class="step">
+    <h3><GuideIcon name="code" /> Open the Book and Its Matching File</h3>
+    <Diagram src="/assets/contributing/vscode-breadcrumbs.png" alt="VS Code editor with a breadcrumb showing the folders and filename of the open file." label="VS Code · check the file path" caption="Read the breadcrumb above your code. For this exercise, it should show test → a-to-z → sketch.js." />
+    <p>
+      Click <a href="/test/a-to-z/">From A to Z</a> in your browser. Then, in VS Code’s
+      Explorer, expand <code>test</code> → expand <code>a-to-z</code> → click <code
+        >sketch.js</code
+      >.
+    </p>
+    <Diagram src="/assets/contributing/own-viewer-original.png" alt="The From A to Z book open in the p5.book viewer, showing the black cover with an orange letter A, a flipbook view menu, and page arrows." label="Your browser · From A to Z before any edits" caption="A screenshot of /test/a-to-z/ on localhost. The first page is the cover; use the arrows underneath to turn pages." />
+    <p>
+      Check the editor’s breadcrumb above the code: it should end with <code
+        >test → a-to-z → sketch.js</code
+      >. Each book has a file called <code>sketch.js</code>, so the folder name
+      matters.
+    </p>
+    <p>
+      Keep this file and the book open side by side. For this first edit, you
+      only need <code>sketch.js</code>.
+    </p>
+    <table>
+      <thead><tr><th>File or folder</th><th>What it does</th></tr></thead>
+      <tbody>
+        <tr
+          ><td><code>sketch.js</code></td><td
+            >Draws the book. Change colors, words, shapes, and page rules here.</td
+          ></tr
+        >
+        <tr
+          ><td><code>index.html</code></td><td
+            >Loads the sketch, styles, and libraries into the browser.</td
+          ></tr
+        >
+        <tr
+          ><td><code>style.css</code></td><td
+            >Styles the surrounding webpage. Canvas artwork is drawn in the
+            sketch.</td
+          ></tr
+        >
+        <tr
+          ><td>Font and image files</td><td
+            >Assets used by this book. Keep them with the sketch when copying a
+            folder.</td
+          ></tr
+        >
+        <tr
+          ><td><code>test/lib/</code></td><td
+            >Shared libraries used by every example. Leave these alone when
+            editing a book.</td
+          ></tr
+        >
+      </tbody>
+    </table>
+  </div>
+  <div class="step">
+    <h3><GuideIcon name="code" /> Give It a New Color</h3>
+    <p>
+      With <code>test/a-to-z/sketch.js</code> open, press <kbd>⌘ F</kbd> or <kbd
+        >Ctrl F</kbd
+      > and search for <code>background("orange");</code>. It appears twice. The
+      first match, <code>book.spine.background("orange")</code>, colors the spine, so skip it.
+      Press <kbd>Enter</kbd> to go to the second match, near the bottom of the file, inside <code>draw()</code>:
+    </p>
+    <Code
+      code={'function draw() {\n  if (book.isLeftPage()) {\n    background("orange");   // ← change this one\n    fill("black");'}
+      lang="js"
+      theme="github-light"
+    />
+    <p>Change just the word inside the quotes, so the line reads:</p>
+    <Code
+      code={'background("hotpink");'}
+      lang="js"
+      theme="github-light"
+    />
+    <p>
+      This changes the orange background on the left-hand pages to pink. Leave
+      the rest of the code alone for now, so it’s easy to see what changed.
+    </p>
+  </div>
+  <div class="step">
+    <h3><GuideIcon name="save" /> Save and Look Inside the Book</h3>
+    <p>
+      Save <code>test/a-to-z/sketch.js</code> with <kbd>⌘ S</kbd> on Mac or <kbd
+        >Ctrl S</kbd
+      > on Windows. The open book reloads automatically and draws its pages again.
+    </p>
+    <p>
+      Click the right arrow in the book viewer to move past the cover. You
+      should see a pink page! The cover stays black because its background comes
+      from the other part of <code>draw()</code>.
+    </p>
+    <Diagram src="/assets/contributing/own-viewer-pink.png" alt="The From A to Z book on pages 2 and 3: a hot pink left page with a black letter B and a black right page with an orange letter C." label="Your browser · after the color change" caption="Pages 2–3 after the edit: the left page is now pink. This also shows the smaller letters from the next step." />
+    <p>
+      Come back here when you want to try another book. Gallery images refresh
+      automatically when the rendered cover changes.
+    </p>
+  </div>
+  <div class="step">
+    <h3><GuideIcon name="code" /> Make One More Change</h3>
+    <p>
+      Try smaller letters next. In the same sketch, replace <code
+        >textSize(350);</code
+      > with:
+    </p>
+    <Code
+      code={"textSize(220);"}
+      lang="js"
+      theme="github-light"
+    />
+    <p>
+      Save again. The letters now have more breathing room. Or change the words
+      on the spine: near the top of the file, find the line below in <code>setup()</code> and replace only the text between the quotes (leave <code>, 0, 0);</code> alone):
+    </p>
+    <Code
+      code={'book.spine.text("p5.book       From A to Z", 0, 0);'}
+      lang="js"
+      theme="github-light"
+    />
+    <p>
+      Choose <strong>3d viewer</strong> from the menu at the top left of the book (it says <em>flipbook</em> to start) to spin the book around and see its spine.
+      You can keep experimenting with one change at a time.
+    </p>
+    <Diagram src="/assets/contributing/own-viewer-3d.png" alt="The From A to Z book in the 3d viewer, shown as a tilted black cover with an orange A, with sliders for size, speed, tilt and colors at the lower right and book measurements at the lower left." label="Your browser · the 3d viewer" caption="The 3d viewer menu is in the top-left. The panel on the right changes size, spin speed and colors; the left lists the book’s size, pages and spine width." />
+  </div>
+  <div class="note">
+    Lost your place? Undo your last edit with <kbd>⌘ Z</kbd> or <kbd>Ctrl Z</kbd
+    >, then save. If the book stops drawing, check for a missing quote, comma,
+    or closing bracket around the line you changed.
+  </div>
+
+  <hr />
+
+  <h2 id="add-a-book"><kbd>E</kbd> — Add Another Book</h2>
+  <div class="step">
+    <h3><GuideIcon name="folder" /> Copy a Complete Book Folder</h3>
+    <p>In VS Code’s Explorer, expand <code>test</code>. Right-click <code>a-to-z</code> and choose <strong>Copy</strong>. Then right-click the parent <code>test</code> folder and choose <strong>Paste</strong>.</p>
+    <p>Copy the whole folder so its HTML, styles, and fonts come with the sketch.</p>
+  </div>
+  <div class="step">
+    <h3><GuideIcon name="folder" /> Rename Your Copy</h3>
+    <p>Right-click the copied folder, choose <strong>Rename</strong>, and enter <code>my-first-remix</code>. It belongs beside <code>a-to-z</code>, not inside it.</p>
+    <Code lang="text" code={`test/
+├── a-to-z/             ← original book
+├── my-first-remix/     ← your new copy
+│   ├── sketch.js       ← edit this copy
+│   ├── index.html
+│   ├── style.css
+│   └── …               ← copied fonts
+├── open-assembly/
+├── parametric-flipbook/
+└── lib/`} theme="github-light" />
+  </div>
+  <div class="step">
+    <h3><GuideIcon name="code" /> Open Your Copy and Name the Book</h3>
+    <p>Expand <code>my-first-remix</code> and click <code>sketch.js</code>. Check the breadcrumb: <code>test → my-first-remix → sketch.js</code>.</p>
+    <Diagram src="/assets/contributing/vscode-breadcrumbs.png" alt="VS Code file breadcrumb above the code editor." label="VS Code · check you’re editing the copy" caption="This example uses another project. Your path should end with my-first-remix → sketch.js." />
+    <p>Replace the two title and description comments at the top with:</p>
+    <Code code={"// title: My first remix\n// description: An alphabet book with pink pages and smaller letters."} lang="js" theme="github-light" />
+  </div>
+  <div class="step">
+    <h3><GuideIcon name="save" /> Save and Open Your New Book</h3>
+    <p>Save <code>test/my-first-remix/sketch.js</code>, then return to <a href="#choose-a-book">Choose a book</a>. A card called <strong>My first remix</strong> appears automatically; give its preview a moment to render.</p>
+    <p>Open that card and try the color change from section D in your copied sketch. Your original A-to-Z book stays available in its own folder.</p>
+  </div>
+  <hr />
+
+  <h2 id="get-updates"><kbd>F</kbd> — Get the Latest Changes</h2>
+  <p>
+    Others (and you, on another computer) may add changes to GitHub while you work.
+    <strong>Fetch</strong> checks for them; <strong>pull</strong> brings them onto your computer.
+    Do this <strong>before you start editing</strong> each time, so your copy is current.
+  </p>
+  <div class="note">
+    <GuideIcon name="sync" /> Have unsaved edits? Save the file, then commit (section G) before pulling.
+    Pulling into committed work is safer than pulling into half-finished edits.
+  </div>
+  <details class="contribution-path" open>
+    <summary><GuideIcon name="desktop" /> GitHub Desktop — Fetch and Pull</summary>
+    <div class="step" data-step="1">
+      <h3><GuideIcon name="sync" /> Fetch Origin</h3>
+      <p>Click <strong>Fetch origin</strong> in the top toolbar. GitHub Desktop checks GitHub and tells you whether anything new is waiting.</p>
+      <Diagram src="/assets/contributing/desktop-fetch.png" alt="GitHub Desktop toolbar with Fetch origin highlighted." label="GitHub Desktop · Fetch origin" caption="Official GitHub screenshot." />
+    </div>
+    <div class="step" data-step="2">
+      <h3><GuideIcon name="download" /> Pull Origin</h3>
+      <p>If the button now says <strong>Pull origin</strong>, click it to download the new changes. Your files in VS Code update automatically.</p>
+      <Diagram src="/assets/contributing/desktop-pull.png" alt="GitHub Desktop toolbar with Pull origin highlighted." label="GitHub Desktop · Pull origin" caption="Pull origin appears when GitHub has commits you don’t have yet." />
+    </div>
+    <div class="step" data-step="3">
+      <h3><GuideIcon name="branch" /> Bring the Newest <code>main</code> into Your Branch</h3>
+      <p>If you’re on your own branch and the project’s <code>main</code> has moved on, click <strong>Current Branch</strong>, then <strong>Choose a branch to merge into [your branch]</strong>, and select <code>main</code>. Then click <strong>Create a merge commit</strong>.</p>
+      <Diagram src="/assets/contributing/desktop-merge-main.png" alt="GitHub Desktop branch menu with Choose a branch to merge highlighted." label="GitHub Desktop · merge main into your branch" caption="Example branch is my-feature. Select main in the list after clicking the highlighted button." />
+      <p>If GitHub Desktop reports conflicts, stop and share the message with the maintainer rather than guessing.</p>
+    </div>
+  </details>
+  <details class="contribution-path">
+    <summary><GuideIcon name="code" /> VS Code — Fetch and Pull</summary>
+    <div class="step" data-step="1">
+      <h3><GuideIcon name="sync" /> Sync Changes</h3>
+      <p>Look at the bottom-left status bar. Arrows with numbers show commits to pull (↓) and push (↑). Click the sync icon, or open the <strong>…</strong> menu in Source Control and choose <strong>Pull</strong>.</p>
+      <Diagram src="/assets/contributing/vscode-sync-status.png" alt="VS Code status bar with the branch name and sync icon with incoming and outgoing counts." label="VS Code · status bar sync" caption="Official VS Code screenshot." />
+      <Diagram src="/assets/contributing/vscode-fetch-pull-push.png" alt="Diagram showing fetch downloading remote commits, pull merging them, and push uploading local commits." label="Fetch, pull, push" caption="Fetch downloads without changing your files. Pull downloads and merges. Push uploads your commits." />
+      <p>To bring in the latest <code>main</code> while on your branch, open the Command Palette (<kbd>⌘ ⇧ P</kbd> or <kbd>Ctrl Shift P</kbd>), run <strong>Git: Merge Branch…</strong>, and choose <code>origin/main</code>.</p>
+      <p><a href="https://code.visualstudio.com/docs/sourcecontrol/repos-remotes">VS Code’s remotes guide →</a></p>
+    </div>
+  </details>
+  <p>After pulling, restart <code>npm run test</code> if it was running, and run <code>npm install</code> again if the project’s <code>package.json</code> changed.</p>
+
+  <hr />
+
+  <h2 id="share-your-changes"><kbd>G</kbd> — Share Your Changes</h2>
+  <p>
+    Happy with your book? Share it for review. A <strong>commit</strong> saves a checkpoint
+    on your computer; a <strong>push</strong> sends those commits to your branch on
+    GitHub; a <strong>pull request (PR)</strong> asks to bring that branch into the
+    project.
+  </p>
+  <div class="note">
+    Already made a branch? Keep using it for this contribution. Already pushed
+    your latest changes? Jump to <a href="#open-a-pr">Open a pull request</a>.
+    Choose GitHub Desktop or VS Code below for committing and pushing. You’ll still edit the sketch in VS Code, and finish the PR on GitHub in your browser.
+  </div>
+  <p>
+    The screenshots below come from the official VS Code and GitHub guides. They
+    show example repositories; use <strong>p5.book</strong>, your own branch,
+    and your own changed files.
+  </p>
+
+  <div class="note"><strong>Branch, commit, push, PR: tiny glossary.</strong> A <strong>branch</strong> is your own side copy of the project, so your experiments don’t touch the main version. A <strong>commit</strong> is a saved checkpoint with a short note. A <strong>push</strong> uploads your commits. A <strong>pull request</strong> asks me to look at your branch and add it to the project. Nothing changes in the main project until I merge it, so there’s no pressure to get it perfect.</div>
+  <p><strong>Choose one way to share:</strong> use GitHub Desktop if you like a dedicated Git app, or keep everything in VS Code. Both paths lead to the same PR.</p>
+  <details class="contribution-path" open>
+    <summary><GuideIcon name="desktop" /> GitHub Desktop — Choose, Commit, Push</summary>
+    <div class="step" data-step="1">
+      <h3><GuideIcon name="branch" /> Choose Your Existing Branch</h3>
+      <p>In GitHub Desktop, check that <strong>Current Repository</strong> is <code>p5.book</code>. Click <strong>Current Branch</strong> and select the branch you already made.</p>
+      <Diagram src="/assets/contributing/desktop-branch.png" alt="GitHub Desktop Current Branch dropdown with an existing branch highlighted." label="GitHub Desktop · Current Branch" caption="Select your own branch. The example branch in this screenshot is called my-feature." />
+      <p>Keep VS Code open on the same local project folder. Save your sketch there, then return to GitHub Desktop to review it.</p>
+    </div>
+    <div class="step" data-step="2">
+      <h3><GuideIcon name="commit" /> Choose Your Files and Commit</h3>
+      <p>Open <strong>Changes</strong>. Click <code>test/a-to-z/sketch.js</code> to review the edit. Check the files you want to include; uncheck unrelated changes.</p>
+      <Diagram src="/assets/contributing/desktop-files.png" alt="GitHub Desktop Changes tab with checkboxes beside changed files." label="GitHub Desktop · select changes" caption="Checked files go into this commit. Include new fonts and images if your book uses them." />
+      <p>In <strong>Summary</strong>, write “Make alphabet pages pink.” Click the blue <strong>Commit … to [your branch]</strong> button. Check its branch name before clicking.</p>
+      <Diagram src="/assets/contributing/desktop-commit.png" alt="GitHub Desktop Changes panel with the Summary field and blue Commit button." label="GitHub Desktop · save a checkpoint" caption="Type your message in Summary. This example shows main; your button should name your contribution branch." />
+    </div>
+    <div class="step" data-step="3">
+      <h3><GuideIcon name="push" /> Publish or Push</h3>
+      <p>A new branch shows <strong>Publish branch</strong>. Click it once to put that branch on GitHub.</p>
+      <Diagram src="/assets/contributing/desktop-publish.png" alt="GitHub Desktop repository toolbar with Publish branch highlighted." label="First push · Publish branch" caption="Use this when your branch has not been uploaded yet." />
+      <p>For a branch you’ve already published, click <strong>Push origin</strong> after committing.</p>
+      <Diagram src="/assets/contributing/desktop-push.png" alt="GitHub Desktop repository toolbar with Push origin highlighted." label="Later pushes · Push origin" caption="This uploads your new commits to the same branch." />
+      <p>Click <strong>Preview Pull Request</strong>, review the comparison, then choose <strong>Create Pull Request</strong> to continue in your browser. Follow <a href="#open-a-pr">Open a pull request</a> below to finish the description.</p>
+      <Diagram src="/assets/contributing/desktop-pr.png" alt="GitHub Desktop No local changes view with Preview Pull Request highlighted." label="Next · preview your PR" caption="No local changes means your edits are committed. Publishing and pushing come before this step." />
+    </div>
+  </details>
+  <details class="contribution-path">
+    <summary><GuideIcon name="code" /> VS Code — Choose, Commit, Push</summary>
+  <div class="step" data-step="1">
+    <h3><GuideIcon name="branch" /> Check Which Branch You’re Working on</h3>
+    <p>
+      Look at the branch name in VS Code’s bottom-left corner. Click it to
+      choose your existing contribution branch. The screenshot shows <code
+        >main</code
+      >; yours should show the branch you’re contributing from.
+    </p>
+    <Diagram
+      src="/assets/contributing/vscode-branch.png"
+      alt="VS Code with the current branch highlighted in the bottom-left status bar and Source Control panel."
+      label="Find your branch"
+      caption="Look for your branch name at the bottom left. This screenshot uses an example project."
+    />
+    <p>
+      For a separate idea, choose <strong>Create new branch…</strong> and give it
+      a name such as <code>examples/pink-alphabet</code>. Don’t switch away from
+      unfinished edits unless you intend to take them with you.
+    </p>
+    <Diagram
+      src="/assets/contributing/vscode-choose-branch.png"
+      alt="VS Code branch picker showing existing branches and the Create new branch action."
+      label="Use an existing branch or create one"
+      caption="If you already have a branch for this work, select that branch instead of creating another."
+    />
+  </div>
+
+  <div class="step" data-step="2">
+    <h3><GuideIcon name="commit" /> Review Your Files and Make a Commit</h3>
+    <p>
+      Open <strong>Source Control</strong> in the left sidebar. Click each changed
+      file to review its differences, then use the <strong>+</strong> beside the files
+      you want to include.
+    </p>
+    <Diagram
+      src="/assets/contributing/vscode-stage.png"
+      alt="VS Code Source Control with the plus button highlighted beside a changed file, a Staged Changes group, a message field, and a Commit button."
+      label="Choose files, then commit"
+      caption="The + button moves a file into Staged Changes. The message field and Commit button are above the file list."
+    />
+    <p>
+      For the pink alphabet example, include <code>test/a-to-z/sketch.js</code>.
+      Include any new fonts or images your sketch needs. Write a message such as <strong
+        >“Make alphabet pages pink and reduce letter size”</strong
+      >, then click <strong>Commit</strong>.
+    </p>
+    <p>
+      Your checkpoint is now saved locally. It reaches GitHub in the next step.
+    </p>
+  </div>
+
+  <div class="step" data-step="3">
+    <h3><GuideIcon name="push" /> Push Your Branch to GitHub</h3>
+    <p>
+      If the branch is new, click <strong>Publish Branch</strong> in Source Control.
+      If it’s already on GitHub, open the <strong>…</strong> menu in Source Control
+      and choose <strong>Push</strong>. If asked for a remote, use <code
+        >origin</code
+      > for this repository.
+    </p>
+    <p>
+      Open <a href="https://github.com/munusshih/p5.book">p5.book on GitHub</a>,
+      choose your branch from the branch dropdown, and check that your latest
+      commit is there. That’s how you know the upload worked.
+    </p>
+    <p>
+      <a href="https://code.visualstudio.com/docs/sourcecontrol/repos-remotes"
+        >See VS Code’s push and publish guide →</a>
+    </p>
+  </div>
+
+  </details>
+  <p><GuideIcon name="review" /> <strong>Both paths continue here, in your browser.</strong></p>
+
+  <div class="step">
+    <h3 id="open-a-pr"><GuideIcon name="review" /> Open a Pull Request</h3>
+    <p>
+      On the GitHub repository page, click <strong
+        >Compare &amp; pull request</strong
+      >. If that banner isn’t there, open <strong
+        >Pull requests → New pull request</strong
+      >.
+    </p>
+    <Diagram
+      src="/assets/contributing/github-compare-pr.png"
+      alt="GitHub’s recent-push banner with a green Compare and pull request button."
+      label="Start the review"
+      caption="This banner appears after a push. Use the button for your contribution branch."
+    />
+    <p>
+      Check the two branch selectors: <strong>base: main</strong> is where the work
+      will go; <strong>compare: your branch</strong> is where your edits are. Check
+      that the listed changes are yours.
+    </p>
+    <p>
+      Use a title such as <strong>“Add pink alphabet pages”</strong>. Explain
+      what you changed and how you checked it. Here’s an example you can adapt:
+    </p>
+    <blockquote>
+      <p>
+        I changed the A-to-Z book’s left-hand pages to pink and made the letters
+        smaller. I opened it from /test/, checked the cover and inside spreads,
+        and confirmed it regenerated after saving. The screenshot below shows
+        the new inside spread.
+      </p>
+    </blockquote>
+    <p>
+      Drag a screenshot of the changed pages into the description. When it’s
+      ready, click <strong>Create pull request</strong>. Choose a draft if
+      you’re still working and want early feedback.
+    </p>
+  </div>
+
+  <div class="step">
+    <h3><GuideIcon name="review" /> Respond to Feedback on the Same Branch</h3>
+    <p>
+      Use <strong>Files changed</strong> to review the proposed edits. If someone
+      suggests a change, edit the sketch, save, commit, and push again on that same
+      branch. The existing PR updates automatically.
+    </p>
+    <Diagram
+      src="/assets/contributing/github-review-files.png"
+      alt="GitHub pull request tabs with Files changed highlighted."
+      label="Review together"
+      caption="Files changed shows exactly what the PR proposes. Discussion and feedback stay with the same PR."
+    />
+    <p>
+      Share the PR link with the maintainer when you’re ready for review.
+      Opening a PR doesn’t merge it; the maintainer can review it before it
+      joins <code>main</code>.
+    </p>
+  </div>
+  <div class="note">
+    Push denied? You may not have write access. Ask the maintainer for
+    collaborator access, or use a fork and open a PR from your fork’s branch to <code
+      >munusshih/p5.book</code
+    > → <code>main</code>.
+  </div>
+  <hr />
+
+  <h2 id="report-an-issue"><kbd>H</kbd> — Report a Problem (File an Issue)</h2>
+  <p>
+    Found a bug, a confusing step in this guide, or an idea for p5.book? Tell me by filing
+    an <strong>issue</strong>. It’s a note on GitHub where problems and ideas are collected and discussed.
+  </p>
+  <div class="note">
+    You don’t need to know how to fix it, or even be sure it’s a bug. “This confused me” is a useful report. Please don’t worry about bothering anyone; issues help the project get better.
+  </div>
+  <div class="step" data-step="1">
+    <h3><GuideIcon name="review" /> Check If It’s Already Reported</h3>
+    <p>Open <a href="https://github.com/munusshih/p5.book/issues">github.com/munusshih/p5.book/issues</a>, or click the <strong>Issues</strong> tab on the repository page. Type a few words about your problem into the search box. If someone already reported it, add a comment or a 👍 instead of opening a new one.</p>
+    <Diagram src="/assets/contributing/github-issues-tab.png" alt="GitHub repository tabs with the Issues tab highlighted." label="GitHub · the Issues tab" caption="Official GitHub screenshot of an example repository. The Issues tab sits beside Code and Pull requests." />
+  </div>
+  <div class="step" data-step="2">
+    <h3><GuideIcon name="code" /> Click New Issue and Describe It</h3>
+    <p>Click the green <strong>New issue</strong> button. Add a short, specific <strong>title</strong>, then fill in the description. These details help me reproduce it:</p>
+    <ul>
+      <li><strong>What you did:</strong> “I opened <code>/test/a-to-z/</code> and saved <code>sketch.js</code>.”</li>
+      <li><strong>What you expected:</strong> “The pages turn pink.”</li>
+      <li><strong>What happened instead:</strong> “The page went blank.”</li>
+      <li><strong>Your setup:</strong> Mac or Windows, and your browser.</li>
+      <li><strong>Any error message:</strong> copy it from the terminal or from the browser console, or take a screenshot.</li>
+    </ul>
+    <Diagram src="/assets/contributing/github-issue-form.png" alt="GitHub Create new issue form with a title field, description box, and green Create button." label="GitHub · the new issue form" caption="Official GitHub screenshot. Add a title, write your description, and drag screenshots into the box." />
+  </div>
+  <div class="step" data-step="3">
+    <h3><GuideIcon name="push" /> Submit It</h3>
+    <p>Click <strong>Create</strong> (or <strong>Submit new issue</strong>). Your issue is now public on GitHub and I’ll get a notification. I may reply with questions, so check back or watch your email.</p>
+    <p>Want to fix it yourself? Say so in the issue, then follow sections F and G and mention the issue in your pull request, for example “Fixes #12.”</p>
+    <p><a href="https://docs.github.com/en/issues/tracking-your-work-with-issues/using-issues/creating-an-issue">GitHub’s guide to creating an issue →</a></p>
+  </div>
+
+</Worksheet>
+
+<style>
+  .contribution-path { border: 1px solid #000; border-radius: .85rem; margin: 1.25rem 0; padding: .85rem; background: #fffef9; }
+  .contribution-path summary { font-weight: 500; cursor: pointer; font-size: 1.1em; }
+  .contribution-path summary:focus-visible { outline: 2px solid #000; outline-offset: 5px; }
+  .contribution-path :global(.diagram img) { max-height: 32rem; width: 100%; object-fit: contain; }
+</style>

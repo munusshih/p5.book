@@ -4,6 +4,8 @@ title: "p5.book: A Computational Book Workshop"
 description: "A computational book workshop on p5.book, open-source publishing, and making a 100-page book with p5.js."
 ---
 
+import ProjectCard from "@/components/ProjectCard.astro";
+
 import Diagram from "@/components/Diagram.astro";
 import "@/styles/comp-book.css";
 
@@ -594,15 +596,8 @@ What other approaches are there to making books with code? Here are three
 approaches to computational publishing:
 
 <div class="reference-projects">
-  <article>
-    <img
-      src="https://pagedjs.org/images/cityfab0.png"
-      alt="A printed publication created with Paged.js"
-      loading="lazy"
-    />
-    <div>
-      <h3>Paged.js — A Website and a Book</h3>
-      <p>
+  <ProjectCard title="Paged.js — A Website and a Book" image="https://pagedjs.org/images/cityfab0.png" alt="A printed publication created with Paged.js" href="https://pagedjs.org/en/about/" linkLabel="Paged.js →">
+<p>
         Paged.js starts with HTML and CSS, then adds the rules needed to turn
         that same web document into paged, print-ready material. It is useful
         when the website and the book should share a source and a visual
@@ -611,49 +606,27 @@ approaches to computational publishing:
       </a> is one example of this
         web-to-print approach.
       </p>
-      <a href="https://pagedjs.org/en/about/">Paged.js →</a>{" "}
+</ProjectCard>
 
-    </div>
-
-  </article>
-
-<article>
-  <img
-    src="https://raw.githubusercontent.com/nature-of-code/noc-book-2/main/docs/images/notion-database.png"
-    alt="The Nature of Code content organized in a Notion database"
-    loading="lazy"
-  />
-  <div>
-    <h3>Magic Book + Notion — Structure into Formats</h3>
-    <p>
+<ProjectCard title="Magic Book + Notion — Structure into Formats" image="https://raw.githubusercontent.com/nature-of-code/noc-book-2/main/docs/images/notion-database.png" alt="The Nature of Code content organized in a Notion database" href="https://github.com/magicbookproject/magicbook" linkLabel="Magic Book →">
+<p>
       Magic Book is suited to long-form, structured content. In
       <a href="https://natureofcode.com/introduction/">The Nature of Code</a>,
       chapters are organized in Notion and imported as HTML for the website and
       print pipelines. Magic Book handles the printable book build, placing the
       content system at the center.
     </p>
-    <a href="https://github.com/magicbookproject/magicbook">Magic Book →</a>
-  </div>
-</article>
+</ProjectCard>
 
-  <article>
-    <img
-      src="/assets/book-cover-poster.png"
-      alt="A colorful generative book made with p5.book"
-      loading="lazy"
-    />
-    <div>
-      <h3>p5.book — Code as Page-Making</h3>
-      <p>
+  <ProjectCard title="p5.book — Code as Page-Making" image="/assets/book-cover-poster.png" alt="A colorful generative book made with p5.book" href="https://github.com/munusshih/p5.book" linkLabel="Source →">
+<p>
         p5.book begins with p5.js canvases rather than flowing text. It serves
         creative coders making generative visuals, visual sequences,
         flipbooks, zines, and experimental books. Here, the changing visual
         system is at the center, and the drawing loop becomes the pagination
         engine.
       </p>
-      <a href="https://github.com/munusshih/p5.book">Source →</a>
-    </div>
-  </article>
+</ProjectCard>
 </div>
 
 <div class="note">

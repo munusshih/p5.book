@@ -693,52 +693,71 @@ book.spine.draw((g) => {
 - **Unknown page count** — don't pass `totalPages` to `createBook()`, use `book.finish()` when done.
 - **Export frames** — use `book.exportFrames()` or the **Frames (PNG/JPG)** option in the download dropdown to save each page as a standalone image.
 - **Viewer shortcuts** — `←`/`→` to flip pages, `[` first page, `]` last page, `?` keyboard cheat sheet.
-- **Viewer styling** — override CSS variables in your stylesheet — see [test/style.css](test/style.css) for the full list.
+- **Viewer styling** — override CSS variables in your stylesheet — see [src-lib/viewer.css](src-lib/viewer.css) for the full list.
 
 ---
 
 ## Local Dev Testing
 
-Use this when you want to test the library locally before publishing.
-
-1. Install dependencies:
-
-```bash
-npm install
-```
-
-2. Build the library and copy it into the local test harness:
+Install dependencies once with `npm install` and the preview browser with
+`npm run previews:setup`, then run:
 
 ```bash
-npm run test:public:prep
+npm run test
 ```
 
-This creates `public/test/lib/p5.book.local.js` from your current source.
+This opens `/test/` automatically with three clickable example cards. Both `/test` and
+`/test/` work. Pick an example, edit its files locally, and save to regenerate the book:
 
-3. Start the docs dev server:
+| Example | Folder |
+| --- | --- |
+| Open Assembly | `test/open-assembly/` |
+| Parametric Flipbook | `test/parametric-flipbook/` |
+| From A to Z | `test/a-to-z/` |
 
-```bash
-npm run dev
+Each folder contains `sketch.js`, `index.html`, `style.css`, and any required fonts.
+The sketches use the checked-in p5.js and jsPDF bundles and the local p5.book build.
+No p5 editor account or upload is needed. The imported sketches are independent of
+`src/examples/`, which contains the documentation examples.
+
+Keep the terminal running. Saving HTML, JS, CSS, or assets in `test/` reloads the
+browser. Changes in `src-lib/` automatically rebuild p5.book and reload the preview.
+Reloading starts book generation again; the 300-page flipbook may take a moment.
+
+`npm run dev` starts the same watcher without opening a browser. `npm run test:public`
+is an alias for `npm run test`. `npm run lib:watch` watches only the library bundle.
+All editable test files and shared dependencies live in the top-level `test/` folder.
+`test/lib/` holds p5.js and jsPDF; the sketches load the current library directly
+from `/p5.book.js`. There is no `public/test/` source folder.
+
+### Automatic example previews
+
+The gallery reuses the site's `Worksheet` layout and the workshop's shared
+`ProjectCard` component. It discovers every `test/<folder>/` containing
+`index.html` and `sketch.js`. Set the title and description using the same comment
+convention as the documentation examples:
+
+```js
+// title: My first remix
+// description: An alphabet book with pink pages and smaller letters.
 ```
 
-4. Open the local test page:
+Dev startup and `npm run build` run each changed sketch in headless Chromium,
+wait for its completed book, and capture the actual rendered cover. Previews are
+cached in `.astro/test-previews/` using hashes of the sketch folder, shared fonts,
+libraries, and renderer. Saving a sketch regenerates its preview in the background;
+unchanged examples reuse their images. Removing a folder removes its preview.
+Build output includes the generated images in `dist/test/previews/`.
 
-```text
-http://localhost:4321/test/
-```
+`npm run test:previews` forces a refresh. No browser is launched when all previews
+are cached. A broken sketch fails the production build with its folder name; dev
+reports the error in the terminal and retries on the next save. A preview is the
+cover, so edits to interior pages will show in the book but may not change its image.
 
-Quick one-command flow:
-
-```bash
-npm run test:public
-```
-
-This runs the prep step and then starts the dev server.
-
-Notes:
-
-- `public/test/index.html` is wired to `/test/lib/p5.book.local.js`, so `/test` and `/test/` always use your local build.
-- Re-run `npm run test:public:prep` after library code changes to refresh the test bundle.
+On a fresh machine, run `npm run previews:setup` before development or a build.
+On Linux CI, install Chromium and its OS dependencies first with
+`npx playwright install --with-deps chromium`. Hosted build environments also need
+this browser setup; installing npm packages alone does not install Chromium.
 
 ## Release
 
