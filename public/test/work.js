@@ -20,7 +20,7 @@ async function setup() {
 
   // Use a loud color so inner spine is obvious on cover PDF page 2.
   book.innerSpine = "#00ffd0";
-  book.spine.background("orange");
+  book.spine.background("blue");
   book.spine.push();
   book.spine.translate(book.spine.width / 2, book.spine.height / 2);
   book.spine.textAlign(CENTER, CENTER);
