@@ -744,7 +744,7 @@ convention as the documentation examples:
 
 Dev startup and `npm run build` run each changed sketch in headless Chromium,
 wait for its completed book, and capture the actual rendered cover. Previews are
-cached in `.astro/test-previews/` using hashes of the sketch folder, shared fonts,
+cached in `test-previews/` (committed, so hosted builds need no browser) using hashes of the sketch folder, shared fonts,
 libraries, and renderer. Saving a sketch regenerates its preview in the background;
 unchanged examples reuse their images. Removing a folder removes its preview.
 Build output includes the generated images in `dist/test/previews/`.

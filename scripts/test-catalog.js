@@ -5,7 +5,7 @@ import { resolve } from 'node:path';
 // Astro bundles this module, so it cannot locate the editable source folders.
 export const root = resolve(process.cwd());
 export const testDir = resolve(root, 'test');
-export const previewDir = resolve(root, '.astro/test-previews');
+export const previewDir = resolve(root, 'test-previews');
 
 // Same title/description comment convention as src/examples/. No gallery registry.
 export function getTestExamples() {

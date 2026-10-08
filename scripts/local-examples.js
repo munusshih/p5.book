@@ -14,7 +14,10 @@ export default function localExamples() {
     hooks: {
       'astro:build:setup': async () => {
         await build(config);
-        await generateTestPreviews();
+        // Hosted builds (e.g. Vercel) have no Chromium; the gallery just goes without cover images.
+        await generateTestPreviews().catch(error => {
+          console.warn(`[test previews] Skipped: ${error.message.split('\n')[0]}`);
+        });
       },
       'astro:server:setup': async ({ server, logger }) => {
         let ready = false;
