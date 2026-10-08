@@ -18,6 +18,13 @@ const p5bookPlugin = {
         res.setHeader("Content-Type", "application/javascript; charset=utf-8");
         res.end(readFileSync(resolve(root, "p5.book.js")));
       });
+      // Allows /test (no trailing slash/index.html) to load the local test
+      // harness page, mirroring how a static file server would resolve it.
+      server.middlewares.use("/test", (req, res, next) => {
+        if (req.url !== "/" && req.url !== "") return next();
+        res.setHeader("Content-Type", "text/html; charset=utf-8");
+        res.end(readFileSync(resolve(root, "public/test/index.html")));
+      });
     },
     "astro:build:done": ({ dir }) => {
       copyFileSync(
