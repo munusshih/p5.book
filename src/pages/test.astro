@@ -104,14 +104,15 @@ const examples = getTestExamples();
     <Diagram src="/assets/contributing/vscode-terminal-command.png" alt="VS Code terminal showing a command typed after the prompt and its output printed underneath." label="Type after the prompt · then press Enter" caption="Official VS Code screenshot of an example command. Yours will show npm install and different output." />
     <p>Text will scroll by for a minute or two. That’s npm working. You’re done when the cursor returns on a fresh line and you see a message such as <code>added 300 packages</code>.</p>
     <div class="note"><strong>What does <code>npm install</code> do?</strong> The project borrows small tools from other people, such as the Astro website tool and the p5.js library. This command downloads them into a folder called <code>node_modules</code>. Yellow “warn” lines are normal; only a red “error” needs attention. You won’t edit that folder, and you only repeat this when the project’s <code>package.json</code> changes.</div>
-    <div class="note"><strong>Stuck?</strong> If you see <code>npm: command not found</code>, Node.js isn’t installed yet or VS Code needs a restart. Quit VS Code, reopen it, and try again. If the message is something else, send me a screenshot or <a href="#report-an-issue">file an issue</a>.</div>
-  </div>
-  <div class="step" data-step="8">
-    <h3><GuideIcon name="download" /> Run <code>npm run previews:setup</code></h3>
-    <p>One more command, also only once. Type it into the same terminal and press <kbd>Enter</kbd>:</p>
-    <Code lang="bash" code="npm run previews:setup" theme="github-light" />
-    <p>It downloads a browser called Chromium, which is about 150 MB, so give it a minute. You’re done when the cursor returns on a fresh line.</p>
-    <div class="note"><strong>Why another browser?</strong> The cover pictures on the book cards (you’ll see them in section C) are made by quietly opening each book in a hidden browser and taking a photo of its cover. Chromium is that hidden browser. It doesn’t replace Chrome or Safari, and you won’t see it. If you skip this step, the preview still works, but the cards will be missing their cover pictures and the terminal will mention <code>npm run previews:setup</code>.</div>
+    <div class="note"><strong>Stuck?</strong> Don’t worry, this happens to everyone. Find your message below:
+      <ul>
+        <li><strong><code>npm: command not found</code></strong> means the terminal can’t find Node.js. Either it isn’t installed yet or VS Code opened before it was. Download the <strong>LTS</strong> version from <a href="https://nodejs.org/en/download">nodejs.org</a>, run the installer, then quit VS Code completely (<kbd>⌘ Q</kbd> on Mac, close all windows on Windows) and reopen it. Check with <code>node -v</code>; you should see a version number.</li>
+        <li><strong>“Not recognized” or “not found” on Windows</strong> usually also needs a VS Code restart. Make sure you chose the <strong>Add to PATH</strong> option in the installer if it asked.</li>
+        <li><strong><code>ENOENT</code> or “no such file <code>package.json</code>”</strong> means the terminal is in the wrong folder. Run <code>pwd</code> (Mac) or <code>cd</code> (Windows); it should end in <code>p5.book</code>. If not, close the terminal and use <strong>Terminal → New Terminal</strong> while the project folder is open in VS Code.</li>
+        <li><strong><code>EACCES</code> or permission errors</strong> mean your computer blocked a write. Don’t use <code>sudo</code>. Reinstall Node.js from nodejs.org and try again.</li>
+        <li><strong>Red text or warnings</strong> that mention “deprecated” or “funding” are normal and safe to ignore. Only an <code>npm ERR!</code> is a real error.</li>
+      </ul>
+      More help: <a href="https://docs.npmjs.com/downloading-and-installing-node-js-and-npm">npm’s install guide</a>, or <a href="https://code.visualstudio.com/docs/terminal/getting-started">VS Code’s terminal guide</a>. Still stuck? Copy the last few lines of the terminal or send me a screenshot, or <a href="https://p5-book.vercel.app/test#report-an-issue">file an issue</a> and I’ll help.</div>
   </div>
 
 
