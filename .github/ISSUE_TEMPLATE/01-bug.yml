@@ -1,0 +1,33 @@
+name: Something isn’t working
+description: Tell us what happened, even if you aren’t sure it’s a bug.
+labels:
+  - bug
+body:
+  - type: textarea
+    id: goal
+    attributes:
+      label: What were you trying to make?
+      description: Describe what you wanted to do and what you expected.
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: What happened?
+      description: Tell us what went wrong and how you got there, as best you can.
+    validations:
+      required: true
+  - type: textarea
+    id: example
+    attributes:
+      label: Sketch, screenshot, or error message (optional)
+      description: A p5.js editor link, a small code example, or a screenshot can help.
+    validations:
+      required: false
+  - type: textarea
+    id: setup
+    attributes:
+      label: Your setup (optional)
+      description: Browser, device, and p5.js / p5.book versions, if you know them.
+    validations:
+      required: false

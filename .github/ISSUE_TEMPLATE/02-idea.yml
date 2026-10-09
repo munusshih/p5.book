@@ -1,0 +1,26 @@
+name: Suggest a feature
+description: Tell us what would help your bookmaking process.
+labels:
+  - enhancement
+body:
+  - type: textarea
+    id: idea
+    attributes:
+      label: What would you like to do?
+      description: Describe the idea in your own words.
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: How would this help?
+      description: Tell us about the book, class, or creative process you have in mind.
+    validations:
+      required: false
+  - type: textarea
+    id: reference
+    attributes:
+      label: Examples or references (optional)
+      description: Share a sketch, image, or related tool if it helps explain the idea.
+    validations:
+      required: false

@@ -1,0 +1,28 @@
+name: Something in the guide is confusing
+description: Ask for a clearer explanation or report a typo.
+labels:
+  - documentation
+body:
+  - type: textarea
+    id: where
+    attributes:
+      label: Where did you get stuck?
+      description: >-
+        Paste a page link, section title, or a few words from the guide. It’s okay if you can’t find
+        it again.
+    validations:
+      required: true
+  - type: textarea
+    id: confusing
+    attributes:
+      label: What was confusing?
+      description: Tell us what you tried to understand or point out the typo.
+    validations:
+      required: true
+  - type: textarea
+    id: help
+    attributes:
+      label: What would help? (optional)
+      description: An example, picture, different wording, or something else?
+    validations:
+      required: false

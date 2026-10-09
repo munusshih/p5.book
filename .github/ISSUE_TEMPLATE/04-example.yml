@@ -1,0 +1,33 @@
+name: Suggest an example or workshop activity
+description: Share a book, sketch, or teaching idea.
+labels:
+  - enhancement
+body:
+  - type: textarea
+    id: idea
+    attributes:
+      label: What would you like to share?
+      description: Describe your book, sketch, or activity. Ideas in progress are welcome.
+    validations:
+      required: true
+  - type: textarea
+    id: audience
+    attributes:
+      label: Who is it for, and what could they learn? (optional)
+      description: 'For example: a first coding class exploring page numbers and color.'
+    validations:
+      required: false
+  - type: textarea
+    id: sample
+    attributes:
+      label: Sketch or sample book (optional)
+      description: Link a sketch or attach images or a PDF you’re comfortable sharing publicly.
+    validations:
+      required: false
+  - type: textarea
+    id: credit
+    attributes:
+      label: How should we credit the work? (optional)
+      description: Include your preferred name and any collaborators or sources.
+    validations:
+      required: false
