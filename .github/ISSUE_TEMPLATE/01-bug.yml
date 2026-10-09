@@ -1,4 +1,4 @@
-name: Something isn’t working
+name: 🐛 Something isn’t working
 description: Tell us what happened, even if you aren’t sure it’s a bug.
 labels:
   - bug
