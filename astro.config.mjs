@@ -9,6 +9,8 @@ export default defineConfig({
   site: "https://p5-book.vercel.app",
   integrations: [mdx(), localExamples()],
   markdown: {
+    // Worksheet code blocks use a light background, so tokens must too.
+    shikiConfig: { theme: "github-light-high-contrast" },
     rehypePlugins: [rehypeHighlight],
   },
   vite: {
